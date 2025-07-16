@@ -10,7 +10,9 @@
           <span>Communities in MNCU-IR</span>
         </div>
         <div>
-          <button @click="$emit('request-login')" class="login-button">Login</button>
+          <!-- Conditionally show Login Button or Profile Bubble -->
+          <button v-if="!isLoggedIn" @click="$emit('request-login')" class="login-button">Login</button>
+          <ProfileBubble v-else :user="user" @logout="$emit('logout')" />
         </div>
       </div>
     </header>
@@ -49,8 +51,23 @@
 
 <script>
 import logo from '../assets/mncu_logo_wide.png';
+import ProfileCircle from './ProfileCircle.vue';
 
 export default {
+  components: {
+    ProfileBubble: ProfileCircle
+  },
+  props: {
+    isLoggedIn: {
+      type: Boolean,
+      default: false
+    },
+    user: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+
   data() {
     return {
       logo: logo,
