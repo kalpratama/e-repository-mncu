@@ -15,7 +15,8 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Login successful!']);
+            return response()->json(data: Auth::user());
+            //return response()->json(['message' => 'Login successful!']);
         }
 
         return response()->json(['message' => 'Invalid credentials.'], 401);
@@ -23,8 +24,8 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        return $request->user();
-        // return response()->json(Auth::user());
+        // return $request->user();
+        return response()->json(Auth::user());
     }
 
     public function logout(Request $request)

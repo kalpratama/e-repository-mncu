@@ -52,6 +52,7 @@
 <script>
 import logo from '../assets/mncu_logo_wide.png';
 import ProfileCircle from './ProfileCircle.vue';
+import dummyData from '../data/dummyData.json';
 
 export default {
   components: {
@@ -71,33 +72,8 @@ export default {
   data() {
     return {
       logo: logo,
-      publicationTypes: [
-        "01. Artikel Jurnal",
-        "02. Artikel Jurnal Tidak Terbit",
-        "03. Artikel",
-        "04. Buku",
-        "05. Bab Buku",
-        "06. Skripsi",
-        "07. Tugas Akhir",
-        "08. Makalah Konferensi",
-        "09. Modul Pembelajaran",
-        "10. Laporan Penelitian",
-        "11. Laporan Magang Mahasiswa",
-        "12. Poster Ilmiah",
-        "13. Dokumentasi Prestasi Mahasiswa",
-      ],
-      recentPublications: [
-        {
-          title: "Judul Terbitan 1 (Lorem ipsum dolor sit amet)",
-          meta: "Lastname, Firstname (Prodi, Universitas, Tahun)",
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        },
-        {
-          title: "Judul Terbitan 2 (Lorem ipsum dolor sit amet)",
-          meta: "Lastname, Firstname (Prodi, Universitas, Tahun)",
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        }
-      ]
+      publicationTypes: dummyData.publicationTypes,
+      recentPublications: dummyData.recentPublications
     };
   }
 }
@@ -215,6 +191,12 @@ export default {
 
 .publication-list a:hover {
   color: #007bff;
+}
+
+.recent-publications {
+  max-height: 500px; /* Limit the height of this container */
+  overflow-y: auto; /* Add vertical scrollbar only when needed */
+  padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
 }
 
 /* --- Right Box List --- */
