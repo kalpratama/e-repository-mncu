@@ -2,20 +2,17 @@
   <div class="page-container">
     <div class="content-wrapper">
 
-      <!-- Left Side: Logo and Company Name -->
       <div class="logo-area">
-        <!-- Placeholder SVG Logo -->
         <img :src="logo" alt="MNCU Logo" class="logo-image">
       </div>
 
-      <!-- Right Side: Login Form -->
       <div class="login-box">
         <h1 class="app-name">E-Repository</h1>
         <p class="company-name">Universitas Media Nusantara Citra</p>
         <form @submit.prevent="handleLogin">
           <div class="input-group">
-            <label for="email">email</label>
-            <input type="text" id="email" v-model="email" required autocomplete="email">
+            <label for="username">Username</label>
+            <input type="text" id="username" v-model="username" required autocomplete="username">
           </div>
           <div class="input-group">
             <label for="password">Password</label>
@@ -30,6 +27,7 @@
   </div>
 </template>
 
+/* -- API connections -- */
 <script>
 import axios from 'axios';
 import logo from '../assets/mncu_logo.png';
@@ -37,8 +35,8 @@ import logo from '../assets/mncu_logo.png';
 export default {
   data() {
     return {
-        logo: logo,
-      email: '',
+      logo: logo,
+      username: '',
       password: '',
       errorMessage: ''
     };
@@ -47,13 +45,16 @@ export default {
     async handleLogin() {
       this.errorMessage = '';
       try {
+        // Send login request to the server
         await axios.post('/login', {
-          email: this.email,
+          username: this.username,
           password: this.password
         });
         this.$emit('login-success');
+        
+        // Redirect to the dashboard or home page
       } catch (error) {
-        this.errorMessage = 'email atau password tidak sesuai.';
+        this.errorMessage = 'Username atau password tidak sesuai!';
         console.error('Login failed:', error);
       }
     }
@@ -62,7 +63,6 @@ export default {
 </script>
 
 <style scoped>
-/* Main container for the whole page, centers content */
 .page-container {
   display: flex;
   justify-content: center;
@@ -80,28 +80,25 @@ export default {
   align-items: center;
   justify-content: center;
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  gap: 4rem;
-  width: 100%;
+  width: 80%;
   max-width: 1000px;
 }
 
-/* --- Logo Area --- */
 .logo-area {
-  flex-basis: 60%;
+  flex-basis: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2rem;
+  margin-top: 2rem;
 }
 
 .logo-image {
   width: 50%;
   height: 50%;
   object-fit: contain;
-  margin-bottom: 0.5rem;
 }
 
 .app-name {
@@ -120,11 +117,10 @@ export default {
   margin-bottom: 2rem;
 }
 
-/* --- Login Box --- */
 .login-box {
-  flex-basis: 80%;
-  padding: 2.5rem;
-  width: 100%;
+  flex-basis: 90%;
+  padding: 2rem;
+  width: 90%;
   max-width: 400px;
 }
 
@@ -151,7 +147,7 @@ export default {
   width: 100%;
   padding: 0.8rem;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 8px;
   box-sizing: border-box;
   transition: border-color 0.2s;
 }
@@ -167,7 +163,7 @@ button {
   background-color: #072546;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
@@ -185,7 +181,6 @@ button:hover {
   font-size: 0.9rem;
 }
 
-/* --- Responsive Design --- */
 @media (max-width: 800px) {
   .content-wrapper {
     flex-direction: column;
