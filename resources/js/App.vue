@@ -1,10 +1,15 @@
 <template>
   <div>
-    <!-- If user is not logged in, show the login page -->
-    <LoginPage v-if="!isLoggedIn" @login-success="onLoginSuccess" />
+    <!--LoginPage v-if="!isLoggedIn" @login-success="onLoginSuccess" /-->
+    <DashboardPage
+      v-if="currentPage === 'dashboard'"
+      @request-login="showLoginPage"
+    />
 
-    <!-- If user is logged in, show the dashboard -->
-    <DashboardPage v-else />
+    <LoginPage
+      v-if="currentPage === 'login'"
+      @login-success="showDashboardPage"
+    />
   </div>
 </template>
 
@@ -19,13 +24,15 @@ export default {
   },
   data() {
     return {
-      isLoggedIn: false
-    };
+      currentPage: 'dashboard', };
   },
   methods: {
-    onLoginSuccess() {
-      this.isLoggedIn = true;
-    }
+    showLoginPage(){
+        this.currentPage = 'login';
+      },
+      showDashboardPage(){
+        this.currentPage = 'dashboard';
+      }
   }
 };
 </script>

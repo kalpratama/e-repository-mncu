@@ -51,7 +51,7 @@ export default {
           password: this.password
         });
         this.$emit('login-success');
-        
+
         // Redirect to the dashboard or home page
       } catch (error) {
         this.errorMessage = 'Username atau password tidak sesuai!';
@@ -154,13 +154,13 @@ export default {
 
 .input-group input:focus {
   outline: none;
-  border-color: #072546;
+  border-color: #1F3D7B;
 }
 
 button {
   width: 100%;
   padding: 0.9rem;
-  background-color: #072546;
+  background-color: #1F3D7B;
   color: white;
   border: none;
   border-radius: 8px;
