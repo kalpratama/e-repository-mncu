@@ -91,25 +91,6 @@ export default {
       publicationTypes: dummyData.publicationTypes,
       recentPublications: dummyData.recentPublications,
       // The JavaScript timer logic has been removed
-  components: {
-    ProfileBubble: ProfileCircle
-  },
-  props: {
-    isLoggedIn: {
-      type: Boolean,
-      default: false
-    },
-    user: {
-      type: Object,
-      default: () => ({})
-    }
-  },
-
-  data() {
-    return {
-      logo: logo,
-      publicationTypes: dummyData.publicationTypes,
-      recentPublications: dummyData.recentPublications
     };
   },
   // The methods for menu handling have been removed
