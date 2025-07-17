@@ -54,7 +54,7 @@ export default {
         //   username: this.username,
         //   password: this.password
         // });
-        this.$emit('login-success');
+        this.$emit('login-success', response.data);
 
         // Redirect to the dashboard or home page
       } catch (error) {

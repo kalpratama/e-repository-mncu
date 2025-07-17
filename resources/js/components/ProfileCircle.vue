@@ -25,10 +25,10 @@ export default {
   computed: {
     // Get the first letter of the user's name for the bubble
     userInitial() {
-      return this.user.name ? this.user.name.charAt(0).toUpperCase() : '?';
+      return this.user.username ? this.user.username.charAt(0).toUpperCase() : '?';
     },
     userName() {
-      return this.user.name || 'User';
+      return this.user.username || 'User';
     }
   }
 }
