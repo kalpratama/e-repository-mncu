@@ -16,10 +16,32 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+<<<<<<< Updated upstream
             return response()->json(['message' => 'Login successful!']);
+=======
+            return response()->json(Auth::user());
+            //return response()->json(['message' => 'Login successful!']);
+>>>>>>> Stashed changes
         }
 
         return response()->json(['message' => 'Invalid credentials.'], 401);
     }
+<<<<<<< Updated upstream
+=======
+
+    public function user(Request $request)
+    {
+        return $request->user();
+        // return response()->json(Auth::user());
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return response()->json(['message' => 'Logout successful!']);
+    }
+>>>>>>> Stashed changes
 }
 

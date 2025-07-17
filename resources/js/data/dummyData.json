@@ -1,0 +1,81 @@
+{
+  "publicationTypes": [
+    {
+      "name": "Artikel Jurnal",
+      "children": [
+        { 
+          "name": "Dosen" ,
+          "children": [
+            {"name": "Jurnal Nasional"},
+            {"name": "Jurnal Internasional"},
+            {"name": "Jurnal Internal"},
+            {"name": "Semua"}
+          ]
+        },
+        { "name": "Mahasiswa" ,
+          "children": [
+            {"name": "Jurnal Nasional"},
+            {"name": "Jurnal Internasional"},
+            {"name": "Jurnal Internal"},
+            {"name": "Semua"}
+          ]
+        },
+        {"name": "Semua"}
+      ]
+    },
+    { 
+      "name": "Artikel Jurnal Tidak Terbit", "children": [
+        {"name": "Dosen"},
+        {"name": "Mahasiswa"},
+        {"name": "Semua"}
+      ] },
+    { "name": "Artikel", 
+      "children": [
+        { "name": "Majalah" },
+        { "name": "Koran" },
+        { "name": "Semua" }
+      ] },
+    { "name": "Buku" },
+    { "name": "Bab Buku" },
+    { "name": "Skripsi" },
+    { "name": "Tugas Akhir" },
+    { "name": "Makalah Konferensi" },
+    { "name": "Modul Pembelajaran" },
+    { "name": "Laporan Penelitian",
+      "children": [
+        {"name": "Dosen"},
+        {"name": "Mahasiswa"},
+        {"name": "Semua"}
+      ] },
+    { "name": "Laporan Magang Mahasiswa" },
+    { "name": "Poster Ilmiah" },
+    { "name": "Dokumentasi Prestasi Mahasiswa" }
+  ],
+  "recentPublications": [
+    {
+      "title": "Analisis Sentimen pada Ulasan Produk E-commerce",
+      "meta": "Putra, Budi (Informatika, Universitas MNC, 2024)",
+      "description": "Penelitian ini mengaplikasikan metode Naive Bayes untuk klasifikasi sentimen pada ulasan produk, mencapai akurasi yang signifikan dalam pengujian."
+    },
+    {
+      "title": "Pengembangan Sistem Informasi Perpustakaan Berbasis Web",
+      "meta": "Susanti, Rina (Sistem Informasi, Universitas MNC, 2024)",
+      "description": "Implementasi sistem perpustakaan digital untuk meningkatkan efisiensi manajemen koleksi dan peminjaman buku di lingkungan akademik."
+    },
+    {
+      "title": "Studi Komparatif Algoritma Machine Learning untuk Prediksi Harga Saham",
+      "meta": "Wijaya, Agung (Manajemen, Universitas MNC, 2023)",
+      "description": "Membandingkan performa algoritma regresi linear, SVM, dan LSTM dalam memprediksi pergerakan harga saham pada sektor teknologi."
+    },
+    {
+      "title": "Rancang Bangun Aplikasi Mobile untuk Petani Hidroponik",
+      "meta": "Lestari, Dewi (Agroteknologi, Universitas MNC, 2024)",
+      "description": "Aplikasi mobile yang menyediakan panduan, jadwal tanam, dan forum diskusi untuk membantu petani hidroponik meningkatkan hasil panen."
+    },
+    {
+      "title": "Dampak Media Sosial Terhadap Kesehatan Mental Remaja",
+      "meta": "Hakim, Arif (Psikologi, Universitas MNC, 2023)",
+      "description": "Kajian mendalam mengenai korelasi antara intensitas penggunaan media sosial dengan tingkat kecemasan dan depresi pada remaja."
+    }
+  ]
+}

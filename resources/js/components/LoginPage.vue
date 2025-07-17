@@ -50,9 +50,12 @@ export default {
           username: this.username,
           password: this.password
         });
+<<<<<<< Updated upstream
         this.$emit('login-success');
+=======
+        this.$emit('login-success', response.data);
+>>>>>>> Stashed changes
 
-        // Redirect to the dashboard or home page
       } catch (error) {
         this.errorMessage = 'Username atau password tidak sesuai!';
         console.error('Login failed:', error);
