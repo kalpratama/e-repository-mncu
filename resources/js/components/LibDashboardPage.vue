@@ -226,21 +226,8 @@ export default {
 .publication-list li:hover > a {
   background-color: #e9ecef;
 }
-
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
 .dropdown-arrow {
-  font-size: 0.8em;
-  color: #888;
-=======
-.dropdown-arrow {
-  font-size: 0.8em;
-  color: #888;
-=======
-.dropdown-arrow {
-  font-size: 0.8em;
+  font-size: 0.8rem;
   color: #888;
 }
 
@@ -270,36 +257,6 @@ export default {
   opacity: 1;
   /* On hover, remove the delay so it appears quickly */
   transition-delay: 0s;
->>>>>>> Stashed changes
-}
-
-/* --- Dropdown Menu Styling --- */
-.dropdown-menu {
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-  left: 100%; /* Position to the right of the parent */
-  top: -1px; /* Align with the top of the parent */
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0 5px; /* Small gap from the parent */
-  min-width: 200px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 10;
-  transition: visibility 0s linear 0.2s, opacity 0.2s linear;
-}
-
-/* Show dropdown on parent hover */
-.publication-list li:hover > .dropdown-menu {
-  display: block;
-  visibility: visible;
-  opacity: 1;
-  /* On hover, remove the delay so it appears quickly */
-  transition-delay: 0s;
->>>>>>> Stashed changes
 }
 
 /* --- Dropdown Menu Styling --- */
@@ -330,7 +287,34 @@ export default {
   transition-delay: 0s;
 }
 
->>>>>>> Stashed changes
+/* --- Dropdown Menu Styling --- */
+.dropdown-menu {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  left: 100%; /* Position to the right of the parent */
+  top: -1px; /* Align with the top of the parent */
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 5px; /* Small gap from the parent */
+  min-width: 200px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 10;
+  transition: visibility 0s linear 0.2s, opacity 0.2s linear;
+}
+
+/* Show dropdown on parent hover */
+.publication-list li:hover > .dropdown-menu {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  /* On hover, remove the delay so it appears quickly */
+  transition-delay: 0s;
+}
+
 /* --- Right Box List --- */
 .recent-publications {
   max-height: 500px;
