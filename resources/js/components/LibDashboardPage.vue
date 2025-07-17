@@ -4,7 +4,7 @@
     <header class="top-header">
       <div class="header-content">
         <div class="logo-container">
-          <img :src="logo" alt="Company Logo" class="company-logo">
+          <img :src="logo" alt="MNCU Logo" class="company-logo">
         </div>
         <div class="communities-link">
           <span>Communities in MNCU-IR</span>
@@ -23,8 +23,27 @@
         <div class="content-box">
           <h2 class="box-title">Terbitan Pustaka</h2>
           <ol class="publication-list">
-            <li v-for="item in publicationTypes" :key="item">
-              <a href="#">{{ item }}</a>
+            <!-- The event listeners have been removed for a pure CSS approach -->
+            <li v-for="item in publicationTypes" :key="item.name">
+              <a href="#">
+                {{ item.name }}
+                <span v-if="item.children" class="dropdown-arrow">&#9656;</span>
+              </a>
+              <!-- First-level dropdown -->
+              <ul v-if="item.children" class="dropdown-menu">
+                <li v-for="child in item.children" :key="child.name">
+                  <a href="#">
+                    {{ child.name }}
+                    <span v-if="child.children" class="dropdown-arrow">&#9656;</span>
+                  </a>
+                  <!-- Second-level dropdown -->
+                  <ul v-if="child.children" class="dropdown-menu">
+                    <li v-for="grandchild in child.children" :key="grandchild.name">
+                      <a href="#">{{ grandchild.name }}</a>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
             </li>
           </ol>
         </div>
@@ -33,13 +52,11 @@
         <div class="content-box">
           <h2 class="box-title">Baru Diterbitkan</h2>
           <div class="recent-publications">
-            <div class="publication-item" v-for="(item, index) in recentPublications" :key="index">
-              <h3>
-                <a href="#">{{ item.title }}</a>
-              </h3>
+            <a href="#" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
+              <h3>{{ item.title }}</h3>
               <p class="meta">{{ item.meta }}</p>
               <p class="description">{{ item.description }}</p>
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -51,6 +68,7 @@
 import logo from '../assets/mncu_logo_wide.png';
 
 export default {
+<<<<<<< Updated upstream
   data() {
     return {
       logo: logo,
@@ -81,8 +99,30 @@ export default {
           description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
         }
       ]
+=======
+  components: {
+    ProfileBubble: ProfileCircle
+  },
+  props: {
+    isLoggedIn: {
+      type: Boolean,
+      default: false
+    },
+    user: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  data() {
+    return {
+      logo: logo,
+      publicationTypes: dummyData.publicationTypes,
+      recentPublications: dummyData.recentPublications,
+      // The JavaScript timer logic has been removed
+>>>>>>> Stashed changes
     };
-  }
+  },
+  // The methods for menu handling have been removed
 }
 </script>
 
@@ -134,7 +174,7 @@ export default {
   padding-left: 5rem;
   padding-right: 5rem;
   padding-bottom: 8rem;
-  padding-top: 2rem;
+  padding-top: 1rem;
 }
 
 .repository-title {
@@ -143,7 +183,7 @@ export default {
   font-size: 1.75rem;
   font-weight: 600;
   margin-top: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .content-boxes {
@@ -179,48 +219,103 @@ export default {
   padding-bottom: 0.75rem;
 }
 
-/* --- Left Box List --- */
+/* --- Left Box List with Dropdowns --- */
 .publication-list {
-  list-style-position: inside;
+  list-style: none;
   padding-left: 0;
   margin: 0;
 }
 
 .publication-list li {
-  margin-bottom: 0.5rem;
+  position: relative;
+  margin-bottom: 0.25rem;
 }
 
 .publication-list a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 1rem;
   text-decoration: none;
-  color: #333;
-  transition: color 0.2s;
+  border-radius: 5px;
+  box-shadow: 0 4px 5px rgba(0,0,0,0.15);
+  transition: background-color 0.2s;
+  cursor: pointer;
 }
 
-.publication-list a:hover {
-  color: #007bff;
+.publication-list li:hover > a {
+  background-color: #e9ecef;
 }
 
+<<<<<<< Updated upstream
+=======
+.dropdown-arrow {
+  font-size: 0.8em;
+  color: #888;
+}
+
+/* --- Dropdown Menu Styling --- */
+.dropdown-menu {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  left: 100%;
+  top: -1px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 5px;
+  min-width: 200px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 10;
+  transition: visibility 0s linear 0.2s, opacity 0.2s linear;
+}
+
+.publication-list li:hover > .dropdown-menu {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+>>>>>>> Stashed changes
 /* --- Right Box List --- */
-.recent-publications .publication-item {
-  margin-bottom: 2rem;
+.recent-publications {
+  max-height: 500px;
+  max-width: 100%;
+  overflow-y: auto;
+  padding-right: 1rem;
 }
 
-.recent-publications .publication-item:last-child {
+a.publication-item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+a.publication-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+}
+
+a.publication-item:last-child {
   margin-bottom: 0;
 }
 
 .publication-item h3 {
   margin: 0 0 0.25rem 0;
   font-size: 1.1rem;
-}
-
-.publication-item h3 a {
-  text-decoration: none;
-  color: #001F3D7B;
+  color: #1F3D7B;
   font-weight: 600;
 }
 
-.publication-item h3 a:hover {
+a.publication-item:hover h3 {
   text-decoration: underline;
 }
 
@@ -258,6 +353,20 @@ button:hover {
 @media (max-width: 992px) {
   .content-boxes {
     flex-direction: column;
+  }
+
+  .dropdown-menu {
+    left: 0;
+    top: 100%;
+    margin: 5px 0 0 0;
+    width: 100%;
+  }
+
+  .dropdown-menu .dropdown-menu {
+    left: 0;
+    top: 100%;
+    margin: 5px 0 0 0;
+    width: 100%;
   }
 }
 
