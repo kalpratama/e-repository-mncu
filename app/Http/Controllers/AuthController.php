@@ -18,8 +18,11 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             return response()->json(['message' => 'Login successful!']);
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
             return response()->json(Auth::user());

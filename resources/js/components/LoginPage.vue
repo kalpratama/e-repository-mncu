@@ -52,7 +52,11 @@ export default {
         });
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         this.$emit('login-success');
+=======
+        this.$emit('login-success', response.data);
+>>>>>>> Stashed changes
 =======
         this.$emit('login-success', response.data);
 >>>>>>> Stashed changes
