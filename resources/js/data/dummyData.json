@@ -1,18 +1,49 @@
 {
   "publicationTypes": [
-    "01. Artikel Jurnal",
-    "02. Artikel Jurnal Tidak Terbit",
-    "03. Artikel",
-    "04. Buku",
-    "05. Bab Buku",
-    "06. Skripsi",
-    "07. Tugas Akhir",
-    "08. Makalah Konferensi",
-    "09. Modul Pembelajaran",
-    "10. Laporan Penelitian",
-    "11. Laporan Magang Mahasiswa",
-    "12. Poster Ilmiah",
-    "13. Dokumentasi Prestasi Mahasiswa"
+    {
+      "name": "Artikel Jurnal",
+      "children": [
+        { "name": "Dosen",
+          "children": [
+            { "name": "Jurnal Nasional" },
+            { "name": "Jurnal Internasional" },
+            { "name": "Semua" }
+          ]
+         },
+        { "name": "Mahasiswa",
+          "children": [
+            { "name": "Jurnal Nasional" },
+            { "name": "Jurnal Internasional" },
+            { "name": "Semua" }
+          ]
+         },
+        {"name": "Semua"}
+      ]
+    },
+    {
+      "name": "Artikel Jurnal Tidak Terbit",
+      "children": [
+        { "name": "Dosen" },
+        { "name": "Mahasiswa" },
+        { "name": "Semua" }
+      ]
+    },
+    {"name": "Artikel"},
+    {"name": "Buku"},
+    {"name": "Bab Buku"},
+    {"name": "Skripsi"},
+    {"name": "Tugas Akhir"},
+    {"name": "Makalah Konferensi"},
+    {"name": "Modul Pembelajaran"},
+    {"name": "Laporan Penelitian",
+      "children": [
+        { "name": "Dosen" },
+        { "name": "Mahasiswa" },
+        { "name": "Semua" }
+      ]},
+    {"name": "Laporan Magang Mahasiswa"},
+    {"name": "Poster Ilmiah"},
+    {"name": "Dokumentasi Prestasi Mahasiswa"}
   ],
   "recentPublications": [
     {

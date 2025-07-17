@@ -5,7 +5,7 @@
     </button>
     <div class="dropdown-menu">
       <div class="dropdown-header">
-        Signed in as<br><strong>{{ userName }}</strong>
+        Halo,<br><strong>{{ userName }}!</strong>\
       </div>
       <a href="#" class="dropdown-item">Profile</a>
       <div class="dropdown-divider"></div>
@@ -43,7 +43,7 @@ export default {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background-color: #007bff;
+  background-color: #bd0000;
   color: white;
   display: flex;
   align-items: center;
@@ -54,7 +54,8 @@ export default {
   cursor: pointer;
 }
 .dropdown-menu {
-  display: none;
+  visibility: hidden;
+  opacity: 0;
   position: absolute;
   right: 0;
   top: 120%;
@@ -64,9 +65,13 @@ export default {
   z-index: 1;
   border-radius: 6px;
   padding: 0.5rem 0;
+  transition: visibility 0s linear 0.2s, opacity 0.2s linear;
 }
 .dropdown:hover .dropdown-menu {
   display: block;
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
 }
 .dropdown-header {
   padding: 0.75rem 1rem;
