@@ -5,7 +5,7 @@
     </button>
     <div class="dropdown-menu">
       <div class="dropdown-header">
-        Halo,<br><strong>{{ userName }}!</strong>
+        Halo,<br><strong>{{ userName }}!</strong>\
       </div>
       <a href="#" class="dropdown-item">Profile</a>
       <div class="dropdown-divider"></div>

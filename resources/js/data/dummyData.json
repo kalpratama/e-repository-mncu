@@ -48,28 +48,44 @@
   "recentPublications": [
     {
       "title": "Analisis Sentimen pada Ulasan Produk E-commerce",
-      "meta": "Putra, Budi (Informatika, Universitas Teknologi, 2024)",
+      "meta": "Putra, Budi (Informatika, Universitas MNC, 2024)",
       "description": "Penelitian ini mengaplikasikan metode Naive Bayes untuk klasifikasi sentimen pada ulasan produk, mencapai akurasi yang signifikan dalam pengujian."
     },
     {
       "title": "Pengembangan Sistem Informasi Perpustakaan Berbasis Web",
-      "meta": "Susanti, Rina (Sistem Informasi, Institut Sains, 2024)",
+      "meta": "Susanti, Rina (Sistem Informasi, Universitas MNC, 2024)",
       "description": "Implementasi sistem perpustakaan digital untuk meningkatkan efisiensi manajemen koleksi dan peminjaman buku di lingkungan akademik."
     },
     {
       "title": "Studi Komparatif Algoritma Machine Learning untuk Prediksi Harga Saham",
-      "meta": "Wijaya, Agung (Manajemen, Sekolah Bisnis, 2023)",
+      "meta": "Wijaya, Agung (Manajemen, Universitas MNC, 2023)",
       "description": "Membandingkan performa algoritma regresi linear, SVM, dan LSTM dalam memprediksi pergerakan harga saham pada sektor teknologi."
     },
     {
       "title": "Rancang Bangun Aplikasi Mobile untuk Petani Hidroponik",
-      "meta": "Lestari, Dewi (Agroteknologi, Universitas Pertanian, 2024)",
+      "meta": "Lestari, Dewi (Agroteknologi, Universitas MNC, 2024)",
       "description": "Aplikasi mobile yang menyediakan panduan, jadwal tanam, dan forum diskusi untuk membantu petani hidroponik meningkatkan hasil panen."
     },
     {
       "title": "Dampak Media Sosial Terhadap Kesehatan Mental Remaja",
-      "meta": "Hakim, Arif (Psikologi, Universitas Humaniora, 2023)",
+      "meta": "Hakim, Arif (Psikologi, Universitas MNC, 2023)",
       "description": "Kajian mendalam mengenai korelasi antara intensitas penggunaan media sosial dengan tingkat kecemasan dan depresi pada remaja."
+    },
+    {
+      "title": "Penerapan Augmented Reality pada Media Pembelajaran Anatomi",
+      "meta": "Nugroho, Adi (Pendidikan Teknik, Universitas MNC, 2024)",
+      "description": "Mengembangkan media pembelajaran interaktif menggunakan Augmented Reality untuk memvisualisasikan organ tubuh manusia secara 3D."
+    },
+    {
+      "title": "Efektivitas Model Pembelajaran Berbasis Proyek",
+      "meta": "Wati, Endang (Pendidikan Dasar, Universitas MNC, 2023)",
+      "description": "Menganalisis peningkatan keterampilan berpikir kritis dan kolaborasi siswa sekolah dasar melalui penerapan model Project-Based Learning."
+    },
+    {
+      "title": "Optimalisasi Jaringan Sensor Nirkabel untuk Pemantauan Lingkungan",
+      "meta": "Santoso, Joko (Teknik Elektro, Universitas MNC, 2024)",
+      "description": "Penelitian ini berfokus pada efisiensi energi dan pengiriman data pada jaringan sensor nirkabel untuk pemantauan kualitas udara."
     }
   ]
 }
+

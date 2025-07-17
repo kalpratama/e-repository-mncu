@@ -45,12 +45,16 @@ export default {
     async handleLogin() {
       this.errorMessage = '';
       try {
-        // Send login request to the server
-        await axios.post('/login', {
+        const response = await axios.post('/api/login', {
           username: this.username,
           password: this.password
         });
-        this.$emit('login-success');
+        // Send login request to the server
+        // await axios.post('/login', {
+        //   username: this.username,
+        //   password: this.password
+        // });
+        this.$emit('login-success', response.data);
 
         // Redirect to the dashboard or home page
       } catch (error) {

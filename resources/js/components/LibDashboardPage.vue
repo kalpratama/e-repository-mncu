@@ -10,7 +10,9 @@
           <span>Communities in MNCU-IR</span>
         </div>
         <div>
-          <button @click="$emit('request-login')" class="login-button">Login</button>
+          <!-- Conditionally show Login Button or Profile Bubble -->
+          <button v-if="!isLoggedIn" @click="$emit('request-login')" class="login-button">Login</button>
+          <ProfileBubble v-else :user="user" @logout="$emit('logout')" />
         </div>
       </div>
     </header>
@@ -66,40 +68,10 @@
 
 <script>
 import logo from '../assets/mncu_logo_wide.png';
+import ProfileCircle from './ProfileCircle.vue';
+import dummyData from '../data/dummyData.json';
 
 export default {
-<<<<<<< Updated upstream
-  data() {
-    return {
-      logo: logo,
-      publicationTypes: [
-        "01. Artikel Jurnal",
-        "02. Artikel Jurnal Tidak Terbit",
-        "03. Artikel",
-        "04. Buku",
-        "05. Bab Buku",
-        "06. Skripsi",
-        "07. Tugas Akhir",
-        "08. Makalah Konferensi",
-        "09. Modul Pembelajaran",
-        "10. Laporan Penelitian",
-        "11. Laporan Magang Mahasiswa",
-        "12. Poster Ilmiah",
-        "13. Dokumentasi Prestasi Mahasiswa",
-      ],
-      recentPublications: [
-        {
-          title: "Judul Terbitan 1 (Lorem ipsum dolor sit amet)",
-          meta: "Lastname, Firstname (Prodi, Universitas, Tahun)",
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        },
-        {
-          title: "Judul Terbitan 2 (Lorem ipsum dolor sit amet)",
-          meta: "Lastname, Firstname (Prodi, Universitas, Tahun)",
-          description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        }
-      ]
-=======
   components: {
     ProfileBubble: ProfileCircle
   },
@@ -119,7 +91,25 @@ export default {
       publicationTypes: dummyData.publicationTypes,
       recentPublications: dummyData.recentPublications,
       // The JavaScript timer logic has been removed
->>>>>>> Stashed changes
+  components: {
+    ProfileBubble: ProfileCircle
+  },
+  props: {
+    isLoggedIn: {
+      type: Boolean,
+      default: false
+    },
+    user: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+
+  data() {
+    return {
+      logo: logo,
+      publicationTypes: dummyData.publicationTypes,
+      recentPublications: dummyData.recentPublications
     };
   },
   // The methods for menu handling have been removed
@@ -247,8 +237,6 @@ export default {
   background-color: #e9ecef;
 }
 
-<<<<<<< Updated upstream
-=======
 .dropdown-arrow {
   font-size: 0.8em;
   color: #888;
@@ -279,7 +267,12 @@ export default {
   transition-delay: 0s;
 }
 
->>>>>>> Stashed changes
+.recent-publications {
+  max-height: 500px; /* Limit the height of this container */
+  overflow-y: auto; /* Add vertical scrollbar only when needed */
+  padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
+}
+
 /* --- Right Box List --- */
 .recent-publications {
   max-height: 500px;
