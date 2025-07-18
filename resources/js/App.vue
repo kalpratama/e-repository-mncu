@@ -1,22 +1,29 @@
 <template>
   <div>
     <!-- ======================= DEBUG BLOCK ======================= -->
-    <!-- <div class="debug-info">
+    <div class="debug-info">
       <strong>-- DEBUG INFO --</strong><br>
       <p>Current Page: <strong>{{ currentPage }}</strong></p>
       <p>Is Logged In: <strong>{{ isLoggedIn }}</strong></p>
       <p>User Data: <strong>{{ user || 'null' }}</strong></p>
-      <p>Token: <strong>{{ token ? 'Present' : 'Missing' }}</strong></p>
+      <p>Token: <strong>{{ token ? 'Available' : 'Missing' }}</strong></p>
       <p>LocalStorage Token: <strong>{{ $data.debugToken || 'Missing' }}</strong></p>
       <button @click="debugStorage" style="margin-top: 10px;">Debug Storage</button>
       <button @click="checkAuthStatus" style="margin-top: 10px; margin-left: 10px;">Re-check Auth</button>
     
-    </div> -->
+    </div>
     <!-- =========================================================== -->
 
+    <router-view 
+      :is-logged-in="isLoggedIn"
+      :user="user"
+      @request-login="goToLogin"
+      @login-success="handleLoginSuccess"
+      @logout="handleLogout"
+    />
 
     <!-- Show the Dashboard page, passing login state and user data down as props -->
-    <DashboardPage 
+    <!-- <DashboardPage 
       v-if="currentPage === 'dashboard'" 
       :is-logged-in="isLoggedIn"
       :user="user"
@@ -24,11 +31,11 @@
       @logout="handleLogout"
     />
 
-    <!-- Show Login page when login button is clicked -->
+    Show Login page when login button is clicked
     <LoginPage 
       v-else-if="currentPage === 'login'" 
       @login-success="handleLoginSuccess" 
-    />
+    /> -->
   </div>
 </template>
 
@@ -54,12 +61,16 @@ export default {
     };
   },
   methods: {
-    showLoginPage(){
-      this.currentPage = 'login';
-    },
+    // showLoginPage(){
+    //   this.currentPage = 'login';
+    // },
 
-    showDashboardPage(){
-      this.currentPage = 'dashboard';
+    // showDashboardPage(){
+    //   this.currentPage = 'dashboard';
+    // },
+
+    goToLogin(){
+      this.$router.push('/login');
     },
 
     handleLoginSuccess(data) {
@@ -67,7 +78,8 @@ export default {
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
       this.isLoggedIn = true;
       this.user = data.user;
-      this.currentPage = 'dashboard';
+      // this.currentPage = 'dashboard';
+      this.$router.push('/');
     },
 
     async handleLogout() {
@@ -80,6 +92,7 @@ export default {
         delete axios.defaults.headers.common['Authorization'];
         this.isLoggedIn = false;
         this.user = null;
+        this.$router.push('/');
       }
     },
 
@@ -156,11 +169,22 @@ export default {
 
 <style>
 .debug-info {
-  background-color: #f0f0f0;
+  background-color: #e7e7e7;
   padding: 10px;
   margin: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 20px;
   font-family: monospace;
 }
+
+button {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 5px 10px;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+} 
 </style>

@@ -19,7 +19,7 @@
             <input type="password" id="password" v-model="password" required autocomplete="current-password">
           </div>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-          <button type="submit">Log In</button>
+          <button type="submit">Masuk</button>
         </form>
       </div>
 

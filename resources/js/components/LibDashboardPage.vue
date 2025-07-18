@@ -27,21 +27,16 @@
           <h2 class="box-title">Terbitan Pustaka</h2>
           <ol class="publication-list">
             <li v-for="item in publicationTypes" :key="item.name">
-              <a href="#">
-                {{ item.name }}
-                <span v-if="item.children" class="dropdown-arrow">&#9656;</span>
-              </a>
+              <router-link to="/">{{ item.name }}</router-link>
               <!-- First-level dropdown -->
               <ul v-if="item.children" class="dropdown-menu">
                 <li v-for="child in item.children" :key="child.name">
-                  <a href="#">
-                    {{ child.name }}
-                    <span v-if="child.children" class="dropdown-arrow">&#9656;</span>
-                  </a>
+                  <router-link to="#">{{ child.name }}</router-link>
+                  <span v-if="child.children" class="dropdown-arrow">&#9656;</span>
                   <!-- Second-level dropdown -->
                   <ul v-if="child.children" class="dropdown-menu">
                     <li v-for="grandchild in child.children" :key="grandchild.name">
-                      <a href="#">{{ grandchild.name }}</a>
+                      <router-link to="#">{{ grandchild.name }}</router-link>
                     </li>
                   </ul>
                 </li>
@@ -64,11 +59,11 @@
           <div class="content-box">
             <h2 class="box-title">Baru Diterbitkan</h2>
             <div class="recent-publications">
-              <a href="#" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
+              <router-link to="#" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
                 <h3>{{ item.title }}</h3>
                 <p class="meta">{{ item.meta }}</p>
                 <p class="description">{{ item.description }}</p>
-              </a>
+              </router-link>
             </div>
           </div>
         </div>
