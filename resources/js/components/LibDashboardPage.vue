@@ -21,11 +21,11 @@
     <main class="main-content">
       <h1 class="repository-title">Repositori Institusional MNC University</h1>
       <div class="content-boxes">
-        <!-- Left Box: Publication Types -->
-        <div class="content-box">
+
+        <!-- Left Column -->
+        <div class="content-box left-column">
           <h2 class="box-title">Terbitan Pustaka</h2>
           <ol class="publication-list">
-            <!-- The event listeners have been removed for a pure CSS approach -->
             <li v-for="item in publicationTypes" :key="item.name">
               <a href="#">
                 {{ item.name }}
@@ -50,17 +50,30 @@
           </ol>
         </div>
 
-        <!-- Right Box: Recently Published -->
-        <div class="content-box">
-          <h2 class="box-title">Baru Diterbitkan</h2>
-          <div class="recent-publications">
-            <a href="#" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
-              <h3>{{ item.title }}</h3>
-              <p class="meta">{{ item.meta }}</p>
-              <p class="description">{{ item.description }}</p>
-            </a>
+        <div class="right-column">
+          <div class="content-box search-box">
+            <div class="search-bar-container">
+              <input type="text" placeholder="Search the repository..." class="search-input">
+              <button class="search-button" aria-label="Search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Recently Published Box below -->
+          <div class="content-box">
+            <h2 class="box-title">Baru Diterbitkan</h2>
+            <div class="recent-publications">
+              <a href="#" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
+                <h3>{{ item.title }}</h3>
+                <p class="meta">{{ item.meta }}</p>
+                <p class="description">{{ item.description }}</p>
+              </a>
+            </div>
           </div>
         </div>
+
+        
       </div>
     </main>
   </div>
@@ -126,7 +139,7 @@ export default {
 /* --- Top Header --- */
 .top-header {
   background-color: #ffffff;
-  padding: 1rem 2rem;
+  padding: .5rem 2rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-bottom: 1px solid #e0e0e0;
 }
@@ -136,7 +149,8 @@ export default {
   justify-content: space-between;
   align-items: center;
   max-width: 1400px;
-  margin: 0 auto;
+  margin-left: 3rem;
+  margin-right: 3rem;
 }
 
 .logo-container {
@@ -145,11 +159,11 @@ export default {
   gap: 0.75rem;
   font-weight: 600;
   font-size: 1.1rem;
-  margin-left: 3rem;
+  /* margin-left: 3rem; */
 }
 
 .company-logo {
-  height: 40px;
+  height: 57px;
   width: auto;
 }
 
@@ -163,17 +177,17 @@ export default {
   background-color: #1F3D7B;
   padding-left: 5rem;
   padding-right: 5rem;
-  padding-bottom: 8rem;
-  padding-top: 1rem;
+  padding-bottom: 9rem;
+  padding-top: .5rem;
 }
 
 .repository-title {
   color: #ffffff;
   text-align: center;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 600;
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
 }
 
 .content-boxes {
@@ -184,19 +198,31 @@ export default {
   margin: 0 auto;
 }
 
-.content-box {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
 .content-boxes > .content-box:first-child {
   flex: 1;
 }
 
 .content-boxes > .content-box:last-child {
   flex: 2;
+}
+
+.content-box {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem 2rem; 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.left-column {
+  flex: 1;
+}
+
+/* **** NEW: Styling for the right column container **** */
+.right-column {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Space between the two boxes on the right */
 }
 
 .box-title {
@@ -207,6 +233,27 @@ export default {
   align-content: center;
   border-bottom: 1px solid #eee;
   padding-bottom: 0.75rem;
+}
+
+/* --- Search Bar --- */
+.search-bar-container {
+  display: flex;
+  gap: 0.5rem;
+}
+.search-input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+.search-button {
+  width: auto;
+  padding: 0.75rem 1.5rem;
+  background-color: #1F3D7B;
+}
+.search-button:hover {
+  background-color: #0056b3;
 }
 
 /* --- Left Box List with Dropdowns --- */
@@ -268,7 +315,7 @@ export default {
 }
 
 .recent-publications {
-  max-height: 500px; /* Limit the height of this container */
+  max-height: 400px; /* Limit the height of this container */
   overflow-y: auto; /* Add vertical scrollbar only when needed */
   padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
 }
@@ -286,7 +333,7 @@ a.publication-item {
   text-decoration: none;
   color: inherit;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -325,7 +372,7 @@ a.publication-item:hover h3 {
   margin: 0;
 }
 
-button {
+button.login-button {
   width: 100%;
   padding: 0.9rem;
   background-color: #1F3D7B;
@@ -338,28 +385,56 @@ button {
   transition: background-color 0.2s;
 }
 
-button:hover {
+button.login-button:hover {
+  background-color: #0056b3;
+}
+
+button.search-button{
+  padding: 0.75rem 1.5rem;
+  background-color: #1F3D7B;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button.search-button:hover {
   background-color: #0056b3;
 }
 
 /* --- Responsive Design --- */
-@media (max-width: 992px) {
+@media (max-width: 882px) {
   .content-boxes {
     flex-direction: column;
+  }
+
+  /* **** NEW: Reorder boxes on mobile **** */
+  .right-column {
+    display: contents; /* This makes children of .right-column direct flex items */
+  }
+  .search-box {
+    order: -2; /* This moves the search box to the top */
+  }
+  .left-column {
+      order: -1; /* This moves the publication list to the middle */
+  }
+  .recent-box {
+    order: 0; /* This keeps the recent box at the bottom */
   }
 
   .dropdown-menu {
     left: 0;
     top: 100%;
     margin: 5px 0 0 0;
-    width: 100%;
+    width: 70%;
   }
 
   .dropdown-menu .dropdown-menu {
-    left: 0;
+    left: 6rem;
     top: 100%;
     margin: 5px 0 0 0;
-    width: 100%;
+    width: 70%;
   }
 }
 
