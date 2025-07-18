@@ -66,7 +66,9 @@ export default {
       this.currentPage = 'dashboard';
     },
 
-    handleLoginSuccess(user) {
+    handleLoginSuccess(data) {
+      localStorage.setItem('access_token', data.access_token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
       this.isLoggedIn = true;
       this.user = user;
       this.currentPage = 'dashboard';
@@ -76,30 +78,49 @@ export default {
       try{
         await axios.post('/api/logout');
       } catch (error) {
-        console.error('Logout failed:', error);
+        console.error('Logout API call failed:', error);
       } finally{
+        localStorage.removeItem('access_token');
+        delete axios.defaults.headers.common['Authorization'];
         this.isLoggedIn = false;
-        this.user = user;
+        this.user = null;
       }
     },
 
     async checkAuthStatus() {
-      try {
-        const response = await axios.get('/api/user');
-        if (response.data) {
-          this.isLoggedIn = true;
-          this.user = response.data;
-        } 
-      } catch (error) {
-        this.isLoggedIn = false;
-        this.user = null;
-        console.log('User not authenticated:', error);
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        try {
+          const response = await axios.get('/api/user');
+          if (response.data) {
+            this.isLoggedIn = true;
+            this.user = response.data;
+          } 
+        } catch (error) {
+          localStorage.removeItem('access_token');
+          console.log('User not authenticated:', error);
+        }
       }
+
+    //   try {
+    //     const response = await axios.get('/api/user');
+    //     if (response.data) {
+    //       this.isLoggedIn = true;
+    //       this.user = response.data;
+    //     } 
+    //   } catch (error) {
+    //     this.isLoggedIn = false;
+    //     this.user = null;
+    //     console.log('User not authenticated:', error);
+    //   }
     },
 
-    created(){
+    
+  },
+
+  created(){
       this.checkAuthStatus();
     }
-  }
 };
 </script>
