@@ -7,9 +7,13 @@
       <div class="dropdown-header">
         Halo,<br><strong>{{ userName }}!</strong>
       </div>
-      <a href="#" class="dropdown-item">Profile</a>
+      <a href="#" class="dropdown-item">Profil</a>
+      <router-link v-if="user && user.role === 'admin'" to="/admin/articles/create" class="admin-button">
+        Unggah Artikel
+      </router-link>
       <div class="dropdown-divider"></div>
       <a href="#" @click.prevent="$emit('logout')" class="dropdown-item">Logout</a>
+      
     </div>
   </div>
 </template>
@@ -93,5 +97,16 @@ export default {
   margin: 0.5rem 0;
   overflow: hidden;
   background-color: #e9ecef;
+}
+
+.admin-button {
+  color: black;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  display: block;
+  font-size: 1rem;
+}
+.admin-button:hover {
+  background-color: #f1f1f1;
 }
 </style>

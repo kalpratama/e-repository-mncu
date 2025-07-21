@@ -12,11 +12,11 @@
         <form @submit.prevent="handleLogin">
           <div class="input-group">
             <label for="username">Username</label>
-            <input type="text" id="username" v-model="username" required autocomplete="username">
+            <input type="text" id="username" v-model="username" required autocomplete="username" placeholder="Masukkan username">
           </div>
           <div class="input-group">
             <label for="password">Password</label>
-            <input type="password" id="password" v-model="password" required autocomplete="current-password">
+            <input type="password" id="password" v-model="password" required autocomplete="current-password" placeholder="Masukkan password">
           </div>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
           <button type="submit">Masuk</button>

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DashboardPage from '../components/LibDashboardPage.vue';
 import LoginPage from '../components/LoginPage.vue';
 import ArticlePage from '../components/ArticlePage.vue';
+import ArticleInputPage from '../components/ArticleInputPage.vue';
 
 const routes = [
   {
@@ -22,6 +23,12 @@ const routes = [
     name: 'Article',
     component: ArticlePage,
     meta: {title: 'Article'},
+  }, 
+  {
+    path: '/admin/articles/create',
+    name: 'ArticleCreate',
+    component: ArticleInputPage,
+    meta: { title: 'Submit Article' }
   },
 ];
 
