@@ -9,5 +9,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 });
-// Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web');
-// Route::post('/user', [AuthController::class, 'user'])->middleware('auth:web');

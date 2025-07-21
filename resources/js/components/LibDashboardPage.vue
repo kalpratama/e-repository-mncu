@@ -1,21 +1,12 @@
 <template>
   <div class="dashboard-body">
     <!-- Top Header -->
-    <header class="top-header">
-      <div class="header-content">
-        <div class="logo-container">
-          <img :src="logo" alt="MNCU Logo" class="company-logo">
-        </div>
-        <div class="communities-link">
-          <span>Communities in MNCU-IR</span>
-        </div>
-        <div>
-          <!-- Conditionally show Login Button or Profile Bubble -->
-          <button v-if="!isLoggedIn" @click="$emit('request-login')" class="login-button">Login</button>
-          <ProfileBubble v-else :user="user" @logout="$emit('logout')" />
-        </div>
-      </div>
-    </header>
+    <Header 
+      :is-logged-in="isLoggedIn" 
+      :user="user" 
+      @request-login="$emit('request-login')" 
+      @logout="$emit('logout')"
+    />
 
     <!-- Main Content Area -->
     <main class="main-content">
@@ -32,7 +23,7 @@
               <ul v-if="item.children" class="dropdown-menu">
                 <li v-for="child in item.children" :key="child.name">
                   <router-link to="#">{{ child.name }}</router-link>
-                  <span v-if="child.children" class="dropdown-arrow">&#9656;</span>
+                  <!-- <span v-if="child.children" class="dropdown-arrow">&#9656;</span> -->
                   <!-- Second-level dropdown -->
                   <ul v-if="child.children" class="dropdown-menu">
                     <li v-for="grandchild in child.children" :key="grandchild.name">
@@ -59,7 +50,7 @@
           <div class="content-box">
             <h2 class="box-title">Baru Diterbitkan</h2>
             <div class="recent-publications">
-              <router-link to="#" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
+              <router-link :to="'/article/' + (index + 1)" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
                 <h3>{{ item.title }}</h3>
                 <p class="meta">{{ item.meta }}</p>
                 <p class="description">{{ item.description }}</p>
@@ -78,10 +69,12 @@
 import logo from '../assets/mncu_logo_wide.png';
 import ProfileCircle from './ProfileCircle.vue';
 import dummyData from '../data/dummyData.json';
+import Header from './Header.vue';
 
 export default {
   components: {
-    ProfileBubble: ProfileCircle
+    ProfileBubble: ProfileCircle,
+    Header
   },
   props: {
     isLoggedIn: {
@@ -98,59 +91,20 @@ export default {
       logo: logo,
       publicationTypes: dummyData.publicationTypes,
       recentPublications: dummyData.recentPublications,
-      // The JavaScript timer logic has been removed
     };
   },
-  // The methods for menu handling have been removed
 }
 </script>
 
 <style scoped>
 .dashboard-body {
-  background-color: #f4f7f6;
+  background-color: #1F3D7B;
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
 }
 
-/* --- Top Header --- */
-.top-header {
-  background-color: #ffffff;
-  padding: .5rem 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin-left: 3rem;
-  margin-right: 3rem;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-  /* margin-left: 3rem; */
-}
-
-.company-logo {
-  height: 57px;
-  width: auto;
-}
-
-.communities-link {
-  font-weight: 900;
-  font-size: 1.5rem;
-}
-
 /* --- Main Content --- */
 .main-content {
-  background-color: #1F3D7B;
   padding-left: 5rem;
   padding-right: 5rem;
   padding-bottom: 9rem;
