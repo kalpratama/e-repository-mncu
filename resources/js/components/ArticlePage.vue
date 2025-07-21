@@ -10,7 +10,7 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      <h1 class="repository-title">{{ article.title }}</h1>
+      <!-- <h1 class="repository-title">{{ article.title }}</h1> -->
       <div class="content-boxes">
         <!-- Left Column: Article Details -->
         <div v-if="article" class="content-box article-details">
@@ -95,7 +95,7 @@ export default {
   padding-left: 5rem;
   padding-right: 5rem;
   padding-bottom: 9rem;
-  padding-top: .5rem;
+  padding-top: 3rem;
 }
 
 .repository-title {
@@ -223,16 +223,16 @@ export default {
   }
 
   .right-column {
-    display: contents; /* This makes children of .right-column direct flex items */
+    display: contents;
   }
   .search-box {
-    order: -2; /* This moves the search box to the top */
+    order: -2;
   }
   .left-column {
-      order: -1; /* This moves the publication list to the middle */
+      order: -1;
   }
   .recent-box {
-    order: 0; /* This keeps the recent box at the bottom */
+    order: 0;
   }
 }
 
