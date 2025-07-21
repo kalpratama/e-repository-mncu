@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ======================= DEBUG BLOCK ======================= -->
-    <div class="debug-info">
+    <!-- <div class="debug-info">
       <strong>-- DEBUG INFO --</strong><br>
       <p>Current Page: <strong>{{ currentPage }}</strong></p>
       <p>Is Logged In: <strong>{{ isLoggedIn }}</strong></p>
@@ -10,8 +10,7 @@
       <p>LocalStorage Token: <strong>{{ $data.debugToken || 'Missing' }}</strong></p>
       <button @click="debugStorage" style="margin-top: 10px;">Debug Storage</button>
       <button @click="checkAuthStatus" style="margin-top: 10px; margin-left: 10px;">Re-check Auth</button>
-    
-    </div>
+    </div> -->
     <!-- =========================================================== -->
 
     <router-view 
@@ -53,22 +52,19 @@ export default {
   },
   data() {
     return {
-      currentPage: 'dashboard',
+      currentPage: this.page || 'dashboard',
       isLoggedIn: false,
       user: null,
       token: null,
       debugToken: null
     };
   },
+  computed:{
+    currentPage() {
+      return this.$route.name || 'loading...';
+    }
+  },
   methods: {
-    // showLoginPage(){
-    //   this.currentPage = 'login';
-    // },
-
-    // showDashboardPage(){
-    //   this.currentPage = 'dashboard';
-    // },
-
     goToLogin(){
       this.$router.push('/login');
     },

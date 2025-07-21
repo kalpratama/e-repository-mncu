@@ -49,11 +49,6 @@
   ],
   "recentPublications": [
     {
-      "title": "Analisis Sentimen pada Ulasan Produk E-commerce",
-      "meta": "Putra, Budi (Informatika, Universitas MNC, 2024)",
-      "description": "Penelitian ini mengaplikasikan metode Naive Bayes untuk klasifikasi sentimen pada ulasan produk, mencapai akurasi yang signifikan dalam pengujian."
-    },
-    {
       "title": "Pengembangan Sistem Informasi Perpustakaan Berbasis Web",
       "meta": "Susanti, Rina (Sistem Informasi, Universitas MNC, 2024)",
       "description": "Implementasi sistem perpustakaan digital untuk meningkatkan efisiensi manajemen koleksi dan peminjaman buku di lingkungan akademik."
@@ -62,6 +57,30 @@
       "title": "Studi Komparatif Algoritma Machine Learning untuk Prediksi Harga Saham",
       "meta": "Wijaya, Agung (Manajemen, Universitas MNC, 2023)",
       "description": "Membandingkan performa algoritma regresi linear, SVM, dan LSTM dalam memprediksi pergerakan harga saham pada sektor teknologi."
+    },
+    {
+      "title": "Analisis Big Data untuk Optimalisasi Rantai Pasok",
+      "meta": "Prasetyo, Andi (Teknik Industri, Universitas MNC, 2024)",
+      "description": "Penelitian ini menggunakan teknik big data untuk menganalisis dan meningkatkan efisiensi rantai pasok pada perusahaan manufaktur."
+    },
+    {
+      "title": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit",
+      "meta": "Lastname, Firstname (Major, Institution, Year)",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    },{
+      "title": "Analisis Sentimen pada Ulasan Produk E-commerce",
+      "meta": "Putra, Budi (Informatika, Universitas MNC, 2024)",
+      "description": "Penelitian ini mengaplikasikan metode Naive Bayes untuk klasifikasi sentimen pada ulasan produk, mencapai akurasi yang signifikan dalam pengujian."
+    },
+    {
+      "title": "Implementasi Blockchain untuk Keamanan Data Medis",
+      "meta": "Sari, Indah (Teknologi Informasi, Universitas MNC, 2023)",
+      "description": "Menggunakan teknologi blockchain untuk meningkatkan keamanan dan privasi data medis pasien dalam sistem informasi kesehatan."
+    },
+    {
+      "title": "Pengaruh Pembelajaran Daring terhadap Motivasi Belajar Siswa",
+      "meta": "Hidayat, Rudi (Pendidikan, Universitas MNC, 2024)",
+      "description": "Studi ini mengeksplorasi bagaimana pembelajaran daring mempengaruhi motivasi dan keterlibatan siswa di tingkat sekolah menengah."
     },
     {
       "title": "Rancang Bangun Aplikasi Mobile untuk Petani Hidroponik",
