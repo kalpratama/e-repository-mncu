@@ -9,8 +9,13 @@ class DocumentTypes extends Model
 {
     use HasFactory;
 
-    public function documents()
+   public function documents()
     {
         return $this->hasMany(Document::class);
+    }
+
+    public function children()
+    {
+        return $this->hasMany(DocumentTypes::class, 'parent_id');
     }
 }

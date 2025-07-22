@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\DocumentType;
+use App\Models\DocumentTypes;
 use App\Models\Document;
 
 class DashboardController extends Controller
@@ -14,18 +14,21 @@ class DashboardController extends Controller
     public function index()
     {
         // Fetch all document types from the database, ordered by name
-        $documentTypes = DocumentType::orderBy('name', 'asc')->get();
+        $allTypes = DocumentTypes::with('children.children')->get();
+
+        // Filter for only top-level types (those without a parent)
+        $publicationTypes = $allTypes->whereNull('parent_id');
 
         // Fetch the 10 most recently created documents,
         // also loading their author information to avoid extra queries (eager loading).
         $recentDocuments = Document::with('authors')
-                                ->latest() // Orders by 'created_at' descending
+                                ->latest()
                                 ->take(10)
                                 ->get();
 
         // Return both sets of data in a single JSON response
         return response()->json([
-            'publicationTypes' => $documentTypes,
+            'publicationTypes' => $publicationTypes->values(), // Use values() to reset array keys
             'recentPublications' => $recentDocuments,
         ]);
     }
