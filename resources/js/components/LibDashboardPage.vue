@@ -11,20 +11,23 @@
     <!-- Main Content Area -->
     <main class="main-content">
       <h1 class="repository-title">Repositori Institusional MNC University</h1>
-      <div class="content-boxes">
+      <div v-if ="isLoading" class="loading-container">
+        <p>Loading...</p>
+      </div>
 
+      <div class="content-boxes">
         <!-- Left Column -->
         <div class="content-box left-column">
           <h2 class="box-title">Terbitan Pustaka</h2>
           <ol class="publication-list">
-            <li v-for="item in publicationTypes" :key="item.name">
+            <menu-item v-for="item in publicationTypes" :key="item.id" :item="item" />
+          
+            <!-- <li v-for="item in publicationTypes" :key="item.name">
               <router-link to="/">{{ item.name }}</router-link>
-              <!-- First-level dropdown -->
               <ul v-if="item.children" class="dropdown-menu">
                 <li v-for="child in item.children" :key="child.name">
                   <router-link to="#">{{ child.name }}</router-link>
-                  <!-- <span v-if="child.children" class="dropdown-arrow">&#9656;</span> -->
-                  <!-- Second-level dropdown -->
+                  <span v-if="child.children" class="dropdown-arrow">&#9656;</span>
                   <ul v-if="child.children" class="dropdown-menu">
                     <li v-for="grandchild in child.children" :key="grandchild.name">
                       <router-link to="#">{{ grandchild.name }}</router-link>
@@ -32,7 +35,7 @@
                   </ul>
                 </li>
               </ul>
-            </li>
+            </li> -->
           </ol>
         </div>
 
@@ -50,11 +53,18 @@
           <div class="content-box">
             <h2 class="box-title">Baru Diterbitkan</h2>
             <div class="recent-publications">
-              <router-link :to="'/article/' + (index + 1)" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
+              <p v-if="recentPublications.length === 0">Belum ada publikasi terbaru.</p>
+              <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in recentPublications" :key="item.id">
+                <h3>{{ item.title }}</h3>
+                <!-- The author names are now formatted by a helper method -->
+                <p class="meta">{{ formatAuthors(item.authors) }} ({{ item.year }})</p>
+                <p class="description">{{ item.abstract }}</p>
+              </router-link>
+              <!-- <router-link :to="'/article/' + (index + 1)" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
                 <h3>{{ item.title }}</h3>
                 <p class="meta">{{ item.meta }}</p>
                 <p class="description">{{ item.description }}</p>
-              </router-link>
+              </router-link> -->
             </div>
           </div>
         </div>
@@ -66,15 +76,14 @@
 </template>
 
 <script>
-import logo from '../assets/mncu_logo_wide.png';
-import ProfileCircle from './ProfileCircle.vue';
 import dummyData from '../data/dummyData.json';
 import Header from './Header.vue';
+import MenuItem from './MenuItem.vue';
 
 export default {
   components: {
-    ProfileBubble: ProfileCircle,
-    Header
+    Header,
+    MenuItem
   },
   props: {
     isLoggedIn: {
@@ -88,15 +97,45 @@ export default {
   },
   data() {
     return {
-      logo: logo,
-      publicationTypes: dummyData.publicationTypes,
-      recentPublications: dummyData.recentPublications,
+      publicationTypes: [], //dummyData.publicationTypes,
+      recentPublications: [], //dummyData.recentPublications,
+      isLoading: true
     };
   },
+  created(){
+    this.fetchDashboardData();
+  },
+  methods:{
+    async fetchDashboardData() {
+      try {
+        const response = await axios.get('/api/dashboard-data');
+        this.publicationTypes = response.data.publicationTypes;
+        this.recentPublications = response.data.recentPublications;
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        this.isLoading = false;
+      }
+  },
+  formatAuthors(authors) {
+      if (!authors || authors.length === 0) {
+        return 'Unknown Author';
+      }
+      return authors.map(author => author.name).join(', ');
+    }
+  }
 }
 </script>
 
 <style scoped>
+
+.loading-container {
+  text-align: center;
+  color: white;
+  padding: 4rem;
+  font-size: 1.2rem;
+}
+
 .dashboard-body {
   background-color: #1F3D7B;
   font-family: 'Figtree', sans-serif;
