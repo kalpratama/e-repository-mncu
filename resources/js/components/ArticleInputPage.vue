@@ -67,13 +67,13 @@
               </fieldset>
 
               <fieldset class="form-section">
-                <legend>Authors</legend>
+                <!-- <legend>Penulis</legend> -->
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
-                  <div class="form-group"><label :for="'author_name_' + index">Author Name</label><input :id="'author_name_' + index" type="text" v-model="author.name" required></div>
-                  <div class="form-group"><label :for="'author_id_' + index">Identifier (NIM/NIK)</label><input :id="'author_id_' + index" type="text" v-model="author.identifier"></div>
+                  <div class="form-group"><label :for="'author_name_' + index">Nama Penulis</label><input :id="'author_name_' + index" type="text" v-model="author.name" required></div>
+                  <div class="form-group"><label :for="'author_id_' + index">Nomor Induk (NIM/NIK)</label><input :id="'author_id_' + index" type="text" v-model="author.identifier"></div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
-                <button type="button" @click="addAuthor" class="add-btn">Add Author</button>
+                <button type="button" @click="addAuthor" class="add-btn">Tambah Penulis</button>
               </fieldset>
 
               <fieldset class="form-section">
@@ -87,7 +87,7 @@
 
           <div class="form-actions">
             <button type="submit" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Submitting...' : 'Unggah' }}
+              {{ isSubmitting ? 'Mengunggah...' : 'Unggah' }}
             </button>
           </div>
         </form>
@@ -237,13 +237,12 @@ export default {
 
 <style scoped>
 .page-body {
-  background-color: #f4f7f6;
+  background-color: #1F3D7B;
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
 }
 
 .main-content {
-  background-color: #1F3D7B;
   padding: 3rem 1rem;
 }
 

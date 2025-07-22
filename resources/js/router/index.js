@@ -3,6 +3,7 @@ import DashboardPage from '../components/LibDashboardPage.vue';
 import LoginPage from '../components/LoginPage.vue';
 import ArticlePage from '../components/ArticlePage.vue';
 import ArticleInputPage from '../components/ArticleInputPage.vue';
+import ProfilePage from '../components/ProfilePage.vue';
 
 const routes = [
   {
@@ -22,13 +23,19 @@ const routes = [
     path: '/article/:id', 
     name: 'Article',
     component: ArticlePage,
-    meta: {title: 'Article'},
+    meta: {title: 'Artikel | MNCU-IR'},
   }, 
   {
     path: '/admin/articles/create',
     name: 'ArticleCreate',
     component: ArticleInputPage,
-    meta: { title: 'Submit Article' }
+    meta: { title: 'Unggah Artikel' }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: ProfilePage,
+    meta: {title: 'Profile | MNCU-IR'},
   },
 ];
 

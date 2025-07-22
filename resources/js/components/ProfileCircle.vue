@@ -5,9 +5,11 @@
     </button>
     <div class="dropdown-menu">
       <div class="dropdown-header">
-        Halo,<br><strong>{{ userName }}!</strong>
+        Halo,<br><strong>{{ user.name }}!</strong>
       </div>
-      <a href="#" class="dropdown-item">Profil</a>
+      <!-- <a href="#" class="dropdown-item">Profil</a> -->
+       
+      <router-link to="/profile" class="dropdown-item">Profil</router-link>
       <router-link v-if="user && user.role === 'admin'" to="/admin/articles/create" class="admin-button">
         Unggah Artikel
       </router-link>
@@ -33,6 +35,9 @@ export default {
     },
     userName() {
       return this.user.username || 'User';
+    },
+    realName() {
+      return this.user.name || 'User';
     }
   }
 }
