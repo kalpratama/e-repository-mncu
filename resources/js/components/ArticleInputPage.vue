@@ -35,12 +35,33 @@
                   <input type="text" id="title" v-model="form.title" required>
                 </div>
                 <div class="form-group">
+                  <label>Kategori Tingkat 1</label>
+                  <select v-model="selectedLevel1" required>
+                    <option disabled value="">Pilih Tipe</option>
+                    <option v-for="type in documentTypes" :key="type.id" :value="type">{{ type.name }}</option>
+                  </select>
+                </div>
+                <div v-if="level2Options.length > 0" class="form-group">
+                  <label>Kategori Tingkat 2</label>
+                  <select v-model="selectedLevel2" required>
+                    <option disabled value="">Pilih Sub-Tipe</option>
+                    <option v-for="type in level2Options" :key="type.id" :value="type">{{ type.name }}</option>
+                  </select>
+                </div>
+                <div v-if="level3Options.length > 0" class="form-group">
+                  <label>Kategori Tingkat 3</label>
+                  <select v-model="selectedLevel3" required>
+                    <option disabled value="">Pilih Sub-Tipe</option>
+                    <option v-for="type in level3Options" :key="type.id" :value="type">{{ type.name }}</option>
+                  </select>
+                </div>
+                <!-- <div class="form-group">
                   <label for="document_type">Jenis Dokumen</label>
                   <select id="document_type" v-model="form.document_type_id" required>
                     <option disabled value="">Pilih salah satu</option>
                     <option v-for="type in documentTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
                   </select>
-                </div>
+                </div> -->
                 <div class="form-group">
                   <label for="tahun">Tahun</label>
                   <input type="number" id="tahun" v-model.number="form.tahun" placeholder="e.g., 2025">
@@ -125,33 +146,95 @@ export default {
         document_file: null,
       },
       // For now, we hardcode the document types. Later, we can fetch this via API.
-      documentTypes: [
-        { id: 1, name: "Artikel Jurnal" },
-        { id: 2, name: "Artikel Jurnal Tidak Terbit" },
-        { id: 3, name: "Artikel" },
-        { id: 4, name: "Buku" },
-        { id: 5, name: "Bab Buku" },
-        { id: 6, name: "Skripsi" },
-        { id: 7, name: "Tugas Akhir (Project Improvement)" },
-        { id: 8, name: "Makalah Konferensi" },
-        { id: 9, name: "Modul Pembelajaran" },
-        { id: 10, name: "Laporan Penelitian" },
-        { id: 11, name: "Laporan Magang Mahasiswa" },
-        { id: 12, name: "Poster Ilmiah" },
-        { id: 13, name: "Dokumentasi Prestasi Mahasiswa" },
-      ],
+      documentTypes: [], 
+        // { id: 1, name: "Artikel Jurnal" },
+        // { id: 2, name: "Artikel Jurnal Tidak Terbit" },
+        // { id: 3, name: "Artikel" },
+        // { id: 4, name: "Buku" },
+        // { id: 5, name: "Bab Buku" },
+        // { id: 6, name: "Skripsi" },
+        // { id: 7, name: "Tugas Akhir (Project Improvement)" },
+        // { id: 8, name: "Makalah Konferensi" },
+        // { id: 9, name: "Modul Pembelajaran" },
+        // { id: 10, name: "Laporan Penelitian" },
+        // { id: 11, name: "Laporan Magang Mahasiswa" },
+        // { id: 12, name: "Poster Ilmiah" },
+        // { id: 13, name: "Dokumentasi Prestasi Mahasiswa" },
+      // ],
+      selectedLevel1: '', 
+      selectedLevel2: '', 
+      selectedLevel3: '',
       isSubmitting: false,
       successMessage: '',
       errorMessage: '',
       validationErrors: null,
     };
   },
+  computed: {
+    level2Options() {
+      return this.selectedLevel1?.children || [];
+    },
+    level3Options() {
+      return this.selectedLevel2?.children || [];
+    }
+    // level2Options() {
+    //   if (this.selectedLevel1 && this.selectedLevel1.children) {
+    //     return this.selectedLevel1.children;
+    //   }
+    //   return [];
+    // },
+    // level3Options() {
+    //   if (this.selectedLevel2 && this.selectedLevel2.children) {
+    //     return this.selectedLevel2.children;
+    //   }
+    //   return [];
+    // }
+  },
+
+  watch: {
+    selectedLevel1(v) { this.selectedLevel2 = ''; this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
+    selectedLevel2(v) { this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
+    selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
+  },
+  // watch: {
+  //   selectedLevel1(newValue) {
+  //     this.selectedLevel2 = ''; // Reset level 2
+  //     this.selectedLevel3 = ''; // Reset level 3
+  //     // If the selected item has no children, it's the final choice
+  //     if (newValue && (!newValue.children || newValue.children.length === 0)) {
+  //       this.form.document_type_id = newValue.id;
+  //     } else {
+  //       this.form.document_type_id = null; // Not a final choice, so nullify
+  //     }
+  //   },
+  //   selectedLevel2(newValue) {
+  //     this.selectedLevel3 = ''; // Reset level 3
+  //     if (newValue && (!newValue.children || newValue.children.length === 0)) {
+  //       this.form.document_type_id = newValue.id;
+  //     } else {
+  //       this.form.document_type_id = null;
+  //     }
+  //   },
+  //   selectedLevel3(newValue) {
+  //     if (newValue) {
+  //       this.form.document_type_id = newValue.id;
+  //     }
+  //   }
+  // },
   methods: {
+    async fetchDocumentTypes() {
+      try {
+        const response = await axios.get('/api/document-types');
+        this.documentTypes = response.data;
+      } catch (error) {
+        console.error("Failed to fetch document types:", error);
+      }
+    },
     handleFileUpload(event){
       this.form.document_file = event.target.files[0];
     },
 
-    AddAuthor(){
+    addAuthor(){
       this.form.authors.push({ name: '', identifier: '' });
     },
 
@@ -170,6 +253,9 @@ export default {
             authors: [{ name: '', identifier: '' }],
             document_file: null,
         };
+        this.selectedLevel1 = '';
+        this.selectedLevel2 = '';
+        this.selectedLevel3 = '';
         document.getElementById('document_file').value = '';
     },
   
@@ -231,7 +317,8 @@ export default {
       //   this.isSubmitting = false;
       // }
     },
-  }
+  },
+  created() { this.fetchDocumentTypes(); }
 }
 </script>
 
@@ -330,7 +417,7 @@ textarea {
 }
 
 button {
-  padding: 0.75rem 2rem;
+  padding: 0.3rem 1rem;
   background-color: #1F3D7B;
   color: white;
   border: none;
@@ -348,6 +435,13 @@ button:hover:not(:disabled) {
 button:disabled {
   background-color: #a0aec0;
   cursor: not-allowed;
+}
+
+.author-group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .message {

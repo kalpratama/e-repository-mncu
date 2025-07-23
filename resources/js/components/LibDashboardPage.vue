@@ -57,14 +57,9 @@
               <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in recentPublications" :key="item.id">
                 <h3>{{ item.title }}</h3>
                 <!-- The author names are now formatted by a helper method -->
-                <p class="meta">{{ formatAuthors(item.authors) }} ({{ item.year }})</p>
-                <p class="description">{{ item.abstract }}</p>
+                <p class="meta">{{ formatMeta(item) }}</p>
+                <p class="description">{{ truncateAbstract(item.abstract) }}</p>
               </router-link>
-              <!-- <router-link :to="'/article/' + (index + 1)" class="publication-item" v-for="(item, index) in recentPublications" :key="index">
-                <h3>{{ item.title }}</h3>
-                <p class="meta">{{ item.meta }}</p>
-                <p class="description">{{ item.description }}</p>
-              </router-link> -->
             </div>
           </div>
         </div>
@@ -76,9 +71,9 @@
 </template>
 
 <script>
-import dummyData from '../data/dummyData.json';
 import Header from './Header.vue';
 import MenuItem from './MenuItem.vue';
+import axios from 'axios';
 
 export default {
   components: {
@@ -92,7 +87,7 @@ export default {
     },
     user: {
       type: Object,
-      default: () => ({})
+      // default: () => ({})
     }
   },
   data() {
@@ -116,8 +111,29 @@ export default {
       } finally {
         this.isLoading = false;
       }
-  },
-  formatAuthors(authors) {
+    },
+    formatMeta(item) {
+      if (!item) return '';
+      const authors = item.authors && item.authors.length > 0 
+        ? item.authors.map(author => author.name).join(', ') 
+        : 'Unknown Author';
+      let detailsInParens = [];
+      if (item.program_studi) detailsInParens.push(item.program_studi);
+      if (item.year) detailsInParens.push(item.year);
+      if (detailsInParens.length > 0) {
+        return `${authors} (${detailsInParens.join(', ')})`;
+      }
+      return authors;
+    },
+    truncateAbstract(text, wordLimit = 20) {
+      if (!text) return '';
+      const words = text.split(' ');
+      if (words.length <= wordLimit) {
+        return text;
+      }
+      return words.slice(0, wordLimit).join(' ') + '...';
+    },
+    formatAuthors(authors) {
       if (!authors || authors.length === 0) {
         return 'Unknown Author';
       }

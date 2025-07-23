@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\Author;
+use App\Models\DocumentType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 
@@ -59,5 +60,18 @@ class ArticleController extends Controller
             // Return a success response with the new document and its authors
             return response()->json($document->load('authors'), 201);
         });
+    }
+
+    public function show(Document $document)
+    {
+        return $document->load('authors', 'DocumentType');
+    }
+
+    public function download(Document $document)
+    {
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            return Storage::disk('public')->download($document->file_path);
+        }
+        return response()->json(['message' => 'File not found.'], 404);
     }
 }
