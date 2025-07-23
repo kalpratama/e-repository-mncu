@@ -17,7 +17,7 @@
           <div class="article-header">
             <div class="title-section">
               <h1>{{ article.title }}</h1>
-              <p class="meta">{{ article.meta }}</p>
+              <p class="meta">{{ formatMeta(article) }}</p>
             </div>
             <div class="thumbnail-section">
               <img :src="article.thumbnail || 'https://placehold.co/100x120/e2e8f0/718096?text=No%0AImage'" alt="Article Thumbnail" class="thumbnail">
@@ -25,7 +25,7 @@
           </div>
           <div class="abstract-section">
             <h2 class="box-title"> Abstrak</h2>
-            <p>{{ article.description }}</p>
+            <p>{{ article.abstract }}</p>
           </div>
         </div>
         <!-- Fallback if article not found -->
@@ -44,9 +44,42 @@
               </button>
             </div>
           </div>
-          <div class="content-box">
-            <p>Additional information or related articles can be displayed here.</p>
+
+          <div v-if="article" class="content-box">
+            <h2 class="details-title">Detail Dokumen</h2>
+            <div class="details-grid">
+              <div v-if="article.document_type" class="detail-item">
+                <span class="detail-label">Kategori</span>
+                <span class="detail-value">{{ article.document_type.name }}</span>
+              </div>
+              <div v-if="article.issn" class="detail-item">
+                <span class="detail-label">ISSN</span>
+                <span class="detail-value">{{ article.issn }}</span>
+              </div>
+              <div v-if="article.publisher" class="detail-item">
+                <span class="detail-label">Penerbit</span>
+                <span class="detail-value">{{ article.publisher }}</span>
+              </div>
+              <div v-if="article.conference_name" class="detail-item">
+                <span class="detail-label">Conference</span>
+                <span class="detail-value">{{ article.conference_name }}</span>
+              </div>
+              <div v-if="article.publication_link" class="detail-item">
+                <span class="detail-label">Link Publikasi</span>
+                <span class="detail-value"><a :href="article.publication_link" target="_blank" rel="noopener noreferrer">Lihat Publikasi</a></span>
+              </div>
+              <div class="buttons-box">
+                <button @click="previewDocument" class="preview-button">Lihat Dokumen</button>
+              <a v-if="isLoggedIn" :href="downloadUrl" class="download-button">Unduh PDF</a>
+              </div>
+            </div>
           </div>
+          <!-- <div v-if="article && article.file_path" class="content-box"> -->
+          <!-- </div> -->
+
+          <!-- <div class="content-box">
+            <p>Additional information or related articles can be displayed here.</p>  
+          </div> -->
         </div>
       </div>
     </main>
@@ -55,7 +88,7 @@
 
 <script>
 import Header from './Header.vue';
-import dummyData from '../data/dummyData.json';
+import axios from 'axios';
 
 export default {
   components: {
@@ -67,17 +100,53 @@ export default {
   },
   data() {
     return {
-      article: null
+      article: null,
+      publicationTypes: [], //dummyData.publicationTypes,
+      recentPublications: [], //dummyData.recentPublications,
+      isLoading: true
     }
   },
   
-  created() {
-    const articleId = parseInt(this.$route.params.id);
-    if (articleId > 0 && articleId <= dummyData.recentPublications.length) {
-      this.article = dummyData.recentPublications[articleId - 1];
-
-      if (this.article){
-        document.title = this.article.title + ' | MNCU-IR';
+  computed: {
+    downloadUrl() {
+      if (!this.article) return '#';
+      return `http://127.0.0.1:8000/api/articles/${this.article.id}/download`;
+    },
+    previewURL() {
+      if (!this.article || !this.article.file_path) return '#';
+      return `http://127.0.0.1:8000/storage/${this.article.file_path}`;
+    }
+  },
+  created() { 
+    this.fetchArticleData(); 
+  },
+  methods: {
+    async fetchArticleData() {
+      this.isLoading = true;
+      const articleId = this.$route.params.id;
+      try {
+        const response = await axios.get(`/api/articles/${articleId}`);
+        this.article = response.data;
+        if (this.article) { document.title = this.article.title; }
+      } catch (error) { this.article = null; } 
+      finally { this.isLoading = false; }
+    },
+    formatMeta(item) { 
+      if (!item) return '';
+      const authors = item.authors && item.authors.length > 0 
+        ? item.authors.map(author => author.name).join(', ') 
+        : 'Unknown Author';
+      let detailsInParens = [];
+      if (item.program_studi) detailsInParens.push(item.program_studi);
+      if (item.year) detailsInParens.push(item.year);
+      if (detailsInParens.length > 0) {
+        return `${authors} (${detailsInParens.join(', ')})`;
+      }
+      return authors;
+    },
+    previewDocument() {
+      if (this.article && this.article.file_path) {
+        window.open(this.previewURL, '_blank');
       }
     }
   }
@@ -94,7 +163,7 @@ export default {
 .main-content {
   padding-left: 5rem;
   padding-right: 5rem;
-  padding-bottom: 9rem;
+  padding-bottom: 2rem;
   padding-top: 3rem;
 }
 
@@ -128,6 +197,16 @@ export default {
   border-radius: 8px;
   padding: 1.5rem 2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.download-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #1F3D7B;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.2s;
 }
 
 .article-details {
@@ -215,6 +294,83 @@ export default {
 }
 .search-button:hover {
   background-color: #0056b3;
+}
+
+/* Details Content Box */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.preview-button, .download-button {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.buttons-box {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.preview-button {
+  background-color: #6c757d;
+  color: white;
+}
+.preview-button:hover {
+  background-color: #5a6268;
+}
+.download-button {
+  background-color: #28a745;
+  color: white;
+}
+.download-button:hover {
+  background-color: #218838;
+}
+.login-prompt {
+  text-align: center;
+  font-weight: 500;
+  color: #666;
+  margin-top: 1rem;
+}
+.details-title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  align-content: center;
+  padding-bottom: 0.1rem;
+}
+.details-grid {
+  display: grid;
+  gap: 1rem;
+}
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+.detail-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+.detail-value {
+  font-size: 1rem;
+  color: #212529;
+  font-weight: 500;
+}
+.detail-value a {
+  color: #0056b3;
+  text-decoration: none;
+}
+.detail-value a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 882px) {

@@ -8,22 +8,15 @@ use App\Models\Document;
 
 class DashboardController extends Controller
 {
-    /**
-     * Fetch initial data for the dashboard.
-     */
     public function index()
     {
-        // Fetch all document types from the database, ordered by name
         $allTypes = DocumentTypes::with('children.children')->get();
 
-        // Filter for only top-level types (those without a parent)
         $publicationTypes = $allTypes->whereNull('parent_id');
 
-        // Fetch the 10 most recently created documents,
-        // also loading their author information to avoid extra queries (eager loading).
         $recentDocuments = Document::with('authors')
                                 ->latest()
-                                ->take(10)
+                                ->take(5)
                                 ->get();
 
         // Return both sets of data in a single JSON response
