@@ -4,6 +4,7 @@ import LoginPage from '../components/LoginPage.vue';
 import ArticlePage from '../components/ArticlePage.vue';
 import ArticleInputPage from '../components/ArticleInputPage.vue';
 import ProfilePage from '../components/ProfilePage.vue';
+import CategoryPage from '../components/CategoryPage.vue';
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     name: 'Profile',
     component: ProfilePage,
     meta: {title: 'Profile | MNCU-IR'},
+  },
+  {
+    path: '/category/:slug', // The ':slug' makes it dynamic
+    name: 'Category',
+    component: CategoryPage,
   },
 ];
 

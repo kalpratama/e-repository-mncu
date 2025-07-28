@@ -5,7 +5,6 @@
       <span v-if="hasChildren" class="dropdown-arrow">&#9656;</span>
     </router-link>
     <ul v-if="hasChildren" class="dropdown-menu">
-      <!-- This is the recursion: MenuItem calls itself for its children -->
       <menu-item v-for="child in item.children" :key="child.id" :item="child" />
     </ul>
   </li>

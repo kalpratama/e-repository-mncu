@@ -131,7 +131,6 @@ export default {
   },
   data() {
     return {
-      // Form data is stored in this object
       form: {
         title: '',
         document_type_id: '',
@@ -145,22 +144,7 @@ export default {
         authors: [{ name: '', identifier: '' }],
         document_file: null,
       },
-      // For now, we hardcode the document types. Later, we can fetch this via API.
       documentTypes: [], 
-        // { id: 1, name: "Artikel Jurnal" },
-        // { id: 2, name: "Artikel Jurnal Tidak Terbit" },
-        // { id: 3, name: "Artikel" },
-        // { id: 4, name: "Buku" },
-        // { id: 5, name: "Bab Buku" },
-        // { id: 6, name: "Skripsi" },
-        // { id: 7, name: "Tugas Akhir (Project Improvement)" },
-        // { id: 8, name: "Makalah Konferensi" },
-        // { id: 9, name: "Modul Pembelajaran" },
-        // { id: 10, name: "Laporan Penelitian" },
-        // { id: 11, name: "Laporan Magang Mahasiswa" },
-        // { id: 12, name: "Poster Ilmiah" },
-        // { id: 13, name: "Dokumentasi Prestasi Mahasiswa" },
-      // ],
       selectedLevel1: '', 
       selectedLevel2: '', 
       selectedLevel3: '',
@@ -177,18 +161,6 @@ export default {
     level3Options() {
       return this.selectedLevel2?.children || [];
     }
-    // level2Options() {
-    //   if (this.selectedLevel1 && this.selectedLevel1.children) {
-    //     return this.selectedLevel1.children;
-    //   }
-    //   return [];
-    // },
-    // level3Options() {
-    //   if (this.selectedLevel2 && this.selectedLevel2.children) {
-    //     return this.selectedLevel2.children;
-    //   }
-    //   return [];
-    // }
   },
 
   watch: {
@@ -196,31 +168,7 @@ export default {
     selectedLevel2(v) { this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
     selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
   },
-  // watch: {
-  //   selectedLevel1(newValue) {
-  //     this.selectedLevel2 = ''; // Reset level 2
-  //     this.selectedLevel3 = ''; // Reset level 3
-  //     // If the selected item has no children, it's the final choice
-  //     if (newValue && (!newValue.children || newValue.children.length === 0)) {
-  //       this.form.document_type_id = newValue.id;
-  //     } else {
-  //       this.form.document_type_id = null; // Not a final choice, so nullify
-  //     }
-  //   },
-  //   selectedLevel2(newValue) {
-  //     this.selectedLevel3 = ''; // Reset level 3
-  //     if (newValue && (!newValue.children || newValue.children.length === 0)) {
-  //       this.form.document_type_id = newValue.id;
-  //     } else {
-  //       this.form.document_type_id = null;
-  //     }
-  //   },
-  //   selectedLevel3(newValue) {
-  //     if (newValue) {
-  //       this.form.document_type_id = newValue.id;
-  //     }
-  //   }
-  // },
+
   methods: {
     async fetchDocumentTypes() {
       try {
@@ -233,11 +181,9 @@ export default {
     handleFileUpload(event){
       this.form.document_file = event.target.files[0];
     },
-
     addAuthor(){
       this.form.authors.push({ name: '', identifier: '' });
     },
-
     removeAuthor(index) {
       if (this.form.authors.length > 1) {
         this.form.authors.splice(index, 1);
@@ -245,7 +191,6 @@ export default {
         alert('At least one author is required.');
       }
     },
-
     resetForm(){
       this.form = {
         title: '', document_type_id: '', abstract: '', year: null, program_studi: '',
@@ -258,7 +203,6 @@ export default {
         this.selectedLevel3 = '';
         document.getElementById('document_file').value = '';
     },
-  
     async submitArticle() {
       this.isSubmitting = true;
       this.successMessage = '';
@@ -294,28 +238,6 @@ export default {
       } finally {
         this.isSubmitting = false;
       }
-
-      // try {
-      //   const response = await axios.post('/api/articles', this.form);
-      //   this.successMessage = `Article "${response.data.title}" created successfully!`;
-      //   // Optionally, reset the form
-      //   this.form = {
-      //     title: '',
-      //     document_type_id: '',
-      //     abstract: '',
-      //     year: null,
-      //     program_studi: '',
-      //   };
-      // } catch (error) {
-      //   if (error.response && error.response.data.message) {
-      //     this.errorMessage = `Error: ${error.response.data.message}`;
-      //   } else {
-      //     this.errorMessage = 'An unexpected error occurred. Please try again.';
-      //   }
-      //   console.error("Article submission failed:", error);
-      // } finally {
-      //   this.isSubmitting = false;
-      // }
     },
   },
   created() { this.fetchDocumentTypes(); }
@@ -328,11 +250,9 @@ export default {
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
 }
-
 .main-content {
   padding: 3rem 1rem;
 }
-
 .form-container {
   max-width: 1250px;
   margin: 0 auto;
@@ -341,14 +261,12 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-
 .form-title {
   font-size: 2rem;
   font-weight: 600;
   color: #1F3D7B;
   margin: 0 0 0.2rem 0;
 }
-
 .form-subtitle {
   font-size: 1rem;
   color: #666;
@@ -356,7 +274,6 @@ export default {
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
 }
-
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -374,23 +291,19 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
 }
-
 .form-group.full-width {
   grid-column: 1 / -1; /* Span across both columns */
 }
-
 label {
   margin-top: 1rem;
   margin-bottom: .3rem;
   font-weight: 500;
   color: #333;
 }
-
 input, select, textarea {
   border: 1px solid #ccc;
   padding: 0.75rem;
@@ -400,22 +313,18 @@ input, select, textarea {
   width: 100%;
   box-sizing: border-box;
 }
-
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: #1F3D7B;
   box-shadow: 0 0 0 2px rgba(31, 61, 123, 0.2);
 }
-
 textarea {
   resize: vertical;
 }
-
 .form-actions {
   margin-top: 2rem;
   text-align: right;
 }
-
 button {
   padding: 0.3rem 1rem;
   background-color: #1F3D7B;
@@ -427,23 +336,19 @@ button {
   font-weight: 600;
   transition: background-color 0.2s;
 }
-
 button:hover:not(:disabled) {
   background-color: #0056b3;
 }
-
 button:disabled {
   background-color: #a0aec0;
   cursor: not-allowed;
 }
-
 .author-group {
   display: flex;
   gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;
 }
-
 .message {
   padding: 1rem;
   border-radius: 5px;
@@ -460,13 +365,11 @@ button:disabled {
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
-
 @media (max-width: 1024px) { 
   .form-columns {
     flex-direction: column; /* Stack columns on tablet and smaller screens */
   }
 }
-
 @media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;

@@ -70,7 +70,8 @@
               </div>
               <div class="buttons-box">
                 <button @click="previewDocument" class="preview-button">Lihat Dokumen</button>
-              <a v-if="isLoggedIn" :href="downloadUrl" class="download-button">Unduh PDF</a>
+                <button v-if="isLoggedIn" @click="downloadDocument" class="download-button">Download PDF</button>
+                <p v-else class="login-prompt">Please log in to download the file.</p>
               </div>
             </div>
           </div>
@@ -147,6 +148,32 @@ export default {
     previewDocument() {
       if (this.article && this.article.file_path) {
         window.open(this.previewURL, '_blank');
+      }
+    },
+    async downloadDocument() {
+      if (!this.article) return;
+      try {
+        const response = await axios({
+          url: `http://127.0.0.1:8000/api/articles/${this.article.id}/download`,
+          method: 'GET',
+          responseType: 'blob', // Important for file downloads
+        });
+
+        // Create a temporary link to trigger the download
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        
+        // Suggest a filename for the download
+        const filename = this.article.file_path.split('/').pop();
+        link.setAttribute('download', filename || 'document.pdf');
+        
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Download failed:', error);
+        alert('Could not download the file.');
       }
     }
   }

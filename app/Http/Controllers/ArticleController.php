@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\Author;
 use App\Models\DocumentType;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
 
 class ArticleController extends Controller
