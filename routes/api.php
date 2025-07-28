@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentTypeController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Middleware\IsAdmin;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
@@ -14,6 +15,7 @@ Route::get('/search', [DashboardController::class, 'search']);
 Route::get('/document-types', [DocumentTypeController::class, 'index']);
 
 Route::get('/articles/{document}', [ArticleController::class, 'show']);
+Route::get('/category/{slug}', [CategoryController::class, 'show']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
