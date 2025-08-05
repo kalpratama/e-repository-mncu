@@ -14,7 +14,7 @@ class DashboardController extends Controller
 
         $publicationTypes = $allTypes->whereNull('parent_id');
 
-        $recentDocuments = Document::with('authors')
+        $recentDocuments = Document::with('authors', 'documentType')
                                 ->latest()
                                 ->take(5)
                                 ->get();
@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $query = $request->input('q');
 
         // Perform a search across document titles, abstracts, and author names.
-        $documents = Document::with('authors')
+        $documents = Document::with('authors', 'documentType')
             ->where('title', 'LIKE', "%{$query}%")
             ->orWhere('abstract', 'LIKE', "%{$query}%")
             ->orWhereHas('authors', function ($authorQuery) use ($query) {

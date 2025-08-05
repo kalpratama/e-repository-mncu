@@ -10,17 +10,21 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <div class="form-container">
-        <h1 class="form-title">Unggah Artikel Baru</h1>
-        <p class="form-subtitle">Isi detail untuk item repositori baru.</p>
+      <div v-if="isLoading" class="loading-container">
+        <p>Memuat artikel untuk diedit...</p>
+      </div>
+      <div v-else class="form-container">
+        <h1 class="form-title">Edit Dokumen</h1>
+        <p class="form-subtitle">Perbaharui detail dokumen </p>
 
-        <form @submit.prevent="submitArticle">
-          <!-- Success/Error Message -->
+        <form @submit.prevent="submitUpdate" enctype="multipart/form-data">
+          <!-- Success/Error Messages -->
           <div v-if="successMessage" class="message success-message">
             {{ successMessage }}
           </div>
           <div v-if="errorMessage" class="message error-message">
-            {{ errorMessage }}
+            <p>{{ errorMessage }}</p>
+            <ul v-if="validationErrors"><li v-for="(error, key) in validationErrors" :key="key">{{ error[0] }}</li></ul>
           </div>
 
           <div class="form-columns">
@@ -55,7 +59,7 @@
                 </div>
                 <div class="form-group">
                   <label for="year">Tahun</label>
-                  <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2025">
+                  <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2024">
                 </div>
                 <div class="form-group">
                   <label for="abstract">Abstrak / Deskripsi</label>
@@ -70,7 +74,7 @@
                 <legend>Informasi Publikasi</legend>
                 <div class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
                 <div class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
-                <!-- <div class="form-group"><label for="conference_name">Conference Name</label><input type="text" id="conference_name" v-model="form.conference_name"></div> -->
+                <!-- <div class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div> -->
                 <div class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
               </fieldset>
 
@@ -80,10 +84,10 @@
                   <div class="form-group"><label :for="'author_name_' + index">Nama Penulis</label><input :id="'author_name_' + index" type="text" v-model="author.name" required></div>
                   <div class="form-group"><label :for="'author_id_' + index">NIM/NIK</label><input :id="'author_id_' + index" type="text" v-model="author.identifier"></div>
                   
-                <div class="form-group">
-                  <label :for="'program_studi_' + index">Program Studi</label>
-                  <input type="text" :id="'program_studi_' + index" v-model="author.program_studi">
-                </div>
+                  <div class="form-group">
+                    <label :for="'program_studi_' + index">Program Studi</label>
+                    <input type="text" :id="'program_studi_' + index" v-model="author.program_studi">
+                  </div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
                 <button type="button" @click="addAuthor" class="add-btn">Tambah Penulis</button>
@@ -97,10 +101,10 @@
               </fieldset>
             </div>
           </div>
-
+          
           <div class="form-actions">
             <button type="submit" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Mengunggah...' : 'Unggah' }}
+                {{ isSubmitting ? 'memberpaharui...' : 'Perbaharui Dokumen' }}
             </button>
           </div>
         </form>
@@ -114,13 +118,13 @@ import Header from './Header.vue';
 import axios from 'axios';
 
 export default {
-  components: {
-    Header
-  },
-  props: {
-    isLoggedIn: Boolean,
-    user: Object
-  },
+  components: { 
+    Header 
+},
+  props: { 
+    isLoggedIn: Boolean, 
+    user: Object 
+},
   data() {
     return {
       form: {
@@ -139,6 +143,7 @@ export default {
       selectedLevel1: '', 
       selectedLevel2: '', 
       selectedLevel3: '',
+      isLoading: true,
       isSubmitting: false,
       successMessage: '',
       errorMessage: '',
@@ -153,87 +158,85 @@ export default {
       return this.selectedLevel2?.children || [];
     }
   },
-
   watch: {
     selectedLevel1(v) { this.selectedLevel2 = ''; this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
     selectedLevel2(v) { this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
     selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
   },
-
   methods: {
-    async fetchDocumentTypes() {
+    async loadInitialData() {
+      this.isLoading = true;
+      const articleId = this.$route.params.id;
+      
+      // Create promises for both API calls
+      const getArticleData = axios.get(`/api/articles/${articleId}`);
+      const getDocumentTypes = axios.get('/api/document-types');
+
       try {
-        const response = await axios.get('/api/document-types');
-        this.documentTypes = response.data;
+        // Use Promise.all to wait for both requests to complete
+        const [articleResponse, typesResponse] = await Promise.all([getArticleData, getDocumentTypes]);
+        
+        // Populate document types first
+        this.documentTypes = typesResponse.data;
+
+        // Then populate the form with the article data
+        const article = articleResponse.data;
+        this.form.title = article.title;
+        this.form.document_type_id = article.document_type_id;
+        this.form.abstract = article.abstract;
+        this.form.year = article.year;
+        this.form.publisher = article.publisher;
+        this.form.issn = article.issn;
+        this.form.conference_name = article.conference_name;
+        this.form.publication_link = article.publication_link;
+        this.form.authors = article.authors.map(a => ({ name: a.name, identifier: a.identifier, program_studi: a.program_studi || '' }));
+
       } catch (error) {
-        console.error("Failed to fetch document types:", error);
+        console.error("Failed to load initial data for editing:", error);
+        this.errorMessage = "Could not load article data.";
+      } finally {
+        // This will now only run after both promises are settled
+        this.isLoading = false;
       }
     },
     handleFileUpload(event){
       this.form.document_file = event.target.files[0];
     },
-    addAuthor(){
+    
+    addAuthor() {
       this.form.authors.push({ name: '', identifier: '', program_studi: '' });
     },
     removeAuthor(index) {
       if (this.form.authors.length > 1) {
         this.form.authors.splice(index, 1);
-      } else {
-        alert('Harus ada minimal satu penulis.');
       }
     },
-    resetForm(){
-      this.form = {
-        title: '', document_type_id: '', abstract: '', year: null,
-            publisher: '', issn: '', conference_name: '', publication_link: '',
-            authors: [{ name: '', identifier: '', program_studi: '' }],
-            document_file: null,
-        };
-        this.selectedLevel1 = '';
-        this.selectedLevel2 = '';
-        this.selectedLevel3 = '';
-        document.getElementById('document_file').value = '';
-    },
-    async submitArticle() {
+    async submitUpdate() {
       this.isSubmitting = true;
       this.successMessage = '';
       this.errorMessage = '';
       this.validationErrors = null;
-      const formData = new FormData();
-      Object.keys(this.form).forEach(key => {
-        if (key === 'authors') {
-          this.form.authors.forEach((author, index) => {
-            formData.append(`authors[${index}][name]`, author.name);
-            formData.append(`authors[${index}][identifier]`, author.identifier);
-            formData.append(`authors[${index}][program_studi]`, author.program_studi);
-          });
-        } else if (this.form[key] !== null) {
-          formData.append(key, this.form[key]);
-        }
-      });
-
+      const articleId = this.$route.params.id;
       try {
-        const response = await axios.post('/api/articles', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        this.successMessage = `Document "${response.data.title}" created successfully!`;
-        this.resetForm();
-        setTimeout(() => this.$router.push(`/article/${response.data.id}`), 2000);
+        const response = await axios.put(`/api/articles/${articleId}`, this.form);
+        this.successMessage = `Document "${response.data.title}" updated successfully!`;
+        // Redirect back to the article page after a short delay
+        setTimeout(() => this.$router.push(`/article/${articleId}`), 2000);
       } catch (error) {
         if (error.response && error.response.status === 422) {
           this.errorMessage = 'Please fix the errors below.';
           this.validationErrors = error.response.data.errors;
-        } else if (error.response && error.response.data.message) {
-          this.errorMessage = `Error: ${error.response.data.message}`;
         } else {
-          this.errorMessage = 'An unexpected error occurred. Please try again.';
+          this.errorMessage = 'An error occurred during the update.';
         }
       } finally {
         this.isSubmitting = false;
       }
     },
   },
-  created() { this.fetchDocumentTypes(); }
+  created() {
+    this.loadInitialData();
+  }
 }
 </script>
 

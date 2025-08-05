@@ -4,29 +4,55 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DocumentTypes;
-use App\Models\Document as Documents;
+use App\Models\Document;
 
 class CategoryController extends Controller
 {
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
-        // Find the document type by its slug, or fail with a 404 error
         $documentTypes = DocumentTypes::where('slug', $slug)->with('children.children')->firstOrFail();
 
-        // **** THIS IS THE KEY CHANGE ****
-        // 1. Get all descendant IDs using our new helper function.
         $allCategoryIds = $this->getDescendantIds($documentTypes);
-        // 2. Add the parent category's own ID to the list.
         $allCategoryIds[] = $documentTypes->id;
 
-        // 3. Fetch all documents where the document_type_id is in our complete list.
-        $documents = Documents::with('authors')
-                        ->whereIn('document_type_id', $allCategoryIds)
-                        ->latest()
-                        ->paginate(15);
+        $years = Document::whereIn('document_type_id', $allCategoryIds)
+                         ->whereNotNull('year')
+                         ->distinct()
+                         ->orderBy('year', 'desc')
+                         ->pluck('year');
+        
+        $programStudi = Document::whereIn('document_type_id', $allCategoryIds)
+                                ->join('author_document', 'documents.id', '=', 'author_document.document_id')
+                                ->join('authors', 'author_document.author_id', '=', 'authors.id')
+                                ->whereNotNull('authors.program_studi')
+                                ->distinct()
+                                ->orderBy('authors.program_studi', 'asc')
+                                ->pluck('authors.program_studi');
+
+        $documentsQuery = Document::with('authors')
+                              ->whereIn('document_type_id', $allCategoryIds);
+
+        // Handle multiple years filter
+        $yearFilters = $request->input('years', []);
+        if (!empty($yearFilters) && is_array($yearFilters)) {
+            $documentsQuery->whereIn('year', $yearFilters);
+        }
+        
+        // Handle multiple program studi filter
+        $prodiFilters = $request->input('prodi', []);
+        if (!empty($prodiFilters) && is_array($prodiFilters)) {
+            $documentsQuery->whereHas('authors', function ($query) use ($prodiFilters) {
+                $query->whereIn('program_studi', $prodiFilters);
+            });
+        }
+
+        $documents = $documentsQuery->latest()->paginate(15);
+
         return response()->json([
             'category' => $documentTypes,
             'documents' => $documents,
+            'years' => $years,
+            'program_studi' => $programStudi,
         ]);
     }
 
@@ -35,9 +61,65 @@ class CategoryController extends Controller
         $ids = [];
         foreach ($category->children as $child) {
             $ids[] = $child->id;
-            // Recursively call the function for grandchildren
             $ids = array_merge($ids, $this->getDescendantIds($child));
         }
         return $ids;
     }
 }
+
+// class CategoryController extends Controller
+// {
+//     public function show(Request $request, $slug)
+//     {
+//         $documentTypes = DocumentTypes::where('slug', $slug)->with('children.children')->firstOrFail();
+
+//         $allCategoryIds = $this->getDescendantIds($documentTypes);
+//         $allCategoryIds[] = $documentTypes->id;
+
+//         $years = Document::whereIn('document_type_id', $allCategoryIds)
+//                          ->whereNotNull('year')
+//                          ->distinct()
+//                          ->orderBy('year', 'desc')
+//                          ->pluck('year');
+        
+//         $programStudi = Document::whereIn('document_type_id', $allCategoryIds)
+//                                 ->join('author_document', 'documents.id', '=', 'author_document.document_id')
+//                                 ->join('authors', 'author_document.author_id', '=', 'authors.id')
+//                                 ->whereNotNull('authors.program_studi')
+//                                 ->distinct()
+//                                 ->orderBy('authors.program_studi', 'asc')
+//                                 ->pluck('authors.program_studi');
+
+//         $documentsQuery = Document::with('authors')
+//                               ->whereIn('document_type_id', $allCategoryIds);
+
+//         if ($request->has('year') && is_array($request->input('year'))) {
+//             $documentsQuery->whereIn('year', $request->input('year'));
+//         }
+        
+//         if ($request->has('prodi')) {
+//             $documentsQuery->whereHas('authors', function ($query) use ($request) {
+//                 $query->where('program_studi', $request->input('prodi'));
+//             });
+//         }
+
+//         $documents = $documentsQuery->latest()->paginate(15);
+
+//         return response()->json([
+//             'category' => $documentTypes,
+//             'documents' => $documents,
+//             'years' => $years,
+//             'program_studi' => $programStudi,
+//         ]);
+//     }
+
+//     private function getDescendantIds($category)
+//     {
+//         $ids = [];
+//         foreach ($category->children as $child) {
+//             $ids[] = $child->id;
+//             $ids = array_merge($ids, $this->getDescendantIds($child));
+//         }
+//         return $ids;
+//     }
+// }
