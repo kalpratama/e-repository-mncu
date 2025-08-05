@@ -30,12 +30,22 @@
             <div class="content-box">
               <h3 class="filter-title">Filter Program Studi</h3>
               <div v-if="programStudi.length > 0" class="filter-group">
-                <div v-for="prodi in programStudi" :key="prodi" class="radio-item">
+                <div v-for="prodi in programStudi" :key="prodi" class="checkbox-item">
                    <input type="checkbox" :id="'prodi-' + prodi" :value="prodi" v-model="selectedProdi" @change="fetchCategoryData">
                    <label :for="'prodi-' + prodi">{{ prodi }}</label>
                 </div>
               </div>
               <p v-else>Tidak ada program studi yang tersedia.</p>
+            </div>
+            <div class="content-box">
+              <h3 class="filter-title">Filter Author Role</h3>
+              <div v-if="roles.length > 0" class="filter-group">
+                <div v-for="role in roles" :key="role" class="checkbox-item">
+                  <input type="checkbox" :id="'role-' + role" :value="role" :checked="selectedRoles.includes(role)" @change="filterByRole(role)">
+                  <label :for="'role-' + role">{{ role }}</label>
+                </div>
+              </div>
+              <p v-else>Tidak ada peran penulis yang tersedia.</p>
             </div>
           </aside>
 
@@ -72,10 +82,12 @@ export default {
       category: {},
       documents: [],
       years: [],
-      programStudi: [],
-      isLoading: true,
       selectedYears: [],
+      programStudi: [],
       selectedProdi: [],
+      roles: [],
+      selectedRoles: [],
+      isLoading: true,
     };
   },
   watch: {
@@ -85,6 +97,7 @@ export default {
           // When navigating to a new category, clear filters
           this.selectedYears = [];
           this.selectedProdi = [];
+          this.selectedRoles = [];
         }
         this.fetchCategoryData();
       },
@@ -112,6 +125,12 @@ export default {
         });
       }
 
+      if (Array.isArray(this.selectedRoles) && this.selectedRoles.length > 0) {
+        this.selectedRoles.forEach(role => {
+          params.append('roles[]', role);
+        });
+      }
+
       const queryString = params.toString();
       const url = queryString ? `/api/category/${slug}?${queryString}` : `/api/category/${slug}`;
 
@@ -123,6 +142,7 @@ export default {
         // Always show all available filters
         this.years = response.data.years;
         this.programStudi = response.data.program_studi;
+        this.roles = response.data.roles; // Ensure roles is always an array
         
         document.title = `Kategori: ${this.category.name}`;
       } catch (error) {
@@ -133,37 +153,6 @@ export default {
         this.isLoading = false;
       }
     },
-
-    // async fetchCategoryData() {
-    //   this.isLoading = true;
-    //   const slug = this.$route.params.slug;
-
-    //   const params = new URLSearchParams();
-    //   if (this.selectedYear) {
-    //     params.append('year', this.selectedYear);
-    //   }
-    //   if (this.selectedProdi) {
-    //     params.append('prodi', this.selectedProdi);
-    //   }
-    //   const queryString = params.toString();
-
-    //   try {
-    //     const response = await axios.get(`/api/category/${slug}?${queryString}`);
-    //     this.category = response.data.category;
-    //     this.documents = response.data.documents.data; // We get paginated data
-    //     if (!this.selectedYear && !this.selectedProdi) {
-    //         this.years = response.data.years;
-    //         this.programStudi = response.data.program_studi;
-    //     }
-    //     document.title = `Category: ${this.category.name}`;
-    //   } catch (error) {
-    //     console.error("Failed to fetch category data:", error);
-    //     this.category = { name: 'Not Found' };
-    //     this.documents = [];
-    //   } finally {
-    //     this.isLoading = false;
-    //   }
-    // },
     formatMeta(item) {
       if (!item) return '';
       const authors = item.authors && item.authors.length > 0 
@@ -204,6 +193,9 @@ export default {
         this.isLoading = false;
       }
     },
+    navigateToSearch(query) {
+      this.$router.push({ name: 'Search', query: { q: query } });
+    },
     filterByYear(year) {
       // If clicking the same year again, clear the filter
       this.selectedYear = this.selectedYear === year ? null : year;
@@ -213,9 +205,19 @@ export default {
       this.selectedProdi = this.selectedProdi === prodi ? null : prodi;
       this.fetchCategoryData();
     },
+    filterByRole(role) {
+      const index = this.selectedRoles.indexOf(role);
+      if (index === -1) {
+        this.selectedRoles.push(role);
+      } else {
+        this.selectedRoles.splice(index, 1);
+      }
+      this.fetchCategoryData();
+    },
     clearFilters() {
       this.selectedYear = null;
       this.selectedProdi = null;
+      this.selectedRoles = [];
       this.fetchCategoryData();
     },
   }
@@ -256,16 +258,15 @@ export default {
   margin-bottom: .5rem; 
 }
 .content-box { 
-    background-color: #ffffff; 
+    /* background-color: #ffffff;  */
     border-radius: 8px; 
     padding: 1.5rem 2rem; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
+    /* box-shadow: 0 4px 12px rgba(0,0,0,0.15);  */
 }
 .content-box {
   background-color: #ffffff;
   border-radius: 8px;
-  padding: 1.5rem 2rem; 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 1.5rem 2rem;
 }
 .right-column {
   flex: 2;
@@ -362,9 +363,11 @@ a.publication-item:hover h3 {
   gap: 2rem;
 }
 .filters-column {
+  background-color: #ffffff;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  /* gap: 1.5rem; */
 }
 .filter-header {
   display: flex;
@@ -383,11 +386,11 @@ a.publication-item:hover h3 {
 }
 .filter-title {
   margin-top: 0;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
   font-size: 1.1rem;
   font-weight: 600;
   border-bottom: 1px solid #eee;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
 }
 .filter-list {
   list-style: none;
@@ -416,16 +419,9 @@ a.publication-item:hover h3 {
   flex-direction: column;
   gap: 0.5rem;
 }
-.radio-item {
+.checkbox-item{
   display: flex;
-  align-items: center;
-}
-.radio-item input[type="radio"] {
-  margin-right: 0.5rem;
-  accent-color: #1F3D7B; /* Modern way to color radio buttons */
-}
-.radio-item label {
-  cursor: pointer;
+  gap: 0.5rem;
 }
 a {
   display: flex;

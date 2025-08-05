@@ -28,6 +28,7 @@ class ArticleController extends Controller
             'authors.*.name' => 'required|string|max:255',
             'authors.*.identifier' => 'nullable|string|max:255',
             'authors.*.program_studi' => 'nullable|string|max:255',
+            'authors.*.role' => 'nullable|string|max:255', // New field for author role
             'document_file' => 'nullable|file|mimes:pdf|max:10240', // Max 10MB PDF
         ]);
 
@@ -53,7 +54,8 @@ class ArticleController extends Controller
                     ['identifier' => $authorData['identifier']],
                     [
                         'name' => $authorData['name'],
-                        'program_studi' => $authorData['program_studi'] // <-- ADD THIS
+                        'program_studi' => $authorData['program_studi'],
+                        'role' => $authorData['role'],
                     ]
                 );
                 $authorIds[] = $author->id;

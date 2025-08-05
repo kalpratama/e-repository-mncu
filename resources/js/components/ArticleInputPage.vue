@@ -26,7 +26,7 @@
           <div class="form-columns">
             <!-- Left Column -->
             <div class="form-column">
-              <fieldset class="form-section">
+              <fieldset class="form-section left">
                 <legend>Detail Dokumen</legend>
                 <div class="form-group">
                   <label for="title">Judul</label>
@@ -84,6 +84,13 @@
                   <label :for="'program_studi_' + index">Program Studi</label>
                   <input type="text" :id="'program_studi_' + index" v-model="author.program_studi">
                 </div>
+                <div class="form-group">
+                  <label>Role</label>
+                  <select v-model="author.role">
+                    <option value="Dosen">Dosen</option>
+                    <option value="Mahasiswa">Mahasiswa</option>
+                  </select>
+                </div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
                 <button type="button" @click="addAuthor" class="add-btn">Tambah Penulis</button>
@@ -132,7 +139,7 @@ export default {
         issn: '',
         //conference_name: '',
         publication_link: '',
-        authors: [{ name: '', identifier: '', program_studi: '' }],
+        authors: [{ name: '', identifier: '', program_studi: '', role: '' }], // Default role set to 'Dosen'
         document_file: null,
       },
       documentTypes: [],
@@ -173,7 +180,7 @@ export default {
       this.form.document_file = event.target.files[0];
     },
     addAuthor(){
-      this.form.authors.push({ name: '', identifier: '', program_studi: '' });
+      this.form.authors.push({ name: '', identifier: '', program_studi: '', role: '' });
     },
     removeAuthor(index) {
       if (this.form.authors.length > 1) {
@@ -206,6 +213,7 @@ export default {
             formData.append(`authors[${index}][name]`, author.name);
             formData.append(`authors[${index}][identifier]`, author.identifier);
             formData.append(`authors[${index}][program_studi]`, author.program_studi);
+            formData.append(`authors[${index}][role]`, author.role);
           });
         } else if (this.form[key] !== null) {
           formData.append(key, this.form[key]);

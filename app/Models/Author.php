@@ -12,6 +12,7 @@ class Author extends Model
         'name',
         'identifier', // This could be NIM, NIK, or any other unique identifier
         'program_studi', // Added program_studi field
+        'role',
     ];
 
     public function documents()

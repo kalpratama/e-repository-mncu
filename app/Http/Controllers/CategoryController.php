@@ -29,8 +29,22 @@ class CategoryController extends Controller
                                 ->orderBy('authors.program_studi', 'asc')
                                 ->pluck('authors.program_studi');
 
+        $roles = Document::whereIn('document_type_id', $allCategoryIds)
+                 ->join('author_document', 'documents.id', '=', 'author_document.document_id')
+                 ->join('authors', 'author_document.author_id', '=', 'authors.id')
+                 ->whereNotNull('authors.role')
+                 ->distinct()
+                 ->orderBy('authors.role', 'asc')
+                 ->pluck('authors.role');
+
         $documentsQuery = Document::with('authors')
                               ->whereIn('document_type_id', $allCategoryIds);
+
+        if ($request->has('role') && is_array($request->input('role')) && count($request->input('role')) > 0) {
+            $documentsQuery->whereHas('authors', function ($query) use ($request) {
+                $query->whereIn('role', $request->input('role'));
+            });
+        }
 
         // Handle multiple years filter
         $yearFilters = $request->input('years', []);
@@ -46,6 +60,13 @@ class CategoryController extends Controller
             });
         }
 
+        $roleFilters = $request->input('roles', []);
+        if (!empty($roleFilters) && is_array($roleFilters)) {
+            $documentsQuery->whereHas('authors', function ($query) use ($roleFilters) {
+                $query->whereIn('role', $roleFilters);
+            });
+        }
+
         $documents = $documentsQuery->latest()->paginate(15);
 
         return response()->json([
@@ -53,6 +74,7 @@ class CategoryController extends Controller
             'documents' => $documents,
             'years' => $years,
             'program_studi' => $programStudi,
+            'roles' => $roles,
         ]);
     }
 
