@@ -11,6 +11,7 @@ class Author extends Model
     protected $fillable = [
         'name',
         'identifier', // This could be NIM, NIK, or any other unique identifier
+        'program_studi', // Added program_studi field
     ];
 
     public function documents()

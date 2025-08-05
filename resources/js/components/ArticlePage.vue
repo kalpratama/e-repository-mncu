@@ -37,12 +37,7 @@
         <!-- Right Column: Search and other info -->
         <div class="right-column">
           <div class="content-box search-box">
-            <div class="search-bar-container">
-              <input type="text" placeholder="Search the repository..." class="search-input">
-              <button class="search-button" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </button>
-            </div>
+            <SearchBar :initial-query="searchQuery" @perform-search="navigateToSearch" />
           </div>
 
           <div v-if="article" class="content-box">
@@ -72,15 +67,13 @@
                 <button @click="previewDocument" class="preview-button">Lihat Dokumen</button>
                 <button v-if="isLoggedIn" @click="downloadDocument" class="download-button">Download PDF</button>
                 <p v-else class="login-prompt">Please log in to download the file.</p>
+                <div v-if="user && user.role === 'admin'" class="admin-actions">
+                  <router-link :to="'/admin/articles/' + article.id + '/edit'" class="edit-button">Edit</router-link>
+                  <button @click="deleteArticle" class="delete-button">Delete</button>
+                </div>
               </div>
             </div>
           </div>
-          <!-- <div v-if="article && article.file_path" class="content-box"> -->
-          <!-- </div> -->
-
-          <!-- <div class="content-box">
-            <p>Additional information or related articles can be displayed here.</p>  
-          </div> -->
         </div>
       </div>
     </main>
@@ -89,11 +82,13 @@
 
 <script>
 import Header from './Header.vue';
+import SearchBar from './SearchBar.vue';
 import axios from 'axios';
 
 export default {
   components: {
-    Header
+    Header,
+    SearchBar
   },
   props: {
     isLoggedIn: Boolean,
@@ -105,6 +100,13 @@ export default {
       publicationTypes: [], //dummyData.publicationTypes,
       recentPublications: [], //dummyData.recentPublications,
       isLoading: true
+    }
+  },
+  watch: {
+    // Watch for changes in the URL query string (e.g., a new search)
+    '$route.query.q': {
+      handler: 'performSearch',
+      immediate: true
     }
   },
   
@@ -138,7 +140,7 @@ export default {
         ? item.authors.map(author => author.name).join(', ') 
         : 'Unknown Author';
       let detailsInParens = [];
-      if (item.program_studi) detailsInParens.push(item.program_studi);
+      if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
       if (item.year) detailsInParens.push(item.year);
       if (detailsInParens.length > 0) {
         return `${authors} (${detailsInParens.join(', ')})`;
@@ -156,7 +158,7 @@ export default {
         const response = await axios({
           url: `http://127.0.0.1:8000/api/articles/${this.article.id}/download`,
           method: 'GET',
-          responseType: 'blob', // Important for file downloads
+          responseType: 'blob',
         });
 
         // Create a temporary link to trigger the download
@@ -175,7 +177,46 @@ export default {
         console.error('Download failed:', error);
         alert('Could not download the file.');
       }
-    }
+    },
+    async deleteArticle() {
+      if (!this.article) return;
+      
+      // Show a confirmation dialog before proceeding
+      if (window.confirm(`Are you sure you want to delete "${this.article.title}"? This action cannot be undone.`)) {
+        try {
+          await axios.delete(`/api/articles/${this.article.id}`);
+          // On success, show an alert and redirect to the dashboard
+          alert('Article deleted successfully.');
+          this.$router.push('/');
+        } catch (error) {
+          console.error('Failed to delete article:', error);
+          alert('An error occurred while deleting the article.');
+        }
+      }
+    },
+    async performSearch() {
+      this.isLoading = true;
+      this.searchQuery = this.$route.query.q || '';
+      if (!this.searchQuery) {
+        this.results = [];
+        this.isLoading = false;
+        return;
+      }
+      
+      try {
+        const response = await axios.get(`/api/search?q=${this.searchQuery}`);
+        this.results = response.data;
+        document.title = `Search: ${this.searchQuery}`;
+      } catch (error) {
+        console.error("Failed to perform search:", error);
+        this.results = [];
+      } finally {``
+        this.isLoading = false;
+      }
+    },
+    navigateToSearch(query) {
+      this.$router.push({ name: 'Search', query: { q: query } });
+    },
   }
 }
 </script>
@@ -400,6 +441,40 @@ export default {
   text-decoration: underline;
 }
 
+/* Admin Only */
+.admin-actions {
+  display: flex;
+  gap: 1rem;
+}
+.edit-button, .delete-button {
+  flex: 1;
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+}
+.edit-button {
+  background-color: #ffc107;
+  color: white;
+}
+.edit-button:hover {
+  background-color: #e0a800;
+}
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+}
+.delete-button:hover {
+  background-color: #c82333;
+}
+
 @media (max-width: 882px) {
   .content-boxes {
     flex-direction: column;
@@ -426,9 +501,13 @@ export default {
   }
   .main-content {
     padding: 1rem;
+    /* padding-top: 3.7rem; */
   }
   .repository-title {
     font-size: 1.5rem;
+  }
+  .buttons-box{
+    flex-direction: column;
   }
 }
 </style>

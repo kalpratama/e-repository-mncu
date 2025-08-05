@@ -48,7 +48,10 @@ export default {
 /* --- Top Header --- */
 .top-header {
   background-color: #ffffff;
-  padding: .5rem 2rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  padding-left: 5rem;
+  padding-right: 5rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-bottom: 1px solid #e0e0e0;
   position: sticky;
@@ -59,10 +62,11 @@ export default {
 .header-content {
   display: flex;
   justify-content: space-between;
+  gap: 2rem;
   align-items: center;
   max-width: 1400px;
-  margin-left: 3rem;
-  margin-right: 3rem;
+  /* margin-left: 3rem;
+  margin-right: 3rem; */
 }
 
 .logo-container {
@@ -75,7 +79,7 @@ export default {
 }
 
 .company-logo {
-  height: 57px;
+  max-height: 57px;
   width: auto;
 }
 
@@ -102,9 +106,20 @@ button.login-button:hover {
 }
 
 @media (max-width: 768px) {
+  .top-header {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
   .header-content {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
+  }
+  .communities-link {
+    display: none;
+  }
+  .company-logo {
+    max-width: 80%;
+    height: auto;
   }
 }
 </style>

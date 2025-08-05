@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-body">
+  <div class="page-body">
     <!-- Top Header -->
     <Header 
       :is-logged-in="isLoggedIn" 
@@ -12,7 +12,7 @@
     <main class="main-content">
       <h1 class="repository-title">Repositori Institusional MNC University</h1>
       <div v-if ="isLoading" class="loading-container">
-        <p>Loading...</p>
+        <p>Memuat...</p>
       </div>
 
       <div class="content-boxes">
@@ -21,40 +21,22 @@
           <h2 class="box-title">Terbitan Pustaka</h2>
           <ol class="publication-list">
             <menu-item v-for="item in publicationTypes" :key="item.id" :item="item" />
-          
-            <!-- <li v-for="item in publicationTypes" :key="item.name">
-              <router-link to="/">{{ item.name }}</router-link>
-              <ul v-if="item.children" class="dropdown-menu">
-                <li v-for="child in item.children" :key="child.name">
-                  <router-link to="#">{{ child.name }}</router-link>
-                  <span v-if="child.children" class="dropdown-arrow">&#9656;</span>
-                  <ul v-if="child.children" class="dropdown-menu">
-                    <li v-for="grandchild in child.children" :key="grandchild.name">
-                      <router-link to="#">{{ grandchild.name }}</router-link>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
-            </li> -->
           </ol>
         </div>
 
+        <!-- Right Column -->
         <div class="right-column">
           <div class="content-box search-box">
-            <div class="search-bar-container">
-              <input type="text" placeholder="Search the repository..." class="search-input">
-              <button class="search-button" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </button>
-            </div>
+            <SearchBar @perform-search="navigateToSearch" />
           </div>
 
           <!-- Recently Published Box below -->
-          <div class="content-box">
+          <div class="content-box recent-publication">
             <h2 class="box-title">Baru Diterbitkan</h2>
             <div class="recent-publications">
               <p v-if="recentPublications.length === 0">Belum ada publikasi terbaru.</p>
               <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in recentPublications" :key="item.id">
+                <p class="meta">Kategori: {{ formatCategory(item) }}</p>
                 <h3>{{ item.title }}</h3>
                 <!-- The author names are now formatted by a helper method -->
                 <p class="meta">{{ formatMeta(item) }}</p>
@@ -63,8 +45,6 @@
             </div>
           </div>
         </div>
-
-        
       </div>
     </main>
   </div>
@@ -73,12 +53,14 @@
 <script>
 import Header from './Header.vue';
 import MenuItem from './MenuItem.vue';
+import SearchBar from './SearchBar.vue';
 import axios from 'axios';
 
 export default {
   components: {
     Header,
-    MenuItem
+    MenuItem,
+    SearchBar
   },
   props: {
     isLoggedIn: {
@@ -92,9 +74,10 @@ export default {
   },
   data() {
     return {
-      publicationTypes: [], //dummyData.publicationTypes,
-      recentPublications: [], //dummyData.recentPublications,
-      isLoading: true
+      publicationTypes: [],
+      recentPublications: [],
+      isLoading: true,
+      searchQuery: ''
     };
   },
   created(){
@@ -112,20 +95,27 @@ export default {
         this.isLoading = false;
       }
     },
+    formatCategory(item) {
+      // Check if the item and its nested document_type object exist
+      if (item && item.document_type && item.document_type.name) {
+        return item.document_type.name;
+      }
+      return 'Tidak Ditemukan'; // Fallback text
+    },
     formatMeta(item) {
       if (!item) return '';
       const authors = item.authors && item.authors.length > 0 
         ? item.authors.map(author => author.name).join(', ') 
         : 'Unknown Author';
       let detailsInParens = [];
-      if (item.program_studi) detailsInParens.push(item.program_studi);
+      if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
       if (item.year) detailsInParens.push(item.year);
       if (detailsInParens.length > 0) {
         return `${authors} (${detailsInParens.join(', ')})`;
       }
       return authors;
     },
-    truncateAbstract(text, wordLimit = 20) {
+    truncateAbstract(text, wordLimit = 30) {
       if (!text) return '';
       const words = text.split(' ');
       if (words.length <= wordLimit) {
@@ -138,34 +128,40 @@ export default {
         return 'Unknown Author';
       }
       return authors.map(author => author.name).join(', ');
+    },
+    performSearch() {
+      if (this.searchQuery.trim()) {
+        this.$router.push({ name: 'Search', query: { q: this.searchQuery } });
+      }
+    },
+    navigateToSearch(query) {
+      this.$router.push({ name: 'Search', query: { q: query } });
     }
   }
 }
 </script>
 
 <style scoped>
-
-.loading-container {
-  text-align: center;
-  color: white;
-  padding: 4rem;
-  font-size: 1.2rem;
-}
-
-.dashboard-body {
+.page-body {
   background-color: #1F3D7B;
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
+  /* overflow-x:hidden;
+  overflow-y: auto; */
 }
-
+.loading-container {
+  text-align: center;
+  color: white;
+  padding: 1rem;
+  font-size: 1.2rem;
+}
 /* --- Main Content --- */
 .main-content {
   padding-left: 5rem;
   padding-right: 5rem;
-  padding-bottom: 9rem;
+  padding-bottom: 3rem;
   padding-top: .5rem;
 }
-
 .repository-title {
   color: #ffffff;
   text-align: center;
@@ -174,7 +170,6 @@ export default {
   margin-top: 0;
   margin-bottom: .5rem;
 }
-
 .content-boxes {
   display: flex;
   flex-direction: row;
@@ -182,34 +177,33 @@ export default {
   max-width: 1400px;
   margin: 0 auto;
 }
-
 .content-boxes > .content-box:first-child {
   flex: 1;
 }
-
 .content-boxes > .content-box:last-child {
   flex: 2;
 }
-
 .content-box {
   background-color: #ffffff;
   border-radius: 8px;
   padding: 1.5rem 2rem; 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-
+.recent-publication{
+  max-height: 500rem;
+  max-width: 100%;
+  padding-right: 1rem;
+}
 .left-column {
   flex: 1;
 }
-
-/* **** NEW: Styling for the right column container **** */
 .right-column {
   flex: 2;
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* Space between the two boxes on the right */
+  gap: 2rem;
+  /* justify-content: space-between; */
 }
-
 .box-title {
   margin-top: 0;
   margin-bottom: 1.5rem;
@@ -246,13 +240,15 @@ export default {
   list-style: none;
   padding-left: 0;
   margin: 0;
+  /* max-height: 520px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 1rem; */
 }
-
 .publication-list li {
   position: relative;
   margin-bottom: 0.25rem;
 }
-
 .publication-list a {
   display: flex;
   justify-content: space-between;
@@ -264,11 +260,9 @@ export default {
   transition: background-color 0.2s;
   cursor: pointer;
 }
-
 .publication-list li:hover > a {
   background-color: #e9ecef;
 }
-
 .dropdown-arrow {
   font-size: 0.8em;
   color: #888;
@@ -292,27 +286,23 @@ export default {
   z-index: 10;
   transition: visibility 0s linear 0.2s, opacity 0.2s linear;
 }
-
 .publication-list li:hover > .dropdown-menu {
   visibility: visible;
   opacity: 1;
   transition-delay: 0s;
 }
-
 .recent-publications {
   max-height: 400px; /* Limit the height of this container */
   overflow-y: auto; /* Add vertical scrollbar only when needed */
   padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
 }
-
 /* --- Right Box List --- */
 .recent-publications {
-  max-height: 500px;
+  max-height: 350px;
   max-width: 100%;
   overflow-y: auto;
   padding-right: 1rem;
 }
-
 a.publication-item {
   display: block;
   text-decoration: none;
@@ -323,40 +313,33 @@ a.publication-item {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
-
 a.publication-item:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
-
 a.publication-item:last-child {
   margin-bottom: 0;
 }
-
 .publication-item h3 {
   margin: 0 0 0.25rem 0;
   font-size: 1.1rem;
   color: #1F3D7B;
   font-weight: 600;
 }
-
 a.publication-item:hover h3 {
   text-decoration: underline;
 }
-
 .publication-item .meta {
   font-size: 0.85rem;
   color: #666;
   margin: 0 0 0.5rem 0;
 }
-
 .publication-item .description {
   font-size: 0.95rem;
   color: #444;
   line-height: 1.6;
   margin: 0;
 }
-
 button.login-button {
   width: 100%;
   padding: 0.9rem;
@@ -369,11 +352,9 @@ button.login-button {
   font-weight: 600;
   transition: background-color 0.2s;
 }
-
 button.login-button:hover {
   background-color: #0056b3;
 }
-
 button.search-button{
   padding: 0.75rem 1.5rem;
   background-color: #1F3D7B;
@@ -383,7 +364,6 @@ button.search-button{
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
 button.search-button:hover {
   background-color: #0056b3;
 }
@@ -393,7 +373,6 @@ button.search-button:hover {
   .content-boxes {
     flex-direction: column;
   }
-
   /* **** NEW: Reorder boxes on mobile **** */
   .right-column {
     display: contents; /* This makes children of .right-column direct flex items */
@@ -407,14 +386,12 @@ button.search-button:hover {
   .recent-box {
     order: 0; /* This keeps the recent box at the bottom */
   }
-
   .dropdown-menu {
     left: 0;
     top: 100%;
     margin: 5px 0 0 0;
     width: 70%;
   }
-
   .dropdown-menu .dropdown-menu {
     left: 6rem;
     top: 100%;

@@ -27,4 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/articles/{document}/download', [ArticleController::class, 'download']);
 
+    // **** NEW: Add the route for updating an article ****
+    Route::put('/articles/{document}', [ArticleController::class, 'update'])->middleware(IsAdmin::class);
+
+    // **** NEW: Add the route for deleting an article ****
+    Route::delete('/articles/{document}', [ArticleController::class, 'destroy'])->middleware(IsAdmin::class);
+
 });

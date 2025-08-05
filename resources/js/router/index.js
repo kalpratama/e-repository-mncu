@@ -5,6 +5,9 @@ import ArticlePage from '../components/ArticlePage.vue';
 import ArticleInputPage from '../components/ArticleInputPage.vue';
 import ProfilePage from '../components/ProfilePage.vue';
 import CategoryPage from '../components/CategoryPage.vue';
+import SearchPage from '../components/SearchPage.vue';
+import ArticleEditPage from '../components/ArticleEditPage.vue';
+import YearPage from '../components/YearPage.vue';
 
 const routes = [
   {
@@ -42,6 +45,22 @@ const routes = [
     path: '/category/:slug', // The ':slug' makes it dynamic
     name: 'Category',
     component: CategoryPage,
+  },
+  {
+    path: '/search',
+    name: 'Search',
+    component: SearchPage,
+  },
+  {
+    path: '/admin/articles/:id/edit',
+    name: 'ArticleEdit',
+    component: ArticleEditPage,
+    meta: { title: 'Edit Artikel' },
+  },
+  {
+    path: '/category/:slug/:year',
+    name: 'CategoryYear',
+    component: YearPage,
   },
 ];
 

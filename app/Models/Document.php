@@ -14,7 +14,6 @@ class Document extends Model
         'document_type_id',
         'abstract',
         'year',
-        'program_studi',
         'issn',
         'publisher',
         'conference_name',
