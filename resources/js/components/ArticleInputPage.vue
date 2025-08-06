@@ -64,10 +64,25 @@
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
                   <div class="form-group"><label>Author Name</label><input type="text" v-model="author.name" required></div>
                   <div v-if="shouldShow('identifier')" class="form-group"><label>Nomor Induk</label><input type="text" v-model="author.identifier"></div>
-                  <div v-if="shouldShow('program_studi')" class="form-group"><label>Program Studi</label><input type="text" v-model="author.program_studi"></div>
+                  <div v-if="shouldShow('program_studi')" class="form-group">
+                    <label>Program Studi</label>
+                    <select v-model="author.program_studi">
+                      <option value="Manajemen">Manajemen</option>
+                      <option value="Akuntansi">Akuntansi</option>
+                      <option value="Pendidikan Matematika">Pendidikan Matematika</option>
+                      <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
+                      <option value="Sains Komunikasi">Sains Komunikasi</option>
+                      <option value="DKV">DKV</option>
+                      <option value="Sistem Informasi">Sistem Informasi</option>
+                      <option value="Ilmu Komputer">Ilmu Komputer</option>
+                    </select>
+                  </div>
                   <div v-if="shouldShow('role')" class="form-group">
                     <label>Role</label>
-                    <select v-model="author.role"><option value="Dosen">Dosen</option><option value="Mahasiswa">Mahasiswa</option></select>
+                    <select v-model="author.role">
+                      <option value="Dosen">Dosen</option>
+                      <option value="Mahasiswa">Mahasiswa</option>
+                    </select>
                   </div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
@@ -99,22 +114,23 @@ import Header from './Header.vue';
 import axios from 'axios';
 
 const fieldConfig = {
-  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
-  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel JTT
-  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel
-  4: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Buku
-  5: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
-  6: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
-  7: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // TA
+  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
+  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
+  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
+  4: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku
+  5: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku
+  6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
+  7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // TA
   8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
-  9: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Modul Pembelajaran
-  10: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
-  11: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
-  12: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
-  13: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Dokumentasi Prestasi mhs
-  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
-  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
-  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internal
+  9: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran
+  10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
+  11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
+  12: ['title', 'year', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
+  13: ['title', 'year', 'authors', 'program_studi', 'file_path'],// Dokumentasi Prestasi mhs
+
+  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
+  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
+  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internal
   17: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Majalah
   18: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Koran
 };
@@ -201,9 +217,35 @@ export default {
         console.error("Failed to fetch document types:", error);
       }
     },
-    handleFileUpload(event){
-      this.form.document_file = event.target.files[0];
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      this.fileError = '';
+      
+      if (file) {
+        // Validate file type
+        if (file.type !== 'application/pdf') {
+          this.fileError = 'Hanya file PDF yang diperbolehkan';
+          event.target.value = ''; // Clear the input
+          this.form.document_file = null;
+          return;
+        }
+        
+        // Validate file size (10MB = 10 * 1024 * 1024 bytes)
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+          this.fileError = 'Ukuran file maksimal 10MB';
+          event.target.value = ''; // Clear the input
+          this.form.document_file = null;
+          return;
+        }
+        
+        this.form.document_file = file;
+        console.log('File selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+      }
     },
+    // handleFileUpload(event){
+    //   this.form.document_file = event.target.files[0];
+    // },
     addAuthor(){
       this.form.authors.push({ name: '', identifier: '', program_studi: '', role: '' });
     },
@@ -256,6 +298,10 @@ export default {
           });
         } else if (this.form[key] !== null) {
           formData.append(key, this.form[key]);
+        }
+
+        if (this.form.document_file) {
+          formData.append('document_file', this.form.document_file);
         }
       });
 

@@ -37,15 +37,14 @@
               </div>
               <p v-else>Tidak ada program studi yang tersedia.</p>
             </div>
-            <div class="content-box">
+            <div v-if="roles.length > 1" class="content-box roles-filter">
               <h3 class="filter-title">Filter Author Role</h3>
-              <div v-if="roles.length > 0" class="filter-group">
+              <div class="filter-group">
                 <div v-for="role in roles" :key="role" class="checkbox-item">
                   <input type="checkbox" :id="'role-' + role" :value="role" :checked="selectedRoles.includes(role)" @change="filterByRole(role)">
                   <label :for="'role-' + role">{{ role }}</label>
                 </div>
               </div>
-              <p v-else>Tidak ada peran penulis yang tersedia.</p>
             </div>
           </aside>
 
@@ -155,15 +154,29 @@ export default {
     },
     formatMeta(item) {
       if (!item) return '';
-      const authors = item.authors && item.authors.length > 0 
-        ? item.authors.map(author => author.name).join(', ') 
+
+      // Format each author as "LastName, FirstName"
+      const authors = item.authors && item.authors.length > 0
+        ? item.authors.map(author => {
+            const parts = author.name.trim().split(/\s+/);
+            if (parts.length >= 2) {
+              const lastName = parts.pop();
+              const firstName = parts.join(' ');
+              return `${lastName}, ${firstName}`;
+            } else {
+              return parts[0]; // Single-word name
+            }
+          }).join(', ')
         : 'Unknown Author';
+
       let detailsInParens = [];
-      if (item.authors[0].program_studi) detailsInParens.push(item.authors[0].program_studi);
+      if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
       if (item.year) detailsInParens.push(item.year);
+
       if (detailsInParens.length > 0) {
         return `${authors} (${detailsInParens.join(', ')})`;
       }
+
       return authors;
     },
     truncateAbstract(text, wordLimit = 20) {

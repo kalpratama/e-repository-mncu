@@ -64,9 +64,10 @@
                 <span class="detail-value"><a :href="article.publication_link" target="_blank" rel="noopener noreferrer">Lihat Publikasi</a></span>
               </div>
               <div class="buttons-box">
-                <button @click="previewDocument" class="preview-button">Lihat Dokumen</button>
+                <button v-if="isLoggedIn" @click="previewDocument" class="preview-button">Lihat Dokumen</button>
+                <!-- <p v-else class="login-prompt">Please log in to view the document.</p> -->
                 <button v-if="isLoggedIn" @click="downloadDocument" class="download-button">Download PDF</button>
-                <p v-else class="login-prompt">Please log in to download the file.</p>
+                <p v-else class="login-prompt">Masuk untuk lihat atau unduh dokumen</p>
                 <div v-if="user && user.role === 'admin'" class="admin-actions">
                   <router-link :to="'/admin/articles/' + article.id + '/edit'" class="edit-button">Edit</router-link>
                   <button @click="deleteArticle" class="delete-button">Delete</button>
@@ -134,19 +135,47 @@ export default {
       } catch (error) { this.article = null; } 
       finally { this.isLoading = false; }
     },
-    formatMeta(item) { 
+
+    formatMeta(item) {
       if (!item) return '';
+
+      // Format each author as "LastName, FirstName"
       const authors = item.authors && item.authors.length > 0 
-        ? item.authors.map(author => author.name).join(', ') 
+        ? item.authors.map(author => {
+            const parts = author.name.trim().split(/\s+/);
+            if (parts.length >= 2) {
+              const lastName = parts.pop();
+              const firstName = parts.join(' ');
+              return `${lastName}, ${firstName}`;
+            } else {
+              return parts[0]; // Single-word name
+            }
+          }).join(', ')
         : 'Unknown Author';
+
       let detailsInParens = [];
       if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
       if (item.year) detailsInParens.push(item.year);
+
       if (detailsInParens.length > 0) {
         return `${authors} (${detailsInParens.join(', ')})`;
       }
+
       return authors;
     },
+    // formatMeta(item) { 
+    //   if (!item) return '';
+    //   const authors = item.authors && item.authors.length > 0 
+    //     ? item.authors.map(author => author.name).join(', ') 
+    //     : 'Unknown Author';
+    //   let detailsInParens = [];
+    //   if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
+    //   if (item.year) detailsInParens.push(item.year);
+    //   if (detailsInParens.length > 0) {
+    //     return `${authors} (${detailsInParens.join(', ')})`;
+    //   }
+    //   return authors;
+    // },
     previewDocument() {
       if (this.article && this.article.file_path) {
         window.open(this.previewURL, '_blank');
