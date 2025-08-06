@@ -142,7 +142,7 @@ export default {
         // Always show all available filters
         this.years = response.data.years;
         this.programStudi = response.data.program_studi;
-        this.roles = response.data.roles; // Ensure roles is always an array
+        this.roles = response.data.roles || []; // Ensure roles is always an array
         
         document.title = `Kategori: ${this.category.name}`;
       } catch (error) {

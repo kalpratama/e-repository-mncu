@@ -89,17 +89,16 @@ class ArticleController extends Controller
             'title' => 'required|string|max:255',
             'document_type_id' => 'required|exists:document_types,id',
             'abstract' => 'nullable|string',
-            'year' => 'nullable|integer|digits:4',
+            'year' => 'required|integer|digits:4',
             'publisher' => 'nullable|string|max:255',
-            'issn' => 'nullable|string|max:255',
+            'issn' => 'required|string|max:255',
             'conference_name' => 'nullable|string|max:255',
             'publication_link' => 'nullable|url|max:255',
             'authors' => 'required|array|min:1',
             'authors.*.name' => 'required|string|max:255',
             'authors.*.identifier' => 'nullable|string|max:255',
             'authors.*.program_studi' => 'nullable|string|max:255',
-            // Note: File updates would be handled separately in a real-world scenario,
-            // but for simplicity, we'll focus on text data updates.
+            'authors.*.role' => 'nullable|string|max:255', // New field for author role
         ]);
 
         return DB::transaction(function () use ($validatedData, $document) {

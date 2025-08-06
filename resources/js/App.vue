@@ -20,21 +20,6 @@
       @login-success="handleLoginSuccess"
       @logout="handleLogout"
     />
-
-    <!-- Show the Dashboard page, passing login state and user data down as props -->
-    <!-- <DashboardPage 
-      v-if="currentPage === 'dashboard'" 
-      :is-logged-in="isLoggedIn"
-      :user="user"
-      @request-login="showLoginPage"
-      @logout="handleLogout"
-    />
-
-    Show Login page when login button is clicked
-    <LoginPage 
-      v-else-if="currentPage === 'login'" 
-      @login-success="handleLoginSuccess" 
-    /> -->
   </div>
 </template>
 
@@ -56,7 +41,8 @@ export default {
       isLoggedIn: false,
       user: null,
       token: null,
-      debugToken: null
+      debugToken: null,
+      logoutInProgress: false
     };
   },
   computed:{
@@ -74,11 +60,14 @@ export default {
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access_token}`;
       this.isLoggedIn = true;
       this.user = data.user;
-      // this.currentPage = 'dashboard';
+      this.token = data.access_token;
       this.$router.push('/');
     },
 
     async handleLogout() {
+      if (this.logoutInProgress) return; // Prevent multiple logout requests
+      this.logoutInProgress = true;
+
       try{
         await axios.post('/api/logout');
       } catch (error) {
@@ -88,7 +77,12 @@ export default {
         delete axios.defaults.headers.common['Authorization'];
         this.isLoggedIn = false;
         this.user = null;
-        this.$router.push('/');
+        this.token = null;
+
+        setTimeout(() => {
+          this.logoutInProgress = false;
+          this.$router.push('/'); // Redirect to login page after logout
+        }, 400); // Delay to allow logout API response
       }
     },
 
@@ -105,12 +99,13 @@ export default {
             this.user = response.data;
           } 
         } catch (error) {
-          localStorage.removeItem('access_token');
-          delete axios.defaults.headers.common['Authorization'];
-          this.isLoggedIn = false;
-          this.user = null;
-          this.token = null;
-          console.log('User not authenticated:', error);
+          console.warn('User session invalid or expired.', error);
+          // localStorage.removeItem('access_token');
+          // delete axios.defaults.headers.common['Authorization'];
+          // this.isLoggedIn = false;
+          // this.user = null;
+          // this.token = null;
+          // console.log('User not authenticated:', error);
         }
       }
     },
@@ -141,12 +136,18 @@ export default {
           console.log('Response received:', response.status, response.data);
           return response;
         },
-        (error) => {
+        async (error) => {
           console.error('Response error:', error.response?.status, error.response?.data);
           
           // Handle 401 errors (unauthorized)
           if (error.response?.status === 401) {
-            this.handleLogout();
+            if (this.isLoggedIn) {
+              console.warn('Unauthorized access, logging out...');
+              await this.handleLogout();
+            } else {
+              console.warn('Unauthorized access, redirecting to login...');
+              this.$router.push('/login');
+            }
           }
           
           return Promise.reject(error);
