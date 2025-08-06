@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\Author;
-use App\Models\DocumentType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
@@ -39,13 +38,12 @@ class ArticleController extends Controller
                 // Store the file in 'storage/app/public/documents' and get its path
                 $filePath = $request->file('document_file')->store('documents', 'public');
             }
-
             $documentData = Arr::except($validatedData, ['authors', 'document_file']);
-
-            // Create the document from the validated data, including the file path
             // $document = Document::create(array_merge($documentData, ['file_path' => $filePath]));
-
-            $document = Document::create(Arr::except($validatedData, ['authors', 'document_file']));
+            $document = Document::create(array_merge(
+                Arr::except($validatedData, ['authors', 'document_file']),
+                ['file_path' => $filePath]
+            ));
 
             // Process the authors
             $authorIds = [];
@@ -77,7 +75,7 @@ class ArticleController extends Controller
     public function download(Document $document)
     {
         if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
-            return Storage::disk('public')->download($document->file_path);
+            return response()->download(storage_path('app/public/' . $document->file_path));
         }
         return response()->json(['message' => 'File not found.'], 404);
     }

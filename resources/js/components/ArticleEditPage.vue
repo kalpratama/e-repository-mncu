@@ -134,10 +134,11 @@ export default {
         year: null,
         publisher: '',
         issn: '',
-        //conference_name: '',
+        conference_name: '',
         publication_link: '',
-        authors: [{ name: '', identifier: '', program_studi: '' }],
+        authors: [{ name: '', identifier: '', program_studi: '', role: '' }],
         document_file: null,
+        fileError: ''
       },
       documentTypes: [],
       selectedLevel1: '', 
@@ -189,7 +190,7 @@ export default {
         this.form.issn = article.issn;
         this.form.conference_name = article.conference_name;
         this.form.publication_link = article.publication_link;
-        this.form.authors = article.authors.map(a => ({ name: a.name, identifier: a.identifier, program_studi: a.program_studi || '' }));
+        this.form.authors = article.authors.map(a => ({ name: a.name, identifier: a.identifier, program_studi: a.program_studi || '', role: a.role || '' }));
 
       } catch (error) {
         console.error("Failed to load initial data for editing:", error);
@@ -199,9 +200,31 @@ export default {
         this.isLoading = false;
       }
     },
-    handleFileUpload(event){
-      this.form.document_file = event.target.files[0];
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      this.fileError = '';
+
+      if (file) {
+        if (file.type !== 'application/pdf') {
+          this.fileError = 'Hanya file PDF yang diperbolehkan';
+          event.target.value = '';
+          this.form.document_file = null;
+          return;
+        }
+
+        const maxSize = 10 * 1024 * 1024;
+        if (file.size > maxSize) {
+          this.fileError = 'Ukuran file maksimal 10MB';
+          event.target.value = '';
+          this.form.document_file = null;
+          return;
+        }
+
+        this.form.document_file = file;
+        console.log('File selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+      }
     },
+
     
     addAuthor() {
       this.form.authors.push({ name: '', identifier: '', program_studi: '' });
