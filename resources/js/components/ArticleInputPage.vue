@@ -14,51 +14,36 @@
         <h1 class="form-title">Unggah Artikel Baru</h1>
         <p class="form-subtitle">Isi detail untuk item repositori baru.</p>
 
-        <form @submit.prevent="submitArticle">
-          <!-- Success/Error Message -->
-          <div v-if="successMessage" class="message success-message">
-            {{ successMessage }}
-          </div>
-          <div v-if="errorMessage" class="message error-message">
-            {{ errorMessage }}
-          </div>
+        <!-- **** POINT OF CHANGE: Step 1 - Category Selection **** -->
+        <div class="form-group">
+          <label for="document_type">Document Type</label>
+          <select id="document_type" v-model="form.document_type_id" @change="onTypeChange" required>
+            <option disabled value="">Please select one</option>
+            <option v-for="type in flatDocumentTypes" :key="type.id" :value="type.id">
+              {{ type.name }}
+            </option>
+          </select>
+        </div>
 
+        <!-- **** POINT OF CHANGE: Step 2 - The rest of the form, shown conditionally **** -->
+        <form v-if="form.document_type_id" @submit.prevent="submitArticle" enctype="multipart/form-data">
           <div class="form-columns">
             <!-- Left Column -->
             <div class="form-column">
-              <fieldset class="form-section left">
-                <legend>Detail Dokumen</legend>
+              <fieldset class="form-section">
+                <legend>Document Details</legend>
                 <div class="form-group">
-                  <label for="title">Judul</label>
+                  <label for="title">Title</label>
                   <input type="text" id="title" v-model="form.title" required>
                 </div>
-                <div class="form-group">
-                  <label>Kategori Tingkat 1</label>
-                  <select v-model="selectedLevel1" required>
-                    <option disabled value="">Pilih Tipe</option>
-                    <option v-for="type in documentTypes" :key="type.id" :value="type">{{ type.name }}</option>
-                  </select>
-                </div>
-                <div v-if="level2Options.length > 0" class="form-group">
-                  <label>Kategori Tingkat 2</label>
-                  <select v-model="selectedLevel2" required>
-                    <option disabled value="">Pilih Sub-Tipe</option>
-                    <option v-for="type in level2Options" :key="type.id" :value="type">{{ type.name }}</option>
-                  </select>
-                </div>
-                <div v-if="level3Options.length > 0" class="form-group">
-                  <label>Kategori Tingkat 3</label>
-                  <select v-model="selectedLevel3" required>
-                    <option disabled value="">Pilih Sub-Tipe</option>
-                    <option v-for="type in level3Options" :key="type.id" :value="type">{{ type.name }}</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="year">Tahun</label>
+                
+                <!-- Conditionally show fields based on the selected category -->
+                <div v-if="shouldShow('year')" class="form-group">
+                  <label for="year">Year</label>
                   <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2025">
                 </div>
-                <div class="form-group">
-                  <label for="abstract">Abstrak / Deskripsi</label>
+                <div v-if="shouldShow('abstract')" class="form-group">
+                  <label for="abstract">Abstract / Description</label>
                   <textarea id="abstract" v-model="form.abstract" rows="8"></textarea>
                 </div>
               </fieldset>
@@ -66,51 +51,44 @@
 
             <!-- Right Column -->
             <div class="form-column">
-              <fieldset class="form-section">
-                <legend>Informasi Publikasi</legend>
-                <div class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
-                <div class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
-                <!-- <div class="form-group"><label for="conference_name">Conference Name</label><input type="text" id="conference_name" v-model="form.conference_name"></div> -->
-                <div class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
+              <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link')" class="form-section">
+                <legend>Publication Info</legend>
+                <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Publisher</label><input type="text" id="publisher" v-model="form.publisher"></div>
+                <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
+                <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Conference Name</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
+                <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Publication Link</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
               </fieldset>
 
               <fieldset class="form-section">
-                <!-- <legend>Penulis</legend> -->
+                <legend>Authors</legend>
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
-                  <div class="form-group"><label :for="'author_name_' + index">Nama Penulis</label><input :id="'author_name_' + index" type="text" v-model="author.name" required></div>
-                  <div class="form-group"><label :for="'author_id_' + index">NIM/NIK</label><input :id="'author_id_' + index" type="text" v-model="author.identifier"></div>
-                  
-                <div class="form-group">
-                  <label :for="'program_studi_' + index">Program Studi</label>
-                  <input type="text" :id="'program_studi_' + index" v-model="author.program_studi">
-                </div>
-                <div class="form-group">
-                  <label>Role</label>
-                  <select v-model="author.role">
-                    <option value="Dosen">Dosen</option>
-                    <option value="Mahasiswa">Mahasiswa</option>
-                  </select>
-                </div>
+                  <div class="form-group"><label>Author Name</label><input type="text" v-model="author.name" required></div>
+                  <div v-if="shouldShow('identifier')" class="form-group"><label>Nomor Induk</label><input type="text" v-model="author.identifier"></div>
+                  <div v-if="shouldShow('program_studi')" class="form-group"><label>Program Studi</label><input type="text" v-model="author.program_studi"></div>
+                  <div v-if="shouldShow('role')" class="form-group">
+                    <label>Role</label>
+                    <select v-model="author.role"><option value="Dosen">Dosen</option><option value="Mahasiswa">Mahasiswa</option></select>
+                  </div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
-                <button type="button" @click="addAuthor" class="add-btn">Tambah Penulis</button>
+                <button type="button" @click="addAuthor" class="add-btn">Add Author</button>
               </fieldset>
 
-              <fieldset class="form-section">
+              <fieldset v-if="shouldShow('file_path')" class="form-section">
+                <legend>File Upload</legend>
                 <div class="form-group">
-                  <label for="document_file">Unggah Dokumen (PDF, maks 10MB)</label>
+                  <label for="document_file">Upload Document (PDF only, max 10MB)</label>
                   <input type="file" id="document_file" @change="handleFileUpload" accept=".pdf">
                 </div>
               </fieldset>
             </div>
           </div>
-
+          
           <div class="form-actions">
-            <button type="submit" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Mengunggah...' : 'Unggah' }}
-            </button>
+            <button type="submit" :disabled="isSubmitting">{{ isSubmitting ? 'Submitting...' : 'Submit Document' }}</button>
           </div>
         </form>
+
       </div>
     </main>
   </div>
@@ -119,6 +97,27 @@
 <script>
 import Header from './Header.vue';
 import axios from 'axios';
+
+const fieldConfig = {
+  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
+  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel JTT
+  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel
+  4: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Buku
+  5: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
+  6: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
+  7: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // TA
+  8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
+  9: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Modul Pembelajaran
+  10: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
+  11: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
+  12: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
+  13: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Dokumentasi Prestasi mhs
+  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
+  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
+  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internal
+  17: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Majalah
+  18: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Koran
+};
 
 export default {
   components: {
@@ -137,7 +136,7 @@ export default {
         year: null,
         publisher: '',
         issn: '',
-        //conference_name: '',
+        conference_name: '',
         publication_link: '',
         authors: [{ name: '', identifier: '', program_studi: '', role: '' }], // Default role set to 'Dosen'
         document_file: null,
@@ -152,22 +151,48 @@ export default {
       validationErrors: null,
     };
   },
+
   computed: {
-    level2Options() {
-      return this.selectedLevel1?.children || [];
-    },
-    level3Options() {
-      return this.selectedLevel2?.children || [];
+    // A helper to flatten the nested document types for the initial dropdown
+    flatDocumentTypes() {
+      const flatten = (types) => {
+        let list = [];
+        for (const type of types) {
+          list.push({ id: type.id, name: type.name });
+          if (type.children) {
+            list = list.concat(flatten(type.children));
+          }
+        }
+        return list;
+      };
+      return flatten(this.documentTypes);
     }
   },
-
-  watch: {
-    selectedLevel1(v) { this.selectedLevel2 = ''; this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
-    selectedLevel2(v) { this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
-    selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
-  },
+  // computed: {
+  //   level2Options() {
+  //     return this.selectedLevel1?.children || [];
+  //   },
+  //   level3Options() {
+  //     return this.selectedLevel2?.children || [];
+  //   }
+  // },
+  // watch: {
+  //   selectedLevel1(v) { this.selectedLevel2 = ''; this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
+  //   selectedLevel2(v) { this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
+  //   selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
+  // },
 
   methods: {
+    // **** POINT OF CHANGE: Method to check if a field should be shown ****
+    shouldShow(fieldName) {
+      if (!this.form.document_type_id) return false;
+      const fields = fieldConfig[this.form.document_type_id];
+      return fields ? fields.includes(fieldName) : false;
+    },
+    onTypeChange() {
+      // When the type changes, reset the form to avoid carrying over old data
+      this.resetForm(this.form.document_type_id);
+    },
     async fetchDocumentTypes() {
       try {
         const response = await axios.get('/api/document-types');
@@ -189,18 +214,32 @@ export default {
         alert('Harus ada minimal satu penulis.');
       }
     },
-    resetForm(){
+    resetForm(selectedTypeId = '') {
       this.form = {
-        title: '', document_type_id: '', abstract: '', year: null,
-            publisher: '', issn: '', conference_name: '', publication_link: '',
-            authors: [{ name: '', identifier: '', program_studi: '' }],
-            document_file: null,
-        };
-        this.selectedLevel1 = '';
-        this.selectedLevel2 = '';
-        this.selectedLevel3 = '';
-        document.getElementById('document_file').value = '';
+        title: '',
+        document_type_id: selectedTypeId,
+        abstract: '',
+        year: null,
+        publisher: '',
+        issn: '',
+        conference_name: '',
+        publication_link: '',
+        authors: [{ name: '', identifier: '', program_studi: '', role: '' }],
+        document_file: null,
+      };
     },
+    // resetForm(){
+    //   this.form = {
+    //     title: '', document_type_id: '', abstract: '', year: null,
+    //         publisher: '', issn: '', conference_name: '', publication_link: '',
+    //         authors: [{ name: '', identifier: '', program_studi: '' }],
+    //         document_file: null,
+    //     };
+    //     this.selectedLevel1 = '';
+    //     this.selectedLevel2 = '';
+    //     this.selectedLevel3 = '';
+    //     document.getElementById('document_file').value = '';
+    // },
     async submitArticle() {
       this.isSubmitting = true;
       this.successMessage = '';
@@ -271,7 +310,7 @@ export default {
 .form-subtitle {
   font-size: 1rem;
   color: #666;
-  margin: 0 0 1rem 0;
+  margin-bottom: .3rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 1rem;
 }
@@ -279,6 +318,9 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
+}
+.form-section {
+  margin-top: 1.5rem;
 }
 
 /* **** NEW: Two-column layout **** */
@@ -300,8 +342,8 @@ export default {
   grid-column: 1 / -1; /* Span across both columns */
 }
 label {
-  margin-top: 1rem;
-  margin-bottom: .3rem;
+  margin-top: .75rem;
+  margin-bottom: 0rem;
   font-weight: 500;
   color: #333;
 }

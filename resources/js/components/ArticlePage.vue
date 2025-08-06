@@ -19,9 +19,9 @@
               <h1>{{ article.title }}</h1>
               <p class="meta">{{ formatMeta(article) }}</p>
             </div>
-            <div class="thumbnail-section">
+            <!-- <div class="thumbnail-section">
               <img :src="article.thumbnail || 'https://placehold.co/100x120/e2e8f0/718096?text=No%0AImage'" alt="Article Thumbnail" class="thumbnail">
-            </div>
+            </div> -->
           </div>
           <div class="abstract-section">
             <h2 class="box-title"> Abstrak</h2>
