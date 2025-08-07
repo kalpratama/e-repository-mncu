@@ -10,7 +10,6 @@
 
     <!-- Main Content Area -->
     <main class="main-content">
-      <!-- <h1 class="repository-title">{{ article.title }}</h1> -->
       <div class="content-boxes">
         <!-- Left Column: Article Details -->
         <div v-if="article" class="content-box article-details">
@@ -65,7 +64,6 @@
               </div>
               <div class="buttons-box">
                 <button v-if="isLoggedIn" @click="previewDocument" class="preview-button">Lihat Dokumen</button>
-                <!-- <p v-else class="login-prompt">Please log in to view the document.</p> -->
                 <button v-if="isLoggedIn" @click="downloadDocument" class="download-button">Download PDF</button>
                 <p v-else class="login-prompt">Masuk untuk lihat atau unduh dokumen</p>
                 <div v-if="user && user.role === 'admin'" class="admin-actions">
@@ -98,8 +96,8 @@ export default {
   data() {
     return {
       article: null,
-      publicationTypes: [], //dummyData.publicationTypes,
-      recentPublications: [], //dummyData.recentPublications,
+      publicationTypes: [],
+      recentPublications: [],
       isLoading: true
     }
   },
@@ -148,7 +146,6 @@ export default {
           }).join('; ')
         : 'Unknown Author';
 
-      // Get unique program_studi values from all authors
       const programs = item.authors
         .map(author => author.program_studi)
         .filter((prog, index, arr) => prog && arr.indexOf(prog) === index);
@@ -161,33 +158,6 @@ export default {
         ? `${authors} (${detailsInParens.join(', ')})`
         : authors;
     },
-    // formatMeta(item) {
-    //   if (!item) return '';
-
-    //   // Format each author as "LastName, FirstName"
-    //   const authors = item.authors && item.authors.length > 0 
-    //     ? item.authors.map(author => {
-    //         const parts = author.name.trim().split(/\s+/);
-    //         if (parts.length >= 2) {
-    //           const lastName = parts.pop();
-    //           const firstName = parts.join(' ');
-    //           return `${lastName}, ${firstName}`;
-    //         } else {
-    //           return parts[0]; // Single-word name
-    //         }
-    //       }).join(', ')
-    //     : 'Unknown Author';
-
-    //   let detailsInParens = [];
-    //   if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
-    //   if (item.year) detailsInParens.push(item.year);
-
-    //   if (detailsInParens.length > 0) {
-    //     return `${authors} (${detailsInParens.join(', ')})`;
-    //   }
-
-    //   return authors;
-    // },
     previewDocument() {
       if (this.article && this.article.file_path) {
         window.open(this.previewURL, '_blank');
@@ -216,22 +186,22 @@ export default {
         link.remove();
       } catch (error) {
         console.error('Download failed:', error);
-        alert('Could not download the file.');
+        alert('Gagal mengunduh.');
       }
     },
     async deleteArticle() {
       if (!this.article) return;
       
       // Show a confirmation dialog before proceeding
-      if (window.confirm(`Are you sure you want to delete "${this.article.title}"? This action cannot be undone.`)) {
+      if (window.confirm(`Anda yakin ingin menghapus "${this.article.title}"? Tindakan ini tidak dapat dibatalkan.`)) {
         try {
           await axios.delete(`/api/articles/${this.article.id}`);
           // On success, show an alert and redirect to the dashboard
-          alert('Article deleted successfully.');
+          alert('Berhasil dihapus.');
           this.$router.push('/');
         } catch (error) {
           console.error('Failed to delete article:', error);
-          alert('An error occurred while deleting the article.');
+          alert('Terjadi kesalahan saat menghapus.');
         }
       }
     },
@@ -251,7 +221,7 @@ export default {
       } catch (error) {
         console.error("Failed to perform search:", error);
         this.results = [];
-      } finally {``
+      } finally {
         this.isLoading = false;
       }
     },

@@ -11,7 +11,7 @@
        
       <router-link to="/profile" class="dropdown-item">Profil</router-link>
       <router-link v-if="user && user.role === 'admin'" to="/admin/articles/create" class="admin-button">
-        Unggah Artikel
+        Unggah Baru
       </router-link>
       <div class="dropdown-divider"></div>
       <a href="#" @click.prevent="$emit('logout')" class="dropdown-item">Logout</a>

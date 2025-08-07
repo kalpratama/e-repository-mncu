@@ -11,7 +11,7 @@
     <!-- Main Content -->
     <main class="main-content">
       <div class="form-container">
-        <h1 class="form-title">Unggah Artikel Baru</h1>
+        <h1 class="form-title">Buat Unggahan Baru</h1>
         <p class="form-subtitle">Isi detail untuk item repositori baru.</p>
 
         <!-- **** POINT OF CHANGE: Step 1 - Category Selection **** -->
@@ -63,7 +63,12 @@
               <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link')" class="form-section">
                 <legend>Informasi Publikasi</legend>
                 <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
+                
+                <!-- ISSN -->
+                 
                 <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
+                <div v-if="shouldShow('isbn')" class="form-group"><label for="issn">ISBN</label><input type="text" id="issn" v-model="form.issn"></div>
+                
                 <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
                 <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
               </fieldset>
@@ -126,12 +131,12 @@ const fieldConfig = {
   1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
   2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
   3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
-  4: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku
-  5: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku
+  4: ['title', 'year', 'isbn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku (kurang tempat terbit)
+  5: ['title', 'year', 'isbn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku (kurang tempat terbit)
   6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
   7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // TA
   8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
-  9: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran
+  9: ['title', 'year', 'isbn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran (kurang tempat terbit)
   10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
   11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
   12: ['title', 'year', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
@@ -300,7 +305,7 @@ export default {
         setTimeout(() => this.$router.push(`/article/${response.data.id}`), 1000);
       } catch (error) {
         if (error.response && error.response.status === 422) {
-          this.errorMessage = 'Please fix the errors below.';
+          this.errorMessage = 'Perbaiki kesalahan sebelum mengunggah.';
           this.validationErrors = error.response.data.errors;
         } else if (error.response && error.response.data.message) {
           this.errorMessage = `Error: ${error.response.data.message}`;

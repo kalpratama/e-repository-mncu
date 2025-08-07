@@ -33,7 +33,7 @@ const routes = [
     path: '/admin/articles/create',
     name: 'ArticleCreate',
     component: ArticleInputPage,
-    meta: { title: 'Unggah Artikel' }
+    meta: { title: 'Unggah Dokumen | MNCU-IR' }
   },
   {
     path: '/profile',
@@ -55,12 +55,7 @@ const routes = [
     path: '/admin/articles/:id/edit',
     name: 'ArticleEdit',
     component: ArticleEditPage,
-    meta: { title: 'Edit Artikel' },
-  },
-  {
-    path: '/category/:slug/:year',
-    name: 'CategoryYear',
-    component: YearPage,
+    meta: { title: 'Edit Dokumen | MNCU-IR' },
   },
 ];
 
@@ -70,7 +65,7 @@ const router = createRouter({
 });
 
 router.afterEach((to, from) => {
-  document.title = to.meta.title || 'Default Title';
+  document.title = to.meta.title || 'Not Found | MNCU-IR';
 });
 
 export default router;

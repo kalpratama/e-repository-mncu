@@ -11,11 +11,11 @@
     <!-- Main Content -->
     <main class="main-content">
       <div v-if="isLoading" class="loading-container">
-        <p>Memuat artikel untuk diedit...</p>
+        <p>Memuat dokumen untuk diedit...</p>
       </div>
       <div v-else class="form-container">
         <h1 class="form-title">Edit Dokumen</h1>
-        <p class="form-subtitle">Perbaharui detail dokumen </p>
+        <p class="form-subtitle">Perbarui detail dokumen </p>
 
         <form v-if="form.document_type_id" @submit.prevent="submitUpdate" enctype="multipart/form-data">
           <!-- Success Message -->
@@ -101,7 +101,7 @@
           
           <div class="form-actions">
             <button type="submit" :disabled="isSubmitting">
-                {{ isSubmitting ? 'memberpaharui...' : 'Perbaharui Dokumen' }}
+                {{ isSubmitting ? 'memperbarui  ...' : 'Perbarui Dokumen' }}
             </button>
           </div>
         </form>

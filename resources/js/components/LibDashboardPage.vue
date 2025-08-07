@@ -100,7 +100,7 @@ export default {
       if (item && item.document_type && item.document_type.name) {
         return item.document_type.name;
       }
-      return 'Tidak Ditemukan'; // Fallback text
+      return 'Tidak Ditemukan';
     },
 
     formatMeta(item) {
@@ -115,7 +115,6 @@ export default {
           }).join('; ')
         : 'Unknown Author';
 
-      // Get unique program_studi values from all authors
       const programs = item.authors
         .map(author => author.program_studi)
         .filter((prog, index, arr) => prog && arr.indexOf(prog) === index);

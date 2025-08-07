@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: 'MenuItem', // The name is important for recursive components
+  name: 'MenuItem',
   props: {
     item: {
       type: Object,
@@ -28,7 +28,6 @@ export default {
 </script>
 
 <style scoped>
-/* These styles are specific to the menu items */
 li {
   position: relative;
   list-style: none;
@@ -46,7 +45,6 @@ a {
   cursor: pointer;
 }
 li:hover > a {
-  /* background-color: #e9ecef; */
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
