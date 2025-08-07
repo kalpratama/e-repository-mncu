@@ -18,7 +18,7 @@
         <!-- Left Column -->
         <aside class="filters-column">
             <div class="content-box">
-              <h3 class="filter-title">Filter Dengan Tahun</h3>
+              <h3 class="filter-title">Filter Tahun</h3>
               <div v-if="years.length > 0" class="filter-group">
                 <div v-for="year in years" :key="year" class="checkbox-item">
                   <input type="checkbox" :id="'year-' + year" :value="year" v-model="selectedYears" @change="fetchCategoryData">
@@ -38,7 +38,7 @@
               <p v-else>Tidak ada program studi yang tersedia.</p>
             </div>
             <div v-if="roles.length > 1" class="content-box roles-filter">
-              <h3 class="filter-title">Filter Author Role</h3>
+              <h3 class="filter-title">Filter Role Penulis</h3>
               <div class="filter-group">
                 <div v-for="role in roles" :key="role" class="checkbox-item">
                   <input type="checkbox" :id="'role-' + role" :value="role" :checked="selectedRoles.includes(role)" @change="filterByRole(role)">
@@ -154,30 +154,28 @@ export default {
     },
     formatMeta(item) {
       if (!item) return '';
-
-      // Format each author as "LastName, FirstName"
+      
       const authors = item.authors && item.authors.length > 0
         ? item.authors.map(author => {
-            const parts = author.name.trim().split(/\s+/);
-            if (parts.length >= 2) {
-              const lastName = parts.pop();
-              const firstName = parts.join(' ');
-              return `${lastName}, ${firstName}`;
-            } else {
-              return parts[0]; // Single-word name
-            }
-          }).join(', ')
+            const parts = author.name.trim().split(' ');
+            const firstName = parts.slice(0, -1).join(' ');
+            const lastName = parts.slice(-1)[0];
+            return `${lastName}, ${firstName}`;
+          }).join('; ')
         : 'Unknown Author';
 
+      // Get unique program_studi values from all authors
+      const programs = item.authors
+        .map(author => author.program_studi)
+        .filter((prog, index, arr) => prog && arr.indexOf(prog) === index);
+
       let detailsInParens = [];
-      if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
+      if (programs.length > 0) detailsInParens.push(programs.join(', '));
       if (item.year) detailsInParens.push(item.year);
 
-      if (detailsInParens.length > 0) {
-        return `${authors} (${detailsInParens.join(', ')})`;
-      }
-
-      return authors;
+      return detailsInParens.length > 0
+        ? `${authors} (${detailsInParens.join(', ')})`
+        : authors;
     },
     truncateAbstract(text, wordLimit = 20) {
       if (!text) return '';

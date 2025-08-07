@@ -23,7 +23,7 @@ export default {
     },
     placeholder: {
       type: String,
-      default: 'Cari di repositori...'
+      default: 'Cari di MNCU-IR'
     }
   },
   data() {

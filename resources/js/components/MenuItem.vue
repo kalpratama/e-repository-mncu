@@ -37,7 +37,7 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.35rem 1rem;
+  padding: 0.2rem 1rem;
   text-decoration: none;
   color: #1F3D7B;
   border-radius: 5px;

@@ -138,42 +138,54 @@ export default {
 
     formatMeta(item) {
       if (!item) return '';
-
-      // Format each author as "LastName, FirstName"
-      const authors = item.authors && item.authors.length > 0 
+      
+      const authors = item.authors && item.authors.length > 0
         ? item.authors.map(author => {
-            const parts = author.name.trim().split(/\s+/);
-            if (parts.length >= 2) {
-              const lastName = parts.pop();
-              const firstName = parts.join(' ');
-              return `${lastName}, ${firstName}`;
-            } else {
-              return parts[0]; // Single-word name
-            }
-          }).join(', ')
+            const parts = author.name.trim().split(' ');
+            const firstName = parts.slice(0, -1).join(' ');
+            const lastName = parts.slice(-1)[0];
+            return `${lastName}, ${firstName}`;
+          }).join('; ')
         : 'Unknown Author';
 
+      // Get unique program_studi values from all authors
+      const programs = item.authors
+        .map(author => author.program_studi)
+        .filter((prog, index, arr) => prog && arr.indexOf(prog) === index);
+
       let detailsInParens = [];
-      if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
+      if (programs.length > 0) detailsInParens.push(programs.join(', '));
       if (item.year) detailsInParens.push(item.year);
 
-      if (detailsInParens.length > 0) {
-        return `${authors} (${detailsInParens.join(', ')})`;
-      }
-
-      return authors;
+      return detailsInParens.length > 0
+        ? `${authors} (${detailsInParens.join(', ')})`
+        : authors;
     },
-    // formatMeta(item) { 
+    // formatMeta(item) {
     //   if (!item) return '';
+
+    //   // Format each author as "LastName, FirstName"
     //   const authors = item.authors && item.authors.length > 0 
-    //     ? item.authors.map(author => author.name).join(', ') 
+    //     ? item.authors.map(author => {
+    //         const parts = author.name.trim().split(/\s+/);
+    //         if (parts.length >= 2) {
+    //           const lastName = parts.pop();
+    //           const firstName = parts.join(' ');
+    //           return `${lastName}, ${firstName}`;
+    //         } else {
+    //           return parts[0]; // Single-word name
+    //         }
+    //       }).join(', ')
     //     : 'Unknown Author';
+
     //   let detailsInParens = [];
     //   if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
     //   if (item.year) detailsInParens.push(item.year);
+
     //   if (detailsInParens.length > 0) {
     //     return `${authors} (${detailsInParens.join(', ')})`;
     //   }
+
     //   return authors;
     // },
     previewDocument() {
@@ -308,6 +320,7 @@ export default {
 
 .article-details {
   flex: 2; /* Takes up more space */
+  overflow-x: auto;
 }
 
 .right-column {
