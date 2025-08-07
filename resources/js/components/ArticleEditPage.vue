@@ -17,14 +17,14 @@
         <h1 class="form-title">Edit Dokumen</h1>
         <p class="form-subtitle">Perbaharui detail dokumen </p>
 
-        <form @submit.prevent="submitUpdate" enctype="multipart/form-data">
-          <!-- Success/Error Messages -->
+        <form v-if="form.document_type_id" @submit.prevent="submitUpdate" enctype="multipart/form-data">
+          <!-- Success Message -->
           <div v-if="successMessage" class="message success-message">
             {{ successMessage }}
           </div>
+          <!-- Error Message -->
           <div v-if="errorMessage" class="message error-message">
-            <p>{{ errorMessage }}</p>
-            <ul v-if="validationErrors"><li v-for="(error, key) in validationErrors" :key="key">{{ error[0] }}</li></ul>
+            {{ errorMessage }}
           </div>
 
           <div class="form-columns">
@@ -36,32 +36,13 @@
                   <label for="title">Judul</label>
                   <input type="text" id="title" v-model="form.title" required>
                 </div>
-                <div class="form-group">
-                  <label>Kategori Tingkat 1</label>
-                  <select v-model="selectedLevel1" required>
-                    <option disabled value="">Pilih Tipe</option>
-                    <option v-for="type in documentTypes" :key="type.id" :value="type">{{ type.name }}</option>
-                  </select>
-                </div>
-                <div v-if="level2Options.length > 0" class="form-group">
-                  <label>Kategori Tingkat 2</label>
-                  <select v-model="selectedLevel2" required>
-                    <option disabled value="">Pilih Sub-Tipe</option>
-                    <option v-for="type in level2Options" :key="type.id" :value="type">{{ type.name }}</option>
-                  </select>
-                </div>
-                <div v-if="level3Options.length > 0" class="form-group">
-                  <label>Kategori Tingkat 3</label>
-                  <select v-model="selectedLevel3" required>
-                    <option disabled value="">Pilih Sub-Tipe</option>
-                    <option v-for="type in level3Options" :key="type.id" :value="type">{{ type.name }}</option>
-                  </select>
-                </div>
-                <div class="form-group">
+                
+                <!-- Conditionally show fields based on the selected category -->
+                <div v-if="shouldShow('year')" class="form-group">
                   <label for="year">Tahun</label>
-                  <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2024">
+                  <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2025">
                 </div>
-                <div class="form-group">
+                <div v-if="shouldShow('abstract')" class="form-group">
                   <label for="abstract">Abstrak / Deskripsi</label>
                   <textarea id="abstract" v-model="form.abstract" rows="8"></textarea>
                 </div>
@@ -70,32 +51,48 @@
 
             <!-- Right Column -->
             <div class="form-column">
-              <fieldset class="form-section">
+              <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link')" class="form-section">
                 <legend>Informasi Publikasi</legend>
-                <div class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
-                <div class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
-                <!-- <div class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div> -->
-                <div class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
+                <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
+                <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
+                <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
+                <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
               </fieldset>
 
               <fieldset class="form-section">
                 <!-- <legend>Penulis</legend> -->
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
-                  <div class="form-group"><label :for="'author_name_' + index">Nama Penulis</label><input :id="'author_name_' + index" type="text" v-model="author.name" required></div>
-                  <div class="form-group"><label :for="'author_id_' + index">NIM/NIK</label><input :id="'author_id_' + index" type="text" v-model="author.identifier"></div>
-                  
-                  <div class="form-group">
-                    <label :for="'program_studi_' + index">Program Studi</label>
-                    <input type="text" :id="'program_studi_' + index" v-model="author.program_studi">
+                  <div class="form-group"><label>Nama Penulis</label><input type="text" v-model="author.name" required></div>
+                  <div v-if="shouldShow('identifier')" class="form-group"><label>Nomor Induk</label><input type="text" v-model="author.identifier"></div>
+                  <div v-if="shouldShow('program_studi')" class="form-group">
+                    <label>Program Studi</label>
+                    <select v-model="author.program_studi">
+                      <option value="Manajemen">Manajemen</option>
+                      <option value="Akuntansi">Akuntansi</option>
+                      <option value="Pendidikan Matematika">Pendidikan Matematika</option>
+                      <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
+                      <option value="Sains Komunikasi">Sains Komunikasi</option>
+                      <option value="DKV">DKV</option>
+                      <option value="Sistem Informasi">Sistem Informasi</option>
+                      <option value="Ilmu Komputer">Ilmu Komputer</option>
+                    </select>
+                  </div>
+                  <div v-if="shouldShow('role')" class="form-group">
+                    <label>Role</label>
+                    <select v-model="author.role">
+                      <option value="Dosen">Dosen</option>
+                      <option value="Mahasiswa">Mahasiswa</option>
+                    </select>
                   </div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
                 <button type="button" @click="addAuthor" class="add-btn">Tambah Penulis</button>
               </fieldset>
 
-              <fieldset class="form-section">
+              <fieldset v-if="shouldShow('file_path')" class="form-section">
+                <!-- <legend>Unggah Dokumen</legend> -->
                 <div class="form-group">
-                  <label for="document_file">Unggah Dokumen (PDF, maks 10MB)</label>
+                  <label for="document_file">Unggah Dokumen (PDF, max 10MB)</label>
                   <input type="file" id="document_file" @change="handleFileUpload" accept=".pdf">
                 </div>
               </fieldset>
@@ -116,6 +113,28 @@
 <script>
 import Header from './Header.vue';
 import axios from 'axios';
+
+const fieldConfig = {
+  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
+  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
+  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
+  4: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku
+  5: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku
+  6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
+  7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // TA
+  8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
+  9: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran
+  10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
+  11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
+  12: ['title', 'year', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
+  13: ['title', 'year', 'authors', 'program_studi', 'file_path'],// Dokumentasi Prestasi mhs
+
+  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
+  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
+  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internal
+  17: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Majalah
+  18: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Koran
+};
 
 export default {
   components: { 
@@ -152,11 +171,18 @@ export default {
     };
   },
   computed: {
-    level2Options() {
-      return this.selectedLevel1?.children || [];
-    },
-    level3Options() {
-      return this.selectedLevel2?.children || [];
+    flatDocumentTypes() {
+      const flatten = (types) => {
+        let list = [];
+        for (const type of types) {
+          list.push({ id: type.id, name: type.name });
+          if (type.children) {
+            list = list.concat(flatten(type.children));
+          }
+        }
+        return list;
+      };
+      return flatten(this.documentTypes);
     }
   },
   watch: {
@@ -165,6 +191,14 @@ export default {
     selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
   },
   methods: {
+    shouldShow(fieldName) {
+      if (!this.form.document_type_id) return false;
+      const fields = fieldConfig[this.form.document_type_id];
+      return fields ? fields.includes(fieldName) : false;
+    },
+    onTypeChange() {
+      this.resetForm(this.form.document_type_id);
+    },
     async loadInitialData() {
       this.isLoading = true;
       const articleId = this.$route.params.id;
@@ -227,21 +261,67 @@ export default {
 
     
     addAuthor() {
-      this.form.authors.push({ name: '', identifier: '', program_studi: '' });
+      this.form.authors.push({ name: '', identifier: '', program_studi: '', role: '' });
     },
     removeAuthor(index) {
       if (this.form.authors.length > 1) {
         this.form.authors.splice(index, 1);
+      } else {
+        alert('Harus ada minimal satu penulis.');
       }
+    },
+    resetForm(selectedTypeId = '') {
+      this.form = {
+        title: '',
+        document_type_id: selectedTypeId,
+        abstract: '',
+        year: null,
+        publisher: '',
+        issn: '',
+        conference_name: '',
+        publication_link: '',
+        authors: [{ name: '', identifier: '', program_studi: '', role: '' }],
+        document_file: null,
+      };
+    },
+    hasOverlongWord(input){
+      return /\S{30,}/.test(input);
     },
     async submitUpdate() {
       this.isSubmitting = true;
       this.successMessage = '';
       this.errorMessage = '';
       this.validationErrors = null;
+      const formData = new FormData();
       const articleId = this.$route.params.id;
+      const fieldsToCheck = ['title', 'abstract', 'publisher', 'conference_name'];
+      const overlongInput = fieldsToCheck.find(field => this.hasOverlongWord(this.form[field]));
+      if (overlongInput) {
+        this.isSubmitting = false;
+        this.errorMessage = `"${overlongInput}" tidak boleh memiliki kata lebih dari 30 karakter tanpa spasi.`;
+        return;
+      }
+      Object.keys(this.form).forEach(key => {
+        if (key === 'authors') {
+          this.form.authors.forEach((author, index) => {
+            formData.append(`authors[${index}][name]`, author.name);
+            formData.append(`authors[${index}][identifier]`, author.identifier);
+            formData.append(`authors[${index}][program_studi]`, author.program_studi);
+            formData.append(`authors[${index}][role]`, author.role);
+          });
+        } else if (this.form[key] !== null) {
+          formData.append(key, this.form[key]);
+        }
+      });
+        if (this.form.document_file) {
+          formData.append('document_file', this.form.document_file);
+        }
+
       try {
-        const response = await axios.put(`/api/articles/${articleId}`, this.form);
+        const response = await axios.post(`/api/articles/${articleId}?_method=PUT`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
         this.successMessage = `Document "${response.data.title}" updated successfully!`;
         // Redirect back to the article page after a short delay
         setTimeout(() => this.$router.push(`/article/${articleId}`), 2000);

@@ -36,7 +36,7 @@
             <div class="recent-publications">
               <p v-if="recentPublications.length === 0">Belum ada publikasi terbaru.</p>
               <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in recentPublications" :key="item.id">
-                <p class="meta">Kategori: {{ formatCategory(item) }}</p>
+                <p class="meta kategori">Kategori: {{ formatCategory(item) }}</p>
                 <h3>{{ item.title }}</h3>
                 <!-- The author names are now formatted by a helper method -->
                 <p class="meta">{{ formatMeta(item) }}</p>
@@ -105,44 +105,29 @@ export default {
 
     formatMeta(item) {
       if (!item) return '';
-
-      // Format each author as "LastName, FirstName"
-      const authors = item.authors && item.authors.length > 0 
+      
+      const authors = item.authors && item.authors.length > 0
         ? item.authors.map(author => {
-            const parts = author.name.trim().split(/\s+/);
-            if (parts.length >= 2) {
-              const lastName = parts.pop();
-              const firstName = parts.join(' ');
-              return `${lastName}, ${firstName}`;
-            } else {
-              return parts[0]; // Single-word name
-            }
-          }).join(', ')
+            const parts = author.name.trim().split(' ');
+            const firstName = parts.slice(0, -1).join(' ');
+            const lastName = parts.slice(-1)[0];
+            return `${lastName}, ${firstName}`;
+          }).join('; ')
         : 'Unknown Author';
 
+      // Get unique program_studi values from all authors
+      const programs = item.authors
+        .map(author => author.program_studi)
+        .filter((prog, index, arr) => prog && arr.indexOf(prog) === index);
+
       let detailsInParens = [];
-      if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
+      if (programs.length > 0) detailsInParens.push(programs.join(', '));
       if (item.year) detailsInParens.push(item.year);
 
-      if (detailsInParens.length > 0) {
-        return `${authors} (${detailsInParens.join(', ')})`;
-      }
-
-      return authors;
+      return detailsInParens.length > 0
+        ? `${authors} (${detailsInParens.join(', ')})`
+        : authors;
     },
-    // formatMeta(item) {
-    //   if (!item) return '';
-    //   const authors = item.authors && item.authors.length > 0 
-    //     ? item.authors.map(author => author.name).join(', ') 
-    //     : 'Unknown Author';
-    //   let detailsInParens = [];
-    //   if (item.authors[0]?.program_studi) detailsInParens.push(item.authors[0].program_studi);
-    //   if (item.year) detailsInParens.push(item.year);
-    //   if (detailsInParens.length > 0) {
-    //     return `${authors} (${detailsInParens.join(', ')})`;
-    //   }
-    //   return authors;
-    // },
     truncateAbstract(text, wordLimit = 30) {
       if (!text) return '';
       const words = text.split(' ');
@@ -281,7 +266,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.3rem 1rem;
+  padding: .3rem, 1rem;
   text-decoration: none;
   border-radius: 5px;
   box-shadow: 0 4px 5px rgba(0,0,0,0.15);
@@ -336,7 +321,7 @@ a.publication-item {
   text-decoration: none;
   color: inherit;
   padding: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: .5rem;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -360,7 +345,7 @@ a.publication-item:hover h3 {
 .publication-item .meta {
   font-size: 0.85rem;
   color: #666;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.2rem 0;
 }
 .publication-item .description {
   font-size: 0.95rem;

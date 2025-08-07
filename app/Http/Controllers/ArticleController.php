@@ -19,15 +19,15 @@ class ArticleController extends Controller
             'document_type_id' => 'required|exists:document_types,id',
             'abstract' => 'nullable|string',
             'year' => 'nullable|integer|digits:4',
-            'publisher' => 'nullable|string|max:255',
-            'issn' => 'nullable|string|max:255',
-            'conference_name' => 'nullable|string|max:255',
+            'publisher' => 'nullable|string|max:100',
+            'issn' => 'nullable|string|min:8|max:13',
+            'conference_name' => 'nullable|string|max:100',
             'publication_link' => 'nullable|url|max:255',
             'authors' => 'required|array|min:1',
-            'authors.*.name' => 'required|string|max:255',
-            'authors.*.identifier' => 'nullable|string|max:255',
-            'authors.*.program_studi' => 'nullable|string|max:255',
-            'authors.*.role' => 'nullable|string|max:255', // New field for author role
+            'authors.*.name' => 'required|string|max:50',
+            'authors.*.identifier' => 'nullable|string|max:20',
+            'authors.*.program_studi' => 'nullable|string|max:50',
+            'authors.*.role' => 'nullable|string|max:10', // New field for author role
             'document_file' => 'nullable|file|mimes:pdf|max:10240', // Max 10MB PDF
         ]);
 

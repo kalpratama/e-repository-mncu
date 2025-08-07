@@ -16,9 +16,9 @@
 
         <!-- **** POINT OF CHANGE: Step 1 - Category Selection **** -->
         <div class="form-group">
-          <label for="document_type">Document Type</label>
+          <label for="document_type">Tipe Dokumen</label>
           <select id="document_type" v-model="form.document_type_id" @change="onTypeChange" required>
-            <option disabled value="">Please select one</option>
+            <option disabled value="">Silakan pilih satu</option>
             <option v-for="type in flatDocumentTypes" :key="type.id" :value="type.id">
               {{ type.name }}
             </option>
@@ -27,23 +27,32 @@
 
         <!-- **** POINT OF CHANGE: Step 2 - The rest of the form, shown conditionally **** -->
         <form v-if="form.document_type_id" @submit.prevent="submitArticle" enctype="multipart/form-data">
+          <!-- Success Message -->
+          <div v-if="successMessage" class="message success-message">
+            {{ successMessage }}
+          </div>
+          <!-- Error Message -->
+          <div v-if="errorMessage" class="message error-message">
+            {{ errorMessage }}
+          </div>
+
           <div class="form-columns">
             <!-- Left Column -->
             <div class="form-column">
               <fieldset class="form-section">
-                <legend>Document Details</legend>
+                <legend>Detail Dokumen</legend>
                 <div class="form-group">
-                  <label for="title">Title</label>
+                  <label for="title">Judul</label>
                   <input type="text" id="title" v-model="form.title" required>
                 </div>
                 
                 <!-- Conditionally show fields based on the selected category -->
                 <div v-if="shouldShow('year')" class="form-group">
-                  <label for="year">Year</label>
+                  <label for="year">Tahun</label>
                   <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2025">
                 </div>
                 <div v-if="shouldShow('abstract')" class="form-group">
-                  <label for="abstract">Abstract / Description</label>
+                  <label for="abstract">Abstrak / Deskripsi</label>
                   <textarea id="abstract" v-model="form.abstract" rows="8"></textarea>
                 </div>
               </fieldset>
@@ -52,17 +61,17 @@
             <!-- Right Column -->
             <div class="form-column">
               <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link')" class="form-section">
-                <legend>Publication Info</legend>
-                <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Publisher</label><input type="text" id="publisher" v-model="form.publisher"></div>
+                <legend>Informasi Publikasi</legend>
+                <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
                 <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
-                <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Conference Name</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
-                <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Publication Link</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
+                <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
+                <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
               </fieldset>
 
               <fieldset class="form-section">
-                <legend>Authors</legend>
+                <!-- <legend>Penulis</legend> -->
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
-                  <div class="form-group"><label>Author Name</label><input type="text" v-model="author.name" required></div>
+                  <div class="form-group"><label>Nama Penulis</label><input type="text" v-model="author.name" required></div>
                   <div v-if="shouldShow('identifier')" class="form-group"><label>Nomor Induk</label><input type="text" v-model="author.identifier"></div>
                   <div v-if="shouldShow('program_studi')" class="form-group">
                     <label>Program Studi</label>
@@ -86,13 +95,13 @@
                   </div>
                   <button type="button" @click="removeAuthor(index)" class="remove-btn">&times;</button>
                 </div>
-                <button type="button" @click="addAuthor" class="add-btn">Add Author</button>
+                <button type="button" @click="addAuthor" class="add-btn">Tambah Penulis</button>
               </fieldset>
 
               <fieldset v-if="shouldShow('file_path')" class="form-section">
-                <legend>File Upload</legend>
+                <!-- <legend>Unggah Dokumen</legend> -->
                 <div class="form-group">
-                  <label for="document_file">Upload Document (PDF only, max 10MB)</label>
+                  <label for="document_file">Unggah Dokumen (PDF, max 10MB)</label>
                   <input type="file" id="document_file" @change="handleFileUpload" accept=".pdf">
                 </div>
               </fieldset>
@@ -100,7 +109,7 @@
           </div>
           
           <div class="form-actions">
-            <button type="submit" :disabled="isSubmitting">{{ isSubmitting ? 'Submitting...' : 'Submit Document' }}</button>
+            <button type="submit" :disabled="isSubmitting">{{ isSubmitting ? 'Mengunggah...' : 'Unggah' }}</button>
           </div>
         </form>
 
@@ -156,6 +165,7 @@ export default {
         publication_link: '',
         authors: [{ name: '', identifier: '', program_studi: '', role: '' }], // Default role set to 'Dosen'
         document_file: null,
+        fileError: '' // For file upload error messages
       },
       documentTypes: [],
       selectedLevel1: '', 
@@ -169,7 +179,6 @@ export default {
   },
 
   computed: {
-    // A helper to flatten the nested document types for the initial dropdown
     flatDocumentTypes() {
       const flatten = (types) => {
         let list = [];
@@ -184,29 +193,14 @@ export default {
       return flatten(this.documentTypes);
     }
   },
-  // computed: {
-  //   level2Options() {
-  //     return this.selectedLevel1?.children || [];
-  //   },
-  //   level3Options() {
-  //     return this.selectedLevel2?.children || [];
-  //   }
-  // },
-  // watch: {
-  //   selectedLevel1(v) { this.selectedLevel2 = ''; this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
-  //   selectedLevel2(v) { this.selectedLevel3 = ''; this.form.document_type_id = (v && !v.children?.length) ? v.id : null; },
-  //   selectedLevel3(v) { if(v) this.form.document_type_id = v.id; }
-  // },
 
   methods: {
-    // **** POINT OF CHANGE: Method to check if a field should be shown ****
     shouldShow(fieldName) {
       if (!this.form.document_type_id) return false;
       const fields = fieldConfig[this.form.document_type_id];
       return fields ? fields.includes(fieldName) : false;
     },
     onTypeChange() {
-      // When the type changes, reset the form to avoid carrying over old data
       this.resetForm(this.form.document_type_id);
     },
     async fetchDocumentTypes() {
@@ -222,19 +216,17 @@ export default {
       this.fileError = '';
       
       if (file) {
-        // Validate file type
         if (file.type !== 'application/pdf') {
           this.fileError = 'Hanya file PDF yang diperbolehkan';
-          event.target.value = ''; // Clear the input
+          event.target.value = '';
           this.form.document_file = null;
           return;
         }
         
-        // Validate file size (10MB = 10 * 1024 * 1024 bytes)
         const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
           this.fileError = 'Ukuran file maksimal 10MB';
-          event.target.value = ''; // Clear the input
+          event.target.value = '';
           this.form.document_file = null;
           return;
         }
@@ -243,9 +235,6 @@ export default {
         console.log('File selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
       }
     },
-    // handleFileUpload(event){
-    //   this.form.document_file = event.target.files[0];
-    // },
     addAuthor(){
       this.form.authors.push({ name: '', identifier: '', program_studi: '', role: '' });
     },
@@ -270,24 +259,22 @@ export default {
         document_file: null,
       };
     },
-    // resetForm(){
-    //   this.form = {
-    //     title: '', document_type_id: '', abstract: '', year: null,
-    //         publisher: '', issn: '', conference_name: '', publication_link: '',
-    //         authors: [{ name: '', identifier: '', program_studi: '' }],
-    //         document_file: null,
-    //     };
-    //     this.selectedLevel1 = '';
-    //     this.selectedLevel2 = '';
-    //     this.selectedLevel3 = '';
-    //     document.getElementById('document_file').value = '';
-    // },
+    hasOverlongWord(input){
+      return /\S{30,}/.test(input);
+    },
     async submitArticle() {
       this.isSubmitting = true;
       this.successMessage = '';
       this.errorMessage = '';
       this.validationErrors = null;
       const formData = new FormData();
+      const fieldsToCheck = ['title', 'abstract', 'publisher', 'conference_name'];
+      const overlongInput = fieldsToCheck.find(field => this.hasOverlongWord(this.form[field]));
+      if (overlongInput) {
+        this.isSubmitting = false;
+        this.errorMessage = `"${overlongInput}" tidak boleh memiliki kata lebih dari 30 karakter tanpa spasi.`;
+        return;
+      }
       Object.keys(this.form).forEach(key => {
         if (key === 'authors') {
           this.form.authors.forEach((author, index) => {
@@ -299,11 +286,10 @@ export default {
         } else if (this.form[key] !== null) {
           formData.append(key, this.form[key]);
         }
-
+      });
         if (this.form.document_file) {
           formData.append('document_file', this.form.document_file);
         }
-      });
 
       try {
         const response = await axios.post('/api/articles', formData, {
@@ -311,7 +297,7 @@ export default {
         });
         this.successMessage = `Document "${response.data.title}" created successfully!`;
         this.resetForm();
-        setTimeout(() => this.$router.push(`/article/${response.data.id}`), 2000);
+        setTimeout(() => this.$router.push(`/article/${response.data.id}`), 1000);
       } catch (error) {
         if (error.response && error.response.status === 422) {
           this.errorMessage = 'Please fix the errors below.';
@@ -326,7 +312,9 @@ export default {
       }
     },
   },
-  created() { this.fetchDocumentTypes(); }
+  created() { 
+    this.fetchDocumentTypes(); 
+  }
 }
 </script>
 
