@@ -247,10 +247,16 @@ a.publication-item:hover h3 { text-decoration: underline; }
 
 @media (max-width: 768px) {
   .main-content {
-    padding: 1rem;
+    padding: 0rem;
+    padding-bottom: 8rem;
   }
   .search-title {
-    font-size: 1.5rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+  .content-box.document-list{
+    border-radius: 0px;
+    padding: 1rem
   }
 }
 </style>

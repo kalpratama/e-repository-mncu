@@ -80,7 +80,20 @@ li:hover > .dropdown-menu {
     left: 3rem;
     top: 100%;
     margin: 5px 0 0 0;
-    width: 100%;
+    width: 30%;
+  }
+  .dropdown-menu .dropdown-menu {
+    left: 3rem;
+    top: -1px;
+    margin: 0 0 0 5px;
+  }
+}
+@media (max-width: 768px){
+  .dropdown-menu {
+    left: 3rem;
+    top: 100%;
+    margin: 5px 0 0 0;
+    width: 30%;
   }
   .dropdown-menu .dropdown-menu {
     left: 3rem;

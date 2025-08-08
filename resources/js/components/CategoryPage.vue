@@ -1,5 +1,6 @@
 <template>
   <div class="page-body">
+    <!-- Top Header -->
     <Header 
       :is-logged-in="isLoggedIn" 
       :user="user" 
@@ -14,30 +15,10 @@
         <p>Memuat Dokumen...</p>
       </div>
       
-      <div v-else class="category-container">
+      <div v-else class="content-boxes">
         <!-- Left Column -->
-        <aside class="filters-column">
-            <div class="content-box">
-              <h3 class="filter-title">Filter Tahun</h3>
-              <div v-if="years.length > 0" class="filter-group">
-                <div v-for="year in years" :key="year" class="checkbox-item">
-                  <input type="checkbox" :id="'year-' + year" :value="year" v-model="selectedYears" @change="fetchCategoryData">
-                  <label :for="'year-' + year">{{ year }}</label>
-                </div>
-              </div>
-              <p v-else>Tidak ada tahun publikasi yang tersedia.</p>
-            </div>
-            <div class="content-box">
-              <h3 class="filter-title">Filter Program Studi</h3>
-              <div v-if="programStudi.length > 0" class="filter-group">
-                <div v-for="prodi in programStudi" :key="prodi" class="checkbox-item">
-                   <input type="checkbox" :id="'prodi-' + prodi" :value="prodi" v-model="selectedProdi" @change="fetchCategoryData">
-                   <label :for="'prodi-' + prodi">{{ prodi }}</label>
-                </div>
-              </div>
-              <p v-else>Tidak ada program studi yang tersedia.</p>
-            </div>
-            <div v-if="roles.length > 1" class="content-box roles-filter">
+        <div class="content-box left-filter">
+            <div v-if="roles.length > 1" class="sub-filter">
               <h3 class="filter-title">Filter Role Penulis</h3>
               <div class="filter-group">
                 <div v-for="role in roles" :key="role" class="checkbox-item">
@@ -46,13 +27,34 @@
                 </div>
               </div>
             </div>
-          </aside>
+            <div class="sub-filter">
+              <h3 class="filter-title">Filter Program Studi</h3>
+              <div v-if="programStudi.length > 0" class="filter-group">
+                <div v-for="prodi in programStudi" :key="prodi" class="checkbox-item">
+                   <input type="checkbox" :id="'prodi-' + prodi" :value="prodi" v-model="selectedProdi" @change="fetchCategoryData">
+                   <label :for="'prodi-' + prodi">{{ prodi }}</label>
+                </div>
+              </div>
+              <p v-else>-</p>
+            </div>
+            <div class="sub-filter">
+              <h3 class="filter-title">Filter Tahun</h3>
+              <div v-if="years.length > 0" class="filter-group">
+                <div v-for="year in years" :key="year" class="checkbox-item">
+                  <input type="checkbox" :id="'year-' + year" :value="year" v-model="selectedYears" @change="fetchCategoryData">
+                  <label :for="'year-' + year">{{ year }}</label>
+                </div>
+              </div>
+              <p v-else>-</p>
+            </div>
+        </div>
 
         <!-- Right Column -->
-        <!-- Main Contents -->
-        <div class="content-box right-column">
-        <SearchBar :initial-query="searchQuery" @perform-search="navigateToSearch" />
-
+         <div class="right-column">
+          <div class="content-box search-box">
+            <SearchBar @perform-search="navigateToSearch" />
+          </div>
+            <div class="content-box document-box">
           <div v-if="documents.length > 0" class="document-list">
             <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in documents" :key="item.id">
               <h3>{{ item.title }}</h3>
@@ -62,6 +64,10 @@
           </div>
           <p v-else class="no-documents-message">Belum ada dokumen pada kategori ini.</p>
         </div>
+
+        </div>
+        <!-- Main Contents -->
+        
       </div>
     </main>
   </div>
@@ -244,7 +250,7 @@ export default {
 .main-content { 
   padding-left: 5rem;
   padding-right: 5rem;
-  padding-bottom: 3rem;
+  padding-bottom: 0rem;
   padding-top: .5rem;
 }
 .loading-container {   
@@ -253,7 +259,7 @@ export default {
     padding: 4rem; 
     font-size: 1.2rem; 
 }
-.category-container {
+.content-boxes {
   display: flex;
   flex-direction: row;
   gap: 2rem;
@@ -261,7 +267,7 @@ export default {
   margin: 0 auto;
 }
 .category-title { 
-    color: #ffffff;
+  color: #ffffff;
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
@@ -269,21 +275,18 @@ export default {
   margin-bottom: .5rem; 
 }
 .content-box { 
-    /* background-color: #ffffff;  */
-    border-radius: 8px; 
-    padding: 1.5rem 2rem; 
+    background-color: #ffffff; 
+    border-radius: 12px; 
+    padding: 1rem 2rem; 
     /* box-shadow: 0 4px 12px rgba(0,0,0,0.15);  */
 }
-.content-box {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 1.5rem 2rem;
-}
 .right-column {
+  background-color: #ffffff;
+  border-radius: 12px;
   flex: 2;
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* Space between the two boxes on the right */
+  gap: 0rem; /* Space between the two boxes on the right */
 }
 .document-list {
   max-height: 500px; /* Limit the height of this container */
@@ -293,31 +296,7 @@ export default {
 }
 .search-bar-container { 
     display: flex; 
-    gap: 0.5rem; 
-    padding-bottom: 1rem;
-}
-.search-input { 
-    flex-grow: 1; 
-    border: 1px solid #ccc; 
-    padding: 0.75rem; 
-    border-radius: 5px; 
-    font-size: 1rem; 
-}
-.search-button { 
-    width: auto; 
-    padding: 0.75rem 1.25rem; 
-    background-color: #1F3D7B; 
-    color: white; 
-    border: none; 
-    border-radius: 8px; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    transition: background-color 0.2s; 
-}
-.search-button:hover { 
-    background-color: #0056b3; 
+    gap: 0.5rem;
 }
 .document-list { 
     padding-top: 1rem; 
@@ -334,7 +313,7 @@ a.publication-item {
     color: inherit; 
     padding: 1.5rem; 
     margin-bottom: 1rem; 
-    border-radius: 6px; 
+    border-radius: 15px; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
 }
@@ -396,11 +375,10 @@ a.publication-item:hover h3 {
   font-weight: 600;
 }
 .filter-title {
-  margin-top: 0;
-  margin-bottom: .5rem;
   font-size: 1.1rem;
   font-weight: 600;
   border-bottom: 1px solid #eee;
+  padding-top: 0.75rem;
   padding-bottom: 0.5rem;
 }
 .filter-list {
@@ -428,7 +406,7 @@ a.publication-item:hover h3 {
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0rem;
 }
 .checkbox-item{
   display: flex;
@@ -452,19 +430,19 @@ li:hover  > a{
 }
 
 @media (max-width: 882px) {
-  .category-container {
-    flex-direction: column;
-  }
   .content-boxes {
     flex-direction: column;
+  }
+  .right-column {
+    display: contents; /* This makes children of .right-column direct flex items */
   }
   .search-box {
     order: -2; 
   }
-  .right-column {
+  .left-filter {
       order: -1;
-    }
-  .recent-box {
+  }
+  .document-box {
     order: 0; 
   }
   .filters-column {
@@ -475,7 +453,58 @@ li:hover  > a{
 
 @media (max-width: 768px) {
   .main-content {
+    padding: 0rem;
+  }
+  .content-box{
+    border-radius: 0px;
+  }
+  .search-box {
     padding: 1rem;
+    border-radius: 0px;
+  }
+  .right-column {
+    /* padding: 0.5rem; */
+    gap: 0rem
+  }
+  .content-boxes {
+    display: flex;
+    flex-direction: column;
+    padding: 0rem;
+    gap: 0rem;
+  }
+  .category-title {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+  a.publication-item{
+    padding: 0.65rem;
+  }
+  p.meta {
+    font-size: 0.75rem;
+  }
+  p.description {
+    font-size: 0.85rem;
+  }
+  h3{
+    font-size: 0.1rem;
+  }
+  .content-box{
+    padding: 1.5rem;
+  }
+  .document-list{
+    padding-right: 0rem;
+    overflow-y: clip;
+    max-height: 10000px;
+  }
+  .left-filter{
+    padding-left: 3rem;
+    padding-right: 3rem;
+    padding-top: 0rem;
+    padding-bottom: 0rem;
+  }
+  .filters-column {
+    justify-content: center;
+    border-radius: 0px;
   }
 }
 </style>

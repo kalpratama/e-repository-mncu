@@ -54,7 +54,11 @@
               <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link')" class="form-section">
                 <legend>Informasi Publikasi</legend>
                 <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
+                
+                <!-- ISSN -->
                 <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
+                <div v-if="shouldShow('isbn')" class="form-group"><label for="isbn">ISBN</label><input type="text" id="isbn" v-model="form.isbn"></div>
+                
                 <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
                 <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
               </fieldset>
@@ -118,12 +122,12 @@ const fieldConfig = {
   1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
   2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
   3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
-  4: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku
-  5: ['title', 'year', 'issn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku
+  4: ['title', 'year', 'isbn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku
+  5: ['title', 'year', 'isbn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku
   6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
   7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // TA
   8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
-  9: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran
+  9: ['title', 'year', 'isbn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran
   10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
   11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
   12: ['title', 'year', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
@@ -357,7 +361,7 @@ export default {
   margin: 0 auto;
   background-color: #ffffff;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 .form-title {
@@ -405,8 +409,8 @@ label {
 }
 input, select, textarea {
   border: 1px solid #ccc;
-  padding: 0.75rem;
-  border-radius: 5px;
+  padding: 0.3rem;
+  border-radius: 12px;
   font-size: 1rem;
   font-family: inherit;
   width: 100%;
@@ -429,7 +433,7 @@ button {
   background-color: #1F3D7B;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
@@ -450,7 +454,7 @@ button:disabled {
 }
 .message {
   padding: 1rem;
-  border-radius: 5px;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
   font-weight: 500;
 }
@@ -470,11 +474,47 @@ button:disabled {
   }
 }
 @media (max-width: 768px) {
+  .main-content {
+    padding: 0rem;
+  }
   .form-grid {
     grid-template-columns: 1fr;
   }
-  .main-content {
-    padding: 1rem;
+  .form-title {
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .form-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .form-columns{
+    gap: 0.5rem;
+  }
+  .form-container{
+    border-radius: 0px;
+    padding: 0.75rem;
+    padding-bottom: 8rem;
+  }
+  legend{
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  label{
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  .author-group {
+    flex-direction: column; /* Stack author fields on smaller screens */
+    gap: 0.5rem;
+    padding: 0.5rem;
+    align-items: flex-start;
+  }
+  .author-groutp input{
+    width: 100%;
+  }
+  input{
+    width: 100%;
   }
 }
 </style>

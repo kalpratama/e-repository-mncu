@@ -15,7 +15,7 @@
         <div v-if="article" class="content-box article-details">
           <div class="article-header">
             <div class="title-section">
-              <h1>{{ article.title }}</h1>
+              <h1 class="title">{{ article.title }}</h1>
               <p class="meta">{{ formatMeta(article) }}</p>
             </div>
             <!-- <div class="thumbnail-section">
@@ -306,7 +306,6 @@ export default {
   font-size: 1.25rem;
   font-weight: 600;
   align-content: center;
-  padding-bottom: 0.1rem;
 }
 
 .article-header {
@@ -512,14 +511,41 @@ export default {
     gap: 1rem;
   }
   .main-content {
-    padding: 1rem;
-    /* padding-top: 3.7rem; */
+    padding: 0rem;
   }
-  .repository-title {
-    font-size: 1.5rem;
+  .content-boxes {
+    gap: 0rem;
+  }
+  .content-box{
+    border-radius: 0px;
+    padding: 1rem;
+    /* padding-bottom: 5rem; */
   }
   .buttons-box{
     flex-direction: column;
+  }
+  .search-box{
+    border-radius: 0px;
+    padding: 1rem;
+  }
+  .article-header{
+    padding-bottom: 0rem;
+  }
+  .article-details {
+    border-radius: 0px;
+    padding: 1rem;
+  }
+  .title-section h1 {
+    font-size: 1.5rem;
+  }
+  .meta {
+    font-size: 0.8rem;
+  }
+  h2.box-title  {
+    margin-bottom: 0rem;
+  }
+  .buttons-box{
+    gap: 0.5rem
   }
 }
 </style>

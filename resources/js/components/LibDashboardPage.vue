@@ -8,14 +8,14 @@
       @logout="$emit('logout')"
     />
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
       <h1 class="repository-title">Repositori Institusional MNC University</h1>
       <div v-if ="isLoading" class="loading-container">
         <p>Memuat...</p>
       </div>
 
-      <div class="content-boxes">
+      <div v-else class="content-boxes">
         <!-- Left Column -->
         <div class="content-box left-column">
           <h2 class="box-title">Terbitan Pustaka</h2>
@@ -37,7 +37,7 @@
               <p v-if="recentPublications.length === 0">Belum ada publikasi terbaru.</p>
               <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in recentPublications" :key="item.id">
                 <p class="meta kategori">Kategori: {{ formatCategory(item) }}</p>
-                <h3>{{ item.title }}</h3>
+                <h3 class="title">{{ item.title }}</h3>
                 <!-- The author names are now formatted by a helper method -->
                 <p class="meta">{{ formatMeta(item) }}</p>
                 <p class="description">{{ truncateAbstract(item.abstract) }}</p>
@@ -171,7 +171,7 @@ export default {
 .main-content {
   padding-left: 5rem;
   padding-right: 5rem;
-  padding-bottom: 3rem;
+  padding-bottom: 0rem;
   padding-top: .5rem;
 }
 .repository-title {
@@ -197,7 +197,7 @@ export default {
 }
 .content-box {
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1.5rem 2rem; 
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
@@ -213,8 +213,8 @@ export default {
   flex: 2;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  /* justify-content: space-between; */
+  gap: 1rem;
+  justify-content: space-between;
 }
 .box-title {
   margin-top: 0;
@@ -246,71 +246,16 @@ export default {
 .search-button:hover {
   background-color: #0056b3;
 }
-
-/* --- Left Box List with Dropdowns --- */
-.publication-list {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  /* max-height: 520px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 1rem; */
+.search-box{
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
 }
-.publication-list li {
-  position: relative;
-  margin-bottom: 0.25rem;
-}
-.publication-list a {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: .3rem, 1rem;
-  text-decoration: none;
-  border-radius: 5px;
-  box-shadow: 0 4px 5px rgba(0,0,0,0.15);
-  transition: background-color 0.2s;
-  cursor: pointer;
-}
-.publication-list li:hover > a {
-  background-color: #e9ecef;
-}
-.dropdown-arrow {
-  font-size: 0.8em;
-  color: #888;
-}
-
-/* --- Dropdown Menu Styling --- */
-.dropdown-menu {
-  opacity: 0;
-  visibility: hidden;
-  position: absolute;
-  left: 100%;
-  top: -1px;
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0 5px;
-  min-width: 200px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  z-index: 10;
-  transition: visibility 0s linear 0.2s, opacity 0.2s linear;
-}
-.publication-list li:hover > .dropdown-menu {
-  visibility: visible;
-  opacity: 1;
-  transition-delay: 0s;
-}
-.recent-publications {
-  max-height: 400px; /* Limit the height of this container */
-  overflow-y: auto; /* Add vertical scrollbar only when needed */
-  padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
+li{
+  padding-top: .5rem;
 }
 /* --- Right Box List --- */
 .recent-publications {
-  max-height: 350px;
+  max-height: 420px;
   max-width: 100%;
   overflow-y: auto;
   padding-right: 1rem;
@@ -321,7 +266,7 @@ a.publication-item {
   color: inherit;
   padding: 1.5rem;
   margin-bottom: .5rem;
-  border-radius: 6px;
+  border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
@@ -418,10 +363,52 @@ button.search-button:hover {
     gap: 1rem;
   }
   .main-content {
-    padding: 1rem;
+    padding: 0rem;
   }
   .repository-title {
-    font-size: 1.5rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+  .box-title {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 0rem;
+  }
+  .content-boxes {
+    flex-direction: column;
+    gap: 0rem;
+  }
+  .search-box {
+    padding: 1rem;
+    border-radius: 0px;
+  }
+  .left-column, .recent-publication {
+    padding: 1.5rem;
+    border-radius: 0px;
+  }
+  .recent-publication{
+    padding-bottom: 13rem;
+  }
+  .recent-publications{
+    overflow-y: auto;
+    max-height: 10000px;
+    padding-right: 0rem;
+  }
+  a.publication-item{
+    padding: 0.65rem;
+    margin-bottom: 1rem
+  }
+  p.meta {
+    font-size: 0.75rem;
+  }
+  p.meta.kategori {
+    font-size: 0.75rem;
+  }
+  p.description {
+    font-size: 0.7rem;
+  }
+  h3.title{
+    font-size: 1rem;
   }
 }
 </style>

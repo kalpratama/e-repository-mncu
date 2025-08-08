@@ -91,7 +91,7 @@ export default {
   max-width: 700px;
   margin: 0 auto;
   background-color: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   overflow: hidden;
 }
@@ -164,5 +164,41 @@ export default {
   text-align: center;
   color: white;
   padding: 3rem;
+}
+
+@media (max-width: 768px) {
+  .details-title{
+    margin-bottom: 0rem;
+  }
+  .profile-container {
+    padding: 1rem;
+    border-radius: 0px;
+    box-shadow: none;
+  }
+  .profile-header{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  .profile-details {
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+  }
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+  .username {
+    font-size: 1.3rem;
+  }
+  .main-content {
+    padding:0rem;
+  }
+  .page-body {
+    background-color:#ffffff;
+  }
+  .info-grid{
+    gap: 0.5rem
+  }
 }
 </style>

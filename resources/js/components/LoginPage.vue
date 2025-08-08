@@ -80,7 +80,6 @@ export default {
   padding: 1rem;
   box-sizing: border-box;
 }
-
 .content-wrapper {
   display: flex;
   flex-direction: row;
@@ -92,7 +91,6 @@ export default {
   width: 80%;
   max-width: 1000px;
 }
-
 .logo-area {
   flex-basis: 100%;
   display: flex;
@@ -101,13 +99,11 @@ export default {
   text-align: center;
   margin-top: 2rem;
 }
-
 .logo-image {
   width: 50%;
   height: 50%;
   object-fit: contain;
 }
-
 .app-name {
   text-align: center;
   font-size: 1.5rem;
@@ -115,7 +111,6 @@ export default {
   color: #1c1c1c;
   margin: 0;
 }
-
 .company-name {
   text-align: center;
   font-size: 1rem;
@@ -123,14 +118,12 @@ export default {
   margin-top: 0.5rem;
   margin-bottom: 2rem;
 }
-
 .login-box {
   flex-basis: 90%;
   padding: 2rem;
   width: 90%;
   max-width: 400px;
 }
-
 .login-box h2 {
   text-align: center;
   margin-top: 0;
@@ -138,49 +131,42 @@ export default {
   color: #333;
   font-weight: bold;
 }
-
 .input-group {
   margin-bottom: 1.5rem;
 }
-
 .input-group label {
   display: block;
   margin-bottom: 0.5rem;
   color: #555;
   font-weight: 500;
 }
-
 .input-group input {
   width: 100%;
   padding: 0.8rem;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 12px;
   box-sizing: border-box;
   transition: border-color 0.2s;
 }
-
 .input-group input:focus {
   outline: none;
   border-color: #1F3D7B;
 }
-
 button {
   width: 100%;
   padding: 0.9rem;
   background-color: #1F3D7B;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
   transition: background-color 0.2s;
 }
-
 button:hover {
   background-color: #0056b3;
 }
-
 .error-message {
   color: #d93025;
   text-align: center;
@@ -188,20 +174,27 @@ button:hover {
   font-size: 0.9rem;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 768px) {
+  .page-container {
+    padding: 0rem;
+    background-color: #ffffff;
+  }
   .content-wrapper {
     flex-direction: column;
-    gap: 2rem;
+    gap: 0rem;
     padding: 1rem;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0px;
   }
-
   .logo-area, .login-box {
     flex-basis: 100%;
     max-width: 420px;
+    padding-top: 0rem;
   }
-
   .logo-area {
-    padding-bottom: 0;
+    margin-top: 0rem;
+    padding-bottom: 2rem;
   }
 }
 </style>

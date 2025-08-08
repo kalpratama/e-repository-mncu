@@ -16,9 +16,9 @@
 
         <!-- **** POINT OF CHANGE: Step 1 - Category Selection **** -->
         <div class="form-group">
-          <label for="document_type">Tipe Dokumen</label>
+          <label for="document_type">Kategori Dokumen</label>
           <select id="document_type" v-model="form.document_type_id" @change="onTypeChange" required>
-            <option disabled value="">Silakan pilih satu</option>
+            <option disabled value="">Pilih Kategori</option>
             <option v-for="type in flatDocumentTypes" :key="type.id" :value="type.id">
               {{ type.name }}
             </option>
@@ -64,8 +64,7 @@
                 <legend>Informasi Publikasi</legend>
                 <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
                 
-                <!-- ISSN -->
-                 
+                <!-- ISSN --> 
                 <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
                 <div v-if="shouldShow('isbn')" class="form-group"><label for="issn">ISBN</label><input type="text" id="issn" v-model="form.issn"></div>
                 
@@ -74,7 +73,7 @@
               </fieldset>
 
               <fieldset class="form-section">
-                <!-- <legend>Penulis</legend> -->
+                <legend>Penulis</legend>
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
                   <div class="form-group"><label>Nama Penulis</label><input type="text" v-model="author.name" required></div>
                   <div v-if="shouldShow('identifier')" class="form-group"><label>Nomor Induk</label><input type="text" v-model="author.identifier"></div>
@@ -104,9 +103,9 @@
               </fieldset>
 
               <fieldset v-if="shouldShow('file_path')" class="form-section">
-                <!-- <legend>Unggah Dokumen</legend> -->
+                <legend>Unggah Dokumen</legend>
                 <div class="form-group">
-                  <label for="document_file">Unggah Dokumen (PDF, max 10MB)</label>
+                  <label for="document_file">(PDF, max 10MB)</label>
                   <input type="file" id="document_file" @change="handleFileUpload" accept=".pdf">
                 </div>
               </fieldset>
@@ -388,8 +387,8 @@ label {
 }
 input, select, textarea {
   border: 1px solid #ccc;
-  padding: 0.75rem;
-  border-radius: 5px;
+  padding: 0.3rem;
+  border-radius: 12px;
   font-size: 1rem;
   font-family: inherit;
   width: 100%;
@@ -412,7 +411,7 @@ button {
   background-color: #1F3D7B;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
@@ -453,11 +452,47 @@ button:disabled {
   }
 }
 @media (max-width: 768px) {
+  .main-content {
+    padding: 0rem;
+  }
   .form-grid {
     grid-template-columns: 1fr;
   }
-  .main-content {
-    padding: 1rem;
+  .form-title {
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .form-subtitle {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  .form-columns{
+    gap: 0.5rem;
+  }
+  .form-container{
+    border-radius: 0px;
+    padding: 0.75rem;
+    padding-bottom: 8rem;
+  }
+  legend{
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  label{
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  .author-group {
+    flex-direction: column; /* Stack author fields on smaller screens */
+    gap: 0.5rem;
+    padding: 0.5rem;
+    align-items: flex-start;
+  }
+  .author-groutp input{
+    width: 100%;
+  }
+  input{
+    width: 100%;
   }
 }
 </style>

@@ -107,8 +107,8 @@ button.login-button:hover {
 
 @media (max-width: 768px) {
   .top-header {
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
   .header-content {
     flex-direction: row;

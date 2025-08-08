@@ -60,7 +60,7 @@ export default {
   flex-grow: 1;
   border: 1px solid #ccc;
   padding: 0.75rem;
-  border-radius: 5px;
+  border-radius: 15px;
   font-size: 1rem;
 }
 .search-button {
@@ -69,7 +69,7 @@ export default {
   background-color: #1F3D7B;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -82,4 +82,18 @@ export default {
 /* .search-input{
     text-align: center;
 } */
+@media (max-width: 600px) {
+  .search-input {
+    width: 100%;
+  }
+  .search-button {
+    width: 20%;
+    text-align: center;
+    padding: 0rem;
+  }
+  .search-input{
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
 </style>
