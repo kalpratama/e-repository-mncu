@@ -10,7 +10,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <h1 class="category-title">Kategori: {{ category.name }}</h1>
+      <h1 class="category-title">{{ category.name }}</h1>
       <div v-if="isLoading" class="loading-container">
         <p>Memuat Dokumen...</p>
       </div>
@@ -18,7 +18,7 @@
       <div v-else class="content-boxes">
         <!-- Left Column -->
         <div class="content-box left-filter">
-            <div v-if="roles.length > 1" class="sub-filter">
+            <div class="sub-filter">
               <h3 class="filter-title">Filter Role Penulis</h3>
               <div class="filter-group">
                 <div v-for="role in roles" :key="role" class="checkbox-item">
@@ -57,7 +57,8 @@
             <div class="content-box document-box">
           <div v-if="documents.length > 0" class="document-list">
             <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in documents" :key="item.id">
-              <h3>{{ item.title }}</h3>
+              <p v-if="isAllCategory" class="meta kategori">Kategori: {{ formatCategory(item) }}</p>
+              <h3 class="document-title">{{ item.title }}</h3>
               <p class="meta">{{ formatMeta(item) }}</p>
               <p class="description">{{ truncateAbstract(item.abstract) }}</p>
             </router-link>
@@ -95,6 +96,12 @@ export default {
       isLoading: true,
     };
   },
+  computed: {
+    isAllCategory() {
+      return this.$route.params.slug === 'all';
+    }
+  },
+
   watch: {
     '$route.params.slug': {
       handler(newSlug, oldSlug) {
@@ -112,7 +119,7 @@ export default {
   methods: {
     async fetchCategoryData() {
       this.isLoading = true;
-      const slug = this.$route.params.slug;
+      const slug = this.$route.params.slug ?? 'all';
 
       const params = new URLSearchParams();
       
@@ -149,7 +156,7 @@ export default {
         this.programStudi = response.data.program_studi;
         this.roles = response.data.roles || []; // Ensure roles is always an array
         
-        document.title = `Kategori: ${this.category.name}`;
+        document.title = `${this.category.name}`;
       } catch (error) {
         console.error("Gagal fetching data kategori:", error);
         this.category = { name: 'Tidak Ditemukan' };
@@ -182,6 +189,12 @@ export default {
       return detailsInParens.length > 0
         ? `${authors} (${detailsInParens.join(', ')})`
         : authors;
+    },
+    formatCategory(item) {
+      if (item && item.document_type && item.document_type.name) {
+        return item.document_type.name;
+      }
+      return 'Tidak Ditemukan';
     },
     truncateAbstract(text, wordLimit = 20) {
       if (!text) return '';
@@ -286,12 +299,14 @@ export default {
   flex: 2;
   display: flex;
   flex-direction: column;
-  gap: 0rem; /* Space between the two boxes on the right */
+  gap: 0rem;
 }
 .document-list {
-  max-height: 500px; /* Limit the height of this container */
-  overflow-y: auto; /* Add vertical scrollbar only when needed */
-  padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 1rem;
+  padding-left: 0.2rem;
+  padding-bottom: 0.5rem;
 
 }
 .search-bar-container { 
@@ -299,7 +314,7 @@ export default {
     gap: 0.5rem;
 }
 .document-list { 
-    padding-top: 1rem; 
+    padding-top: 0.5rem; 
 }
 .no-documents-message { 
     text-align: center; 
@@ -311,7 +326,7 @@ a.publication-item {
     display: block; 
     text-decoration: none; 
     color: inherit; 
-    padding: 1.5rem; 
+    padding: 1rem; 
     margin-bottom: 1rem; 
     border-radius: 15px; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
@@ -409,8 +424,19 @@ a.publication-item:hover h3 {
   gap: 0rem;
 }
 .checkbox-item{
+  /* display: flex;
+  gap: 0.5rem; */
   display: flex;
-  gap: 0.5rem;
+  /* justify-content: space-between; */
+  padding-left: 0.5rem;
+  align-items: center;
+  text-decoration: none;
+  /* color: #1F3D7B; */
+  border-radius: 5px;
+  box-shadow: 0 4px 5px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin-bottom: 0.1rem;
+  cursor: pointer;
 }
 a {
   display: flex;
@@ -421,9 +447,14 @@ a {
   border-radius: 5px;
   box-shadow: 0 4px 5px rgba(0,0,0,0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  cursor: pointer;
 }
-li:hover  > a{
+label{
+  padding-left: 1rem;
+  width: 100%;
+  cursor: pointer;
+  padding: 0.2rem 1rem;
+}
+.checkbox-item:hover{
   /* background-color: #e9ecef; */
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
@@ -480,13 +511,10 @@ li:hover  > a{
     padding: 0.65rem;
   }
   p.meta {
-    font-size: 0.75rem;
+    font-size: small;
   }
   p.description {
-    font-size: 0.85rem;
-  }
-  h3{
-    font-size: 0.1rem;
+    font-size: small;
   }
   .content-box{
     padding: 1.5rem;
@@ -496,9 +524,18 @@ li:hover  > a{
     overflow-y: clip;
     max-height: 10000px;
   }
+  h3.document-title{
+    font-size: medium;
+  }
+  .filter-title {
+    font-size: 1rem;
+  }
+  label{
+    font-size: small;
+  }
   .left-filter{
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
     padding-top: 0rem;
     padding-bottom: 0rem;
   }

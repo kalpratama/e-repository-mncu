@@ -20,6 +20,10 @@ class Document extends Model
         'publication_link',
         'file_path',
         'authors', // This will be handled via a pivot table, so it's not directly fill
+        'location',
+        'achievement_type',
+        'championship',
+        'champ_ranking',
         // Add other fields here as you expand your form
     ];
 

@@ -34,12 +34,36 @@ export default {
   },
   methods: {
     submitSearch() {
-      if (this.internalQuery.trim()) {
-        // When submitted, it emits an event to the parent page with the query
-        this.$emit('perform-search', this.internalQuery);
+      const query = this.internalQuery.trim();
+
+      // 1. Empty check
+      if (!query) {
+        this.errorMessage = "Kata kunci tidak boleh kosong.";
+        return;
       }
+
+      // 2. Check for any single word longer than 30 chars
+      if (this.hasOverlongWord(query)) {
+        this.errorMessage = "Tidak boleh ada kata lebih dari 30 karakter tanpa spasi.";
+        return;
+      }
+
+      // 3. Limit overall query length (prevent paragraph searches)
+      if (query.length > 100) {
+        this.errorMessage = "Kata kunci terlalu panjang, maksimum 100 karakter.";
+        return;
+      }
+
+      // Passed validation → emit search
+      this.errorMessage = "";
+      this.$emit("perform-search", query);
+    },
+
+    hasOverlongWord(input) {
+      return /\S{30,}/.test(input);
     }
   },
+
   watch: {
     // If the parent page's query changes (e.g., browser back button), update the input
     initialQuery(newQuery) {

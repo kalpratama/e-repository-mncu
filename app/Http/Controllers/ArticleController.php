@@ -13,7 +13,6 @@ class ArticleController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the incoming data, including the new fields and file
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'document_type_id' => 'required|exists:document_types,id',
@@ -27,28 +26,28 @@ class ArticleController extends Controller
             'authors.*.name' => 'required|string|max:50',
             'authors.*.identifier' => 'nullable|string|max:20',
             'authors.*.program_studi' => 'nullable|string|max:50',
-            'authors.*.role' => 'nullable|string|max:10', // New field for author role
+            'authors.*.role' => 'nullable|string|max:10',
             'document_file' => 'nullable|file|mimes:pdf|max:10240', // Max 10MB PDF
+            
+            'location' => 'nullable|string|max:100',
+            'achievement_type' => 'nullable|string|max:100',
+            'championship' => 'nullable|string|max:100',
+            'champ_ranking' => 'nullable|string|max:100',
         ]);
 
-        // Use a database transaction to ensure data integrity
         return DB::transaction(function () use ($request, $validatedData) {
             $filePath = null;
             if ($request->hasFile('document_file')) {
-                // Store the file in 'storage/app/public/documents' and get its path
                 $filePath = $request->file('document_file')->store('documents', 'public');
             }
-            $documentData = Arr::except($validatedData, ['authors', 'document_file']);
-            // $document = Document::create(array_merge($documentData, ['file_path' => $filePath]));
             $document = Document::create(array_merge(
                 Arr::except($validatedData, ['authors', 'document_file']),
                 ['file_path' => $filePath]
             ));
 
-            // Process the authors
             $authorIds = [];
             foreach ($validatedData['authors'] as $authorData) {
-                $author = Author::updateOrCreate( // Use updateOrCreate to handle existing authors
+                $author = Author::updateOrCreate(
                     ['identifier' => $authorData['identifier']],
                     [
                         'name' => $authorData['name'],
@@ -59,49 +58,45 @@ class ArticleController extends Controller
                 $authorIds[] = $author->id;
             }
 
-            // Attach the authors to the document
             $document->authors()->sync($authorIds);
 
-            // Return a success response with the new document and its authors
             return response()->json($document->load('authors'), 201);
         });
     }
 
-    public function show(Document $document)
-    {
-        return $document->load('authors', 'DocumentType');
-    }
-
-    public function download(Document $document)
-    {
-        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
-            return response()->download(storage_path('app/public/' . $document->file_path));
-        }
-        return response()->json(['message' => 'File not found.'], 404);
-    }
-
     public function update(Request $request, Document $document)
     {
-        // Validation rules are similar to the store method
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'document_type_id' => 'required|exists:document_types,id',
             'abstract' => 'nullable|string',
             'year' => 'required|integer|digits:4',
             'publisher' => 'nullable|string|max:255',
-            'issn' => 'required|string|max:255',
+            'issn' => 'nullable|string|max:255',
             'conference_name' => 'nullable|string|max:255',
             'publication_link' => 'nullable|url|max:255',
             'authors' => 'required|array|min:1',
             'authors.*.name' => 'required|string|max:255',
             'authors.*.identifier' => 'nullable|string|max:255',
             'authors.*.program_studi' => 'nullable|string|max:255',
-            'authors.*.role' => 'nullable|string|max:255', // New field for author role
+            'authors.*.role' => 'nullable|string|max:255',
+            'document_file' => 'nullable|file|mimes:pdf|max:10240', // Max 10MB PDF
+
+            'location' => 'nullable|string|max:100',
+            'achievement_type' => 'nullable|string|max:100',
+            'championship' => 'nullable|string|max:100',
+            'champ_ranking' => 'nullable|string|max:100',
         ]);
 
-        return DB::transaction(function () use ($validatedData, $document) {
+        return DB::transaction(function () use ($request, $validatedData, $document) {
+            $filePath = null;
+            if ($request->hasFile('document_file')) {
+                $filePath = $request->file('document_file')->store('documents', 'public');
+            }
             // Update the document's main fields
-            $document->update(Arr::except($validatedData, ['authors']));
+            $document->update(array_merge(Arr::except($validatedData, ['authors', 'document_file']), 
+                ['file_path' => $filePath]
+            ));
 
             // Process and sync the authors
             $authorIds = [];
@@ -119,6 +114,19 @@ class ArticleController extends Controller
 
             return response()->json($document->load('authors'), 200);
         });
+    }
+
+    public function show(Document $document)
+    {
+        return $document->load('authors', 'DocumentType');
+    }
+
+    public function download(Document $document)
+    {
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            return response()->download(storage_path('app/public/' . $document->file_path));
+        }
+        return response()->json(['message' => 'File not found.'], 404);
     }
 
     public function destroy(Document $document)

@@ -23,7 +23,7 @@
           <div v-if="results.length > 0">
             <router-link :to="'/article/' + item.id" class="publication-item" v-for="item in results" :key="item.id">
                 <p class="meta">Kategori: {{ formatCategory(item) }}</p>
-              <h3>{{ item.title }}</h3>
+              <h3 class="document-title">{{ item.title }}</h3>
               <p class="meta">{{ formatMeta(item) }}</p>
               <p class="description">{{ truncateAbstract(item.abstract) }}</p>
             </router-link>
@@ -257,6 +257,18 @@ a.publication-item:hover h3 { text-decoration: underline; }
   .content-box.document-list{
     border-radius: 0px;
     padding: 1rem
+  }
+  h3.document-title{
+    font-size: medium;
+  }
+  a.publication-item{
+    padding: 0.65rem;
+  }
+  p.meta {
+    font-size: small;
+  }
+  p.description {
+    font-size: small;
   }
 }
 </style>

@@ -17,11 +17,30 @@ export default {
     item: {
       type: Object,
       required: true
+    },
+    isTopLevel: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      menuItems: []
     }
   },
   computed: {
     hasChildren() {
       return this.item.children && this.item.children.length > 0;
+    }
+  },
+  methods: {
+    async fetchMenuItems() {
+      try {
+        const response = await axios.get('/api/categories/menu');
+        this.menuItems = response.data;
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      }
     }
   }
 }
