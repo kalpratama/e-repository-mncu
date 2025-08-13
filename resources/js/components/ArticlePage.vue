@@ -29,8 +29,8 @@
         </div>
         <!-- Fallback if article not found -->
         <div v-else class="content-box article-details">
-          <h1>Article Not Found</h1>
-          <p>The article you are looking for does not exist.</p>
+          <h1>Artikel Tidak Ditemukan</h1>
+          <p>Artikel yang Anda cari tidak ada.</p>
         </div>
 
         <!-- Right Column: Search and other info -->
@@ -47,28 +47,53 @@
                 <span class="detail-value">{{ article.document_type.name }}</span>
               </div>
               <div v-if="article.issn" class="detail-item">
-                <span class="detail-label">ISSN</span>
+                <span v-if="article.document_type.name === 'Buku'" class="detail-label">ISBN</span>
+                <span v-else class="detail-label">ISSN</span>
                 <span class="detail-value">{{ article.issn }}</span>
               </div>
               <div v-if="article.publisher" class="detail-item">
                 <span class="detail-label">Penerbit</span>
                 <span class="detail-value">{{ article.publisher }}</span>
               </div>
+              <div v-if="article.location" class="detail-item">
+                <span v-if="article.document_type.name === 'Buku'" class="detail-label">Tempat Terbit</span>
+                <span v-else class="detail-label">Lokasi</span>
+                <span class="detail-value">{{ article.location }}</span>
+              </div>
               <div v-if="article.conference_name" class="detail-item">
                 <span class="detail-label">Conference</span>
                 <span class="detail-value">{{ article.conference_name }}</span>
               </div>
+              
               <div v-if="article.publication_link" class="detail-item">
                 <span class="detail-label">Link Publikasi</span>
                 <span class="detail-value"><a :href="article.publication_link" target="_blank" rel="noopener noreferrer">Lihat Publikasi</a></span>
               </div>
+              <div v-if="article.achievement_type" class="detail-item">
+                <span class="detail-label">Jenis Prestasi</span>
+                <span class="detail-value">{{ article.achievement_type }}</span>
+              </div>
+
+              <div v-if="article.conference_name" class="detail-item">
+                <span class="detail-label">Konferensi</span>
+                <span class="detail-value">{{ article.conference_name }}</span>
+              </div>
+              <div v-if="article.championship" class="detail-item">
+                <span class="detail-label">Kejuaraan</span>
+                <span class="detail-value">{{ article.championship }}</span>
+              </div>
+              <div v-if="article.champ_ranking" class="detail-item">
+                <span class="detail-label">Peringkat</span>
+                <span class="detail-value">{{ article.champ_ranking }}</span>
+              </div>
               <div class="buttons-box">
-                <button v-if="isLoggedIn" @click="previewDocument" class="preview-button">Lihat Dokumen</button>
-                <button v-if="isLoggedIn" @click="downloadDocument" class="download-button">Download PDF</button>
-                <p v-else class="login-prompt">Masuk untuk lihat atau unduh dokumen</p>
+                <button v-if="isLoggedIn && hasPdfFiles" @click="previewDocument" class="preview-button">Lihat Dokumen</button>
+                <button v-if="isLoggedIn && hasPdfFiles" @click="downloadDocument" class="download-button">Unduh PDF</button>
+                <p v-else-if="!isLoggedIn" class="login-prompt">Masuk untuk lihat atau unduh dokumen</p>
+                <p v-else class="login-prompt">PDF dokumen ini tidak tersedia.</p>
                 <div v-if="user && user.role === 'admin'" class="admin-actions">
                   <router-link :to="'/admin/articles/' + article.id + '/edit'" class="edit-button">Edit</router-link>
-                  <button @click="deleteArticle" class="delete-button">Delete</button>
+                  <button @click="deleteArticle" class="delete-button">Hapus</button>
                 </div>
               </div>
             </div>
@@ -91,7 +116,9 @@ export default {
   },
   props: {
     isLoggedIn: Boolean,
-    user: Object
+    user: Object,
+    // hasPdfFiles: Boolean
+    article: Object
   },
   data() {
     return {
@@ -117,6 +144,12 @@ export default {
     previewURL() {
       if (!this.article || !this.article.file_path) return '#';
       return `http://127.0.0.1:8000/storage/${this.article.file_path}`;
+    },
+    hasPdfFiles() {
+      return this.article &&
+            typeof this.article.file_path === 'string' &&
+            this.article.file_path.trim() !== '' &&
+            /\.pdf$/i.test(this.article.file_path);
     }
   },
   created() { 
@@ -200,7 +233,7 @@ export default {
           alert('Berhasil dihapus.');
           this.$router.push('/');
         } catch (error) {
-          console.error('Failed to delete article:', error);
+          console.error('Gagal menghapus dokumen:', error);
           alert('Terjadi kesalahan saat menghapus.');
         }
       }
@@ -219,7 +252,7 @@ export default {
         this.results = response.data;
         document.title = `Search: ${this.searchQuery}`;
       } catch (error) {
-        console.error("Failed to perform search:", error);
+        console.error("Gagal melakukan pencarian:", error);
         this.results = [];
       } finally {
         this.isLoading = false;
@@ -397,6 +430,7 @@ export default {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  justify-content: space-between;
 }
 .preview-button {
   background-color: #6c757d;

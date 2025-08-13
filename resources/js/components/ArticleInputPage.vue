@@ -14,18 +14,16 @@
         <h1 class="form-title">Buat Unggahan Baru</h1>
         <p class="form-subtitle">Isi detail untuk item repositori baru.</p>
 
-        <!-- **** POINT OF CHANGE: Step 1 - Category Selection **** -->
         <div class="form-group">
           <label for="document_type">Kategori Dokumen</label>
           <select id="document_type" v-model="form.document_type_id" @change="onTypeChange" required>
             <option disabled value="">Pilih Kategori</option>
-            <option v-for="type in flatDocumentTypes" :key="type.id" :value="type.id">
+            <option class="documenttype_dropdown" v-for="type in flatDocumentTypes" :key="type.id" :value="type.id">
               {{ type.name }}
             </option>
           </select>
         </div>
 
-        <!-- **** POINT OF CHANGE: Step 2 - The rest of the form, shown conditionally **** -->
         <form v-if="form.document_type_id" @submit.prevent="submitArticle" enctype="multipart/form-data">
           <!-- Success Message -->
           <div v-if="successMessage" class="message success-message">
@@ -40,7 +38,7 @@
             <!-- Left Column -->
             <div class="form-column">
               <fieldset class="form-section">
-                <legend>Detail Dokumen</legend>
+                <legend class="document-type">Detail Dokumen</legend>
                 <div class="form-group">
                   <label for="title">Judul</label>
                   <input type="text" id="title" v-model="form.title" required>
@@ -60,23 +58,71 @@
 
             <!-- Right Column -->
             <div class="form-column">
-              <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link')" class="form-section">
+              <fieldset v-if="shouldShow('publisher') || shouldShow('issn') || shouldShow('conference_name') || shouldShow('publication_link') || shouldShow('location')" class="form-section">
                 <legend>Informasi Publikasi</legend>
-                <div v-if="shouldShow('publisher')" class="form-group"><label for="publisher">Penerbit</label><input type="text" id="publisher" v-model="form.publisher"></div>
+                <div v-if="shouldShow('publisher')" class="form-group">
+                  <label for="publisher">Penerbit</label>
+                  <input type="text" id="publisher" v-model="form.publisher">
+                </div>
+
+                <!-- ISSN -->
+                <div v-if="shouldShow('issn')" class="form-group">
+                  <label for="issn">ISSN</label>
+                  <input type="text" id="issn" v-model="form.issn">
+                </div>
+                <div v-if="shouldShow('isbn')" class="form-group">
+                  <label for="issn">ISBN</label>
+                  <input type="text" id="issn" v-model="form.issn">
+                </div>
                 
-                <!-- ISSN --> 
-                <div v-if="shouldShow('issn')" class="form-group"><label for="issn">ISSN</label><input type="text" id="issn" v-model="form.issn"></div>
-                <div v-if="shouldShow('isbn')" class="form-group"><label for="issn">ISBN</label><input type="text" id="issn" v-model="form.issn"></div>
-                
-                <div v-if="shouldShow('conference_name')" class="form-group"><label for="conference_name">Nama Konferensi</label><input type="text" id="conference_name" v-model="form.conference_name"></div>
-                <div v-if="shouldShow('publication_link')" class="form-group"><label for="publication_link">Tautan Publikasi</label><input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com"></div>
+                <div v-if="shouldShow('conference_name')" class="form-group">
+                  <label for="conference_name">Nama Konferensi</label>
+                  <input type="text" id="conference_name" v-model="form.conference_name">
+                </div>
+                <div v-if="shouldShow('publication_link')" class="form-group">
+                  <label for="publication_link">Tautan Publikasi</label>
+                  <input type="url" id="publication_link" v-model="form.publication_link" placeholder="https://example.com">
+                </div>
+
+                <div v-if="shouldShow('location')" class="form-group">
+                  <label for="location">Lokasi</label>
+                  <input type="text" id="location" v-model="form.location" placeholder="e.g., Jakarta"></input>
+                </div>
+                <div v-if="shouldShow('tempat_terbit')" class="form-group">
+                  <label for="location">Tempat Terbit</label>
+                  <input type="text" id="location" v-model="form.location" placeholder="e.g., Jakarta"></input>
+                </div>
+
+                <!-- Prestasi -->
+                <div v-if="shouldShow('achievement_type')" class="form-group">
+                  <label for="achievement_type">Jenis Prestasi</label>
+                  <input type="text" id="achievement_type" v-model="form.achievement_type" placeholder="e.g., Juara 1"></input>
+                </div>
+                <div v-if="shouldShow('championship')" class="form-group">
+                  <label for="championship">Kejuaraan</label>
+                  <input type="text" id="championship" v-model="form.championship" placeholder="e.g., Olimpiade"></input>
+                </div>
+                <div v-if="shouldShow('champ_ranking')" class="form-group">
+                  <label for="champ_ranking">Peringkat</label>
+                  <input type="text" id="champ_ranking" v-model="form.champ_ranking" placeholder="e.g., 1"></input>
+                </div>
               </fieldset>
 
               <fieldset class="form-section">
-                <legend>Penulis</legend>
+                <legend>Kontributor</legend>
                 <div v-for="(author, index) in form.authors" :key="index" class="author-group">
-                  <div class="form-group"><label>Nama Penulis</label><input type="text" v-model="author.name" required></div>
-                  <div v-if="shouldShow('identifier')" class="form-group"><label>Nomor Induk</label><input type="text" v-model="author.identifier"></div>
+                  <div v-if="shouldShow('authors')" class="form-group">
+                    <label>Nama</label>
+                    <input type="text" id="author_name" v-model="author.name" required>
+                  </div>
+                  <div v-if="shouldShow('name')" class="form-group">
+                    <label>Nama</label>
+                    <input type="text" id="author_name" v-model="author.name" required>
+                  </div>
+                  <div v-if="shouldShow('identifier')" class="form-group">
+                    <label>Nomor Induk</label>
+                    <input type="text" id="author_identifier" v-model="author.identifier">
+                  </div>
                   <div v-if="shouldShow('program_studi')" class="form-group">
                     <label>Program Studi</label>
                     <select v-model="author.program_studi">
@@ -130,16 +176,16 @@ const fieldConfig = {
   1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
   2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
   3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
-  4: ['title', 'year', 'isbn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Buku (kurang tempat terbit)
-  5: ['title', 'year', 'isbn', 'publisher', 'abstract', 'authors', 'program_studi', 'file_path'], // Bab buku (kurang tempat terbit)
+  4: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Buku
+  5: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
   6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
   7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // TA
   8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
-  9: ['title', 'year', 'isbn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'file_path'], // Modul Pembelajaran (kurang tempat terbit)
+  9: ['title', 'year', 'isbn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Modul Pembelajaran
   10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
   11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
-  12: ['title', 'year', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Poster Ilmiah
-  13: ['title', 'year', 'authors', 'program_studi', 'file_path'],// Dokumentasi Prestasi mhs
+  12: ['title', 'year', 'authors', 'program_studi', 'role', 'identifier', 'file_path'],// Poster Ilmiah
+  13: ['title', 'year', 'name', 'program_studi', 'role', 'identifier', 'location', 'achievement_type', 'championship', 'champ_ranking', 'file_path'],// Dokumentasi Prestasi mhs
 
   14: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
   15: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
@@ -169,12 +215,14 @@ export default {
         publication_link: '',
         authors: [{ name: '', identifier: '', program_studi: '', role: '' }], // Default role set to 'Dosen'
         document_file: null,
-        fileError: '' // For file upload error messages
+        fileError: '', // For file upload error messages
+
+        location: '',
+        achievement_type: '',
+        championship: '',
+        champ_ranking: '',
       },
       documentTypes: [],
-      selectedLevel1: '', 
-      selectedLevel2: '', 
-      selectedLevel3: '',
       isSubmitting: false,
       successMessage: '',
       errorMessage: '',
@@ -261,6 +309,11 @@ export default {
         publication_link: '',
         authors: [{ name: '', identifier: '', program_studi: '', role: '' }],
         document_file: null,
+
+        location: '',
+        achievement_type: '',
+        championship: '',
+        champ_ranking: '',
       };
     },
     hasOverlongWord(input){
@@ -272,7 +325,7 @@ export default {
       this.errorMessage = '';
       this.validationErrors = null;
       const formData = new FormData();
-      const fieldsToCheck = ['title', 'abstract', 'publisher', 'conference_name'];
+      const fieldsToCheck = ['title', 'abstract', 'publisher', 'conference_name', 'location', 'achievement_type', 'championship', 'champ_ranking'];
       const overlongInput = fieldsToCheck.find(field => this.hasOverlongWord(this.form[field]));
       if (overlongInput) {
         this.isSubmitting = false;
@@ -299,9 +352,9 @@ export default {
         const response = await axios.post('/api/articles', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        this.successMessage = `Document "${response.data.title}" created successfully!`;
+        this.successMessage = `Dokumen "${response.data.title}" berhasil dibuat!`;
         this.resetForm();
-        setTimeout(() => this.$router.push(`/article/${response.data.id}`), 1000);
+        setTimeout(() => this.$router.push(`/article/${response.data.id}`), 2000);
       } catch (error) {
         if (error.response && error.response.status === 422) {
           this.errorMessage = 'Perbaiki kesalahan sebelum mengunggah.';
@@ -309,7 +362,7 @@ export default {
         } else if (error.response && error.response.data.message) {
           this.errorMessage = `Error: ${error.response.data.message}`;
         } else {
-          this.errorMessage = 'An unexpected error occurred. Please try again.';
+          this.errorMessage = 'Terjadi kesalahan yang tidak terduga. Silakan coba lagi.';
         }
       } finally {
         this.isSubmitting = false;
@@ -474,8 +527,12 @@ button:disabled {
     padding: 0.75rem;
     padding-bottom: 8rem;
   }
-  legend{
+  .documenttype-dropdown{
+    max-width: 100%;
+  }
+  legend.document-type{
     font-size: 1.1rem;
+    font-weight: bold;
     margin-bottom: 0.5rem;
   }
   label{

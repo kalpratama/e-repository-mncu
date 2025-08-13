@@ -22,6 +22,13 @@
           <ol class="publication-list">
             <menu-item v-for="item in publicationTypes" :key="item.id" :item="item" />
           </ol>
+          <li>
+            <router-link :to="{ name: 'Category', params: { slug: 'all' } }">Semua Dokumen</router-link>
+
+            <!-- <router-link :to="{ name: 'CategoryAll' }">
+              Semua Dokumen
+            </router-link> -->
+          </li>
         </div>
 
         <!-- Right Column -->
@@ -96,7 +103,6 @@ export default {
       }
     },
     formatCategory(item) {
-      // Check if the item and its nested document_type object exist
       if (item && item.document_type && item.document_type.name) {
         return item.document_type.name;
       }
@@ -218,7 +224,7 @@ export default {
 }
 .box-title {
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 1.25rem;
   font-weight: 600;
   align-content: center;
@@ -258,7 +264,9 @@ li{
   max-height: 420px;
   max-width: 100%;
   overflow-y: auto;
-  padding-right: 1rem;
+  padding-right: 1rem; /* Add space so text doesn't touch the scrollbar */
+  padding-left: 0.2rem;
+  padding-bottom: 0.5rem;
 }
 a.publication-item {
   display: block;
@@ -323,6 +331,30 @@ button.search-button{
 }
 button.search-button:hover {
   background-color: #0056b3;
+}
+li {
+  position: relative;
+  list-style: none;
+}
+a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem 1rem;
+  text-decoration: none;
+  color: #1F3D7B;
+  border-radius: 5px;
+  box-shadow: 0 4px 5px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+}
+li:hover > a {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+}
+.dropdown-arrow {
+  font-size: 0.8em;
+  color: #888;
 }
 
 /* --- Responsive Design --- */
@@ -399,16 +431,16 @@ button.search-button:hover {
     margin-bottom: 1rem
   }
   p.meta {
-    font-size: 0.75rem;
+    font-size: small;
   }
   p.meta.kategori {
-    font-size: 0.75rem;
+    font-size: small;
   }
   p.description {
-    font-size: 0.7rem;
+    font-size: small;
   }
   h3.title{
-    font-size: 1rem;
+    font-size: medium;
   }
 }
 </style>

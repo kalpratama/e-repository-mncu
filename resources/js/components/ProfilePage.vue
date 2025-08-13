@@ -20,28 +20,44 @@
         </div>
         <div class="profile-details">
           <h2 class="details-title">Informasi Akun</h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <span class="info-label">Username</span>
-              <span class="info-value">{{ user.username }}</span>
+
+        <div class="info-container">
+          <div class="info-left">
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Username</span>
+                <span class="info-value">{{ user.username }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ user.email || 'Not Provided' }}</span>
+              </div>
+              
+              <div class="info-item">
+                <span class="info-label">Bergabung Sejak</span>
+                <span class="info-value">{{ formattedJoinDate }}</span>
+              </div>
             </div>
-            <div class="info-item">
-              <span class="info-label">Email</span>
-              <span class="info-value">{{ user.email || 'Not Provided' }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Role</span>
-              <span class="info-value">{{ user.role }}</span>
-            </div>
-            <!-- <div class="info-item">
-              <span class="info-label">Member Since</span>
-              <span class="info-value">{{ formattedJoinDate }}</span>
-            </div> -->
           </div>
+          <div class="info-right">
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">NIM</span>
+                <span class="info-value">{{ user.id_number || '-' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Program Studi</span>
+                <span class="info-value">{{ user.prodi || '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          
         </div>
       </div>
       <div v-else class="loading-container">
-        <p>Loading user profile...</p>
+        <p>Memuat Profil Pengguna...</p>
       </div>
     </main>
   </div>
@@ -68,7 +84,7 @@ export default {
       }
       // Format the date to be more readable, e.g., "July 21, 2025"
       const date = new Date(this.user.created_at);
-      return date.toLocaleDateString('en-US', {
+      return date.toLocaleDateString('id', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
@@ -136,15 +152,26 @@ export default {
   padding: 2rem;
 }
 .details-title {
+  text-align: center;
   margin: 0 0 1.5rem 0;
   font-size: 1.25rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 0.75rem;
 }
+.info-container{
+  display: flex;
+  flex-direction: row;
+  gap: 10rem;
+  max-width: 1400px;
+  justify-content: space-between;  
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
 .info-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
+  min-width: 150px;
 }
 .info-item {
   display: flex;
@@ -199,6 +226,12 @@ export default {
   }
   .info-grid{
     gap: 0.5rem
+  }
+  .info-container{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1400px;
   }
 }
 </style>

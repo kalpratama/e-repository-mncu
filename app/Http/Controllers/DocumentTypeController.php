@@ -7,9 +7,6 @@ use App\Models\DocumentTypes;
 
 class DocumentTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource in a nested format.
-     */
     public function index()
     {
         // Fetch all types and eager load their children and grandchildren recursively

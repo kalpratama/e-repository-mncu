@@ -15,6 +15,7 @@ Route::get('/search', [DashboardController::class, 'search']);
 Route::get('/document-types', [DocumentTypeController::class, 'index']);
 
 Route::get('/articles/{document}', [ArticleController::class, 'show']);
+// Route::get('/category/all', [CategoryController::class, 'show']);
 Route::get('/category/{slug}', [CategoryController::class, 'show']);
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,11 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware(IsAdmin::class); // Ensure only admins can create articles
 
     Route::get('/articles/{document}/download', [ArticleController::class, 'download']);
-
-    // **** NEW: Add the route for updating an article ****
     Route::put('/articles/{document}', [ArticleController::class, 'update'])->middleware(IsAdmin::class);
-
-    // **** NEW: Add the route for deleting an article ****
     Route::delete('/articles/{document}', [ArticleController::class, 'destroy'])->middleware(IsAdmin::class);
 
 });
