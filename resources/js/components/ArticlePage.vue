@@ -22,9 +22,13 @@
               <img :src="article.thumbnail || 'https://placehold.co/100x120/e2e8f0/718096?text=No%0AImage'" alt="Article Thumbnail" class="thumbnail">
             </div> -->
           </div>
-          <div class="abstract-section">
+          <div class="abstract-section" v-if="article && article.abstract">
             <h2 class="box-title"> Abstrak</h2>
-            <p>{{ article.abstract }}</p>
+            <p class="abstract-text">{{ article.abstract }}</p>
+          </div>
+          <div class="abstract-section" v-if="article && article.description">
+            <h2 class="box-title"> Deskripsi</h2>
+            <p class="abstract-text">{{ article.description }}</p>
           </div>
         </div>
         <!-- Fallback if article not found -->
@@ -45,6 +49,10 @@
               <div v-if="article.document_type" class="detail-item">
                 <span class="detail-label">Kategori</span>
                 <span class="detail-value">{{ article.document_type.name }}</span>
+              </div>
+              <div v-if="article.document_type" class="detail-item">
+                <span class="detail-label">Tanggal</span>
+                <span class="detail-value">{{ article.date_when }}</span>
               </div>
               <div v-if="article.issn" class="detail-item">
                 <span v-if="article.document_type.name === 'Buku'" class="detail-label">ISBN</span>
@@ -333,12 +341,16 @@ export default {
   gap: 2rem;
 }
 
-.box-title {
+h2.box-title {
   margin-top: 0;
-  margin-bottom: 1.5rem;
+  margin: 0rem;
   font-size: 1.25rem;
   font-weight: 600;
   align-content: center;
+}
+.abstract-text {
+  margin-bottom: 1rem;
+  font-size: 1rem;
 }
 
 .article-header {

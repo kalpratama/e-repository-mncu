@@ -9,6 +9,8 @@ use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Middleware\IsAdmin;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\API\BackgroundImageController;
+
 
 Route::get('/dashboard-data', [DashboardController::class, 'index']);
 Route::get('/search', [DashboardController::class, 'search']);
@@ -17,6 +19,9 @@ Route::get('/document-types', [DocumentTypeController::class, 'index']);
 Route::get('/articles/{document}', [ArticleController::class, 'show']);
 // Route::get('/category/all', [CategoryController::class, 'show']);
 Route::get('/category/{slug}', [CategoryController::class, 'show']);
+
+Route::get('/background-images', [BackgroundImageController::class, 'index']);
+
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
@@ -29,5 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/articles/{document}/download', [ArticleController::class, 'download']);
     Route::put('/articles/{document}', [ArticleController::class, 'update'])->middleware(IsAdmin::class);
     Route::delete('/articles/{document}', [ArticleController::class, 'destroy'])->middleware(IsAdmin::class);
+
+    Route::get('/admin/background-images', [BackgroundImageController::class, 'adminIndex']);
+    Route::post('/admin/background-images', [BackgroundImageController::class, 'store']);
+    Route::patch('/admin/background-images/{backgroundImage}', [BackgroundImageController::class, 'update']);
+    Route::delete('/admin/background-images/{backgroundImage}', [BackgroundImageController::class, 'destroy']);
+    Route::post('/admin/background-images/update-order', [BackgroundImageController::class, 'updateOrder']);
 
 });
