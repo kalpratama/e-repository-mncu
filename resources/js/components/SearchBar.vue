@@ -23,7 +23,7 @@ export default {
     },
     placeholder: {
       type: String,
-      default: 'Cari di MNCU-IR'
+      default: 'Cari kategori, judul, abstrak, atau penulis...'
     }
   },
   data() {

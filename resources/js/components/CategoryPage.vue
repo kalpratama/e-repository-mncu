@@ -644,8 +644,7 @@ label{
   padding:0rem;
 }
 .search-box {
-  padding-left: 0rem;
-  padding-left: 0rem;
+  padding: 0rem;
 }
 
 @media (max-width: 882px) {
