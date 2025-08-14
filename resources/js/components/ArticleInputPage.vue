@@ -45,13 +45,34 @@
                 </div>
                 
                 <!-- Conditionally show fields based on the selected category -->
+                <div v-if="shouldShow('date_when')" class="form-group">
+                  <label for="date_when">Tanggal</label>
+                  <input type="date" id="date_when" v-model.number="form.date_when" placeholder="e.g.,">
+                </div>
                 <div v-if="shouldShow('year')" class="form-group">
                   <label for="year">Tahun</label>
                   <input type="number" id="year" v-model.number="form.year" placeholder="e.g., 2025">
                 </div>
                 <div v-if="shouldShow('abstract')" class="form-group">
-                  <label for="abstract">Abstrak / Deskripsi</label>
-                  <textarea id="abstract" v-model="form.abstract" rows="8"></textarea>
+                  <label for="abstract">Abstrak</label>
+                  <textarea id="abstract" v-model="form.abstract" rows="4"></textarea>
+                </div>
+                <div v-if="shouldShow('description')" class="form-group">
+                  <label for="description">Deskripsi</label>
+                  <textarea id="description" v-model="form.description" rows="4"></textarea>
+                </div>
+                <!-- Prestasi -->
+                <div v-if="shouldShow('achievement_type')" class="form-group">
+                  <label for="achievement_type">Jenis Prestasi</label>
+                  <input type="text" id="achievement_type" v-model="form.achievement_type" placeholder="e.g., Juara 1"></input>
+                </div>
+                <div v-if="shouldShow('championship')" class="form-group">
+                  <label for="championship">Kejuaraan</label>
+                  <input type="text" id="championship" v-model="form.championship" placeholder="e.g., Olimpiade"></input>
+                </div>
+                <div v-if="shouldShow('champ_ranking')" class="form-group">
+                  <label for="champ_ranking">Peringkat</label>
+                  <input type="text" id="champ_ranking" v-model="form.champ_ranking" placeholder="e.g., 1"></input>
                 </div>
               </fieldset>
             </div>
@@ -91,20 +112,6 @@
                 <div v-if="shouldShow('tempat_terbit')" class="form-group">
                   <label for="location">Tempat Terbit</label>
                   <input type="text" id="location" v-model="form.location" placeholder="e.g., Jakarta"></input>
-                </div>
-
-                <!-- Prestasi -->
-                <div v-if="shouldShow('achievement_type')" class="form-group">
-                  <label for="achievement_type">Jenis Prestasi</label>
-                  <input type="text" id="achievement_type" v-model="form.achievement_type" placeholder="e.g., Juara 1"></input>
-                </div>
-                <div v-if="shouldShow('championship')" class="form-group">
-                  <label for="championship">Kejuaraan</label>
-                  <input type="text" id="championship" v-model="form.championship" placeholder="e.g., Olimpiade"></input>
-                </div>
-                <div v-if="shouldShow('champ_ranking')" class="form-group">
-                  <label for="champ_ranking">Peringkat</label>
-                  <input type="text" id="champ_ranking" v-model="form.champ_ranking" placeholder="e.g., 1"></input>
                 </div>
               </fieldset>
 
@@ -173,23 +180,23 @@ import Header from './Header.vue';
 import axios from 'axios';
 
 const fieldConfig = {
-  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
-  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
-  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
-  4: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Buku
-  5: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
-  6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // Skripsi
-  7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'role', 'file_path'], // TA
-  8: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
-  9: ['title', 'year', 'isbn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Modul Pembelajaran
+  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
+  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
+  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
+  4: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'description', 'authors', 'program_studi', 'role', 'file_path'], // Buku
+  5: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'description', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
+  6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'identifier', 'role', 'file_path'], // Skripsi
+  7: ['title', 'year', 'abstract', 'authors', 'program_studi', 'identifier', 'role', 'file_path'], // TA
+  8: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'conference_name', 'authors', 'program_studi', 'role', 'file_path'], // Makalah Konferensi
+  9: ['title', 'year', 'isbn', 'publisher', 'description', 'publication_link', 'tempat_terbit', 'authors', 'program_studi', 'role', 'file_path'], // Modul Pembelajaran
   10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
   11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
   12: ['title', 'year', 'authors', 'program_studi', 'role', 'identifier', 'file_path'],// Poster Ilmiah
   13: ['title', 'year', 'name', 'program_studi', 'role', 'identifier', 'location', 'achievement_type', 'championship', 'champ_ranking', 'file_path'],// Dokumentasi Prestasi mhs
 
-  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
-  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
-  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internal
+  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
+  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
+  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internal
   17: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Majalah
   18: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Koran
 };
@@ -208,6 +215,8 @@ export default {
         title: '',
         document_type_id: '',
         abstract: '',
+        description: '',
+        date_when: null,
         year: null,
         publisher: '',
         issn: '',
@@ -302,6 +311,8 @@ export default {
         title: '',
         document_type_id: selectedTypeId,
         abstract: '',
+        description: '',
+        date_when: null,
         year: null,
         publisher: '',
         issn: '',
@@ -325,7 +336,7 @@ export default {
       this.errorMessage = '';
       this.validationErrors = null;
       const formData = new FormData();
-      const fieldsToCheck = ['title', 'abstract', 'publisher', 'conference_name', 'location', 'achievement_type', 'championship', 'champ_ranking'];
+      const fieldsToCheck = ['title', 'abstract', 'description', 'publisher', 'conference_name', 'location', 'achievement_type', 'championship', 'champ_ranking'];
       const overlongInput = fieldsToCheck.find(field => this.hasOverlongWord(this.form[field]));
       if (overlongInput) {
         this.isSubmitting = false;

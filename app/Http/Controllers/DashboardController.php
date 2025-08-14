@@ -36,7 +36,10 @@ class DashboardController extends Controller
         // Perform a search across document titles, abstracts, and author names.
         $documents = Document::with('authors', 'documentType')
             ->where('title', 'LIKE', "%{$query}%")
+            ->orWhere('year', 'LIKE', "%{$query}%")
+            ->orWhere('location', 'LIKE', "%{$query}%")
             ->orWhere('abstract', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
             ->orWhereHas('authors', function ($authorQuery) use ($query) {
                 $authorQuery->where('name', 'LIKE', "%{$query}%");
             })

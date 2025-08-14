@@ -13,6 +13,8 @@ class Document extends Model
         'title',
         'document_type_id',
         'abstract',
+        'description',
+        'date_when',
         'year',
         'issn',
         'publisher',

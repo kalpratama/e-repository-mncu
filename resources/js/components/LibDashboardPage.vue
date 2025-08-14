@@ -219,8 +219,8 @@ export default {
   flex: 2;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  justify-content: space-between;
+  gap: 2rem;
+  /* justify-content: space-between; */
 }
 .box-title {
   margin-top: 0;

@@ -7,6 +7,7 @@ import ProfilePage from '../components/ProfilePage.vue';
 import CategoryPage from '../components/CategoryPage.vue';
 import SearchPage from '../components/SearchPage.vue';
 import ArticleEditPage from '../components/ArticleEditPage.vue';
+import AdminBackgroundImages from '../components/AdminBackgroundImages.vue';
 
 const routes = [
   {
@@ -57,6 +58,12 @@ const routes = [
     component: ArticleEditPage,
     meta: { title: 'Edit Dokumen | MNCU-IR' },
   },
+  {
+    path: '/admin/background-images',
+    name: 'AdminBackgroundImages',
+    component: AdminBackgroundImages,
+    meta: { title: 'BG Imgs | MNCU-IR' },
+  }
 ];
 
 const router = createRouter({

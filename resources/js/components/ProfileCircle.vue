@@ -7,7 +7,6 @@
       <div class="dropdown-header">
         Halo,<br><strong>{{ user.name }}!</strong>
       </div>
-      <!-- <a href="#" class="dropdown-item">Profil</a> -->
        
       <router-link to="/profile" class="dropdown-item">Profil</router-link>
       <router-link v-if="user && user.role === 'admin'" to="/admin/articles/create" class="admin-button">
