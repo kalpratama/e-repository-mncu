@@ -39,11 +39,12 @@
               </div>
             </div>
           </div>
-          <div class="info-right">
+          <div v-if="user && user.role !== 'admin'" class="info-right">
             <div class="info-grid">
               <div class="info-item">
-                <span class="info-label">NIM</span>
-                <span class="info-value">{{ user.id_number || '-' }}</span>
+                <span v-if="user.role === 'mahasiswa'" class="info-label">NIM</span>
+                <span v-else class="info-label">NIP</span>
+                  <span class="info-value">{{ user.id_number || '-' }}</span>
               </div>
               <div class="info-item">
                 <span class="info-label">Program Studi</span>

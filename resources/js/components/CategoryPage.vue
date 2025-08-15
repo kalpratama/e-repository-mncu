@@ -135,7 +135,7 @@ export default {
       selectedRoles: [],
       isLoading: true,
       currentPage: 1,
-      itemsPerPage: 3,
+      itemsPerPage: 6,
 
       isFilterOpen: false,
     };
@@ -614,6 +614,7 @@ a.publication-item:hover h3 {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   margin-bottom: 0.1rem;
   cursor: pointer;
+  width: 95%;
 }
 a {
   display: flex;
@@ -629,7 +630,7 @@ label{
   padding-left: 1rem;
   width: 100%;
   cursor: pointer;
-  padding: 0.2rem 1rem;
+  padding: 0.1rem 1rem;
 }
 .checkbox-item:hover{
   /* background-color: #e9ecef; */
@@ -637,8 +638,12 @@ label{
   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
 .left-filter {
-  width: 250px;
+  padding-left: 1.5rem;
+  padding-right: 1rem;
+  width: 300px;
+  max-height: 660px;
   transition: transform 0.3s ease-in-out;
+  overflow-y: auto;
 }
 .filter-burger{
   padding:0rem;
@@ -749,7 +754,7 @@ label{
     position: fixed;
     top: 0;
     left: 0;
-    max-height: 60%;
+    max-height: 90%;
     background: #fff;
     box-shadow: 2px 0 8px rgba(0,0,0,0.2);
     transform: translateY(1440px);
@@ -763,7 +768,7 @@ label{
   .left-filter.open {
     transform: translateX(0);
     transform: translateY(200px);
-    max-height: 60%;
+    max-height: 90%;
     overflow-y: auto;
     border-radius: 15px;
     padding: 1rem;

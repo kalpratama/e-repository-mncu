@@ -50,7 +50,7 @@
                 <span class="detail-label">Kategori</span>
                 <span class="detail-value">{{ article.document_type.name }}</span>
               </div>
-              <div v-if="article.document_type" class="detail-item">
+              <div v-if="article.date_when" class="detail-item">
                 <span class="detail-label">Tanggal</span>
                 <span class="detail-value">{{ article.date_when }}</span>
               </div>
@@ -69,7 +69,7 @@
                 <span class="detail-value">{{ article.location }}</span>
               </div>
               <div v-if="article.conference_name" class="detail-item">
-                <span class="detail-label">Conference</span>
+                <span class="detail-label">Konferensi</span>
                 <span class="detail-value">{{ article.conference_name }}</span>
               </div>
               
@@ -80,11 +80,6 @@
               <div v-if="article.achievement_type" class="detail-item">
                 <span class="detail-label">Jenis Prestasi</span>
                 <span class="detail-value">{{ article.achievement_type }}</span>
-              </div>
-
-              <div v-if="article.conference_name" class="detail-item">
-                <span class="detail-label">Konferensi</span>
-                <span class="detail-value">{{ article.conference_name }}</span>
               </div>
               <div v-if="article.championship" class="detail-item">
                 <span class="detail-label">Kejuaraan</span>
@@ -341,15 +336,14 @@ export default {
   gap: 2rem;
 }
 
-h2.box-title {
-  margin-top: 0;
-  margin: 0rem;
+.box-title {
+  margin: 0,0,0,0;
   font-size: 1.25rem;
   font-weight: 600;
   align-content: center;
 }
 .abstract-text {
-  margin-bottom: 1rem;
+  margin-bottom: 2.5rem;
   font-size: 1rem;
 }
 
@@ -474,7 +468,7 @@ h2.box-title {
 }
 .details-grid {
   display: grid;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 .detail-item {
   display: flex;
