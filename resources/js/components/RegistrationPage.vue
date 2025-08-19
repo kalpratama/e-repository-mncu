@@ -9,7 +9,7 @@
       <div class="login-box">
         <h1 class="app-name">E-Repository</h1>
         <p class="company-name">Universitas Media Nusantara Citra</p>
-        <form @submit.prevent="handleLogin">
+        <form @submit.prevent="handleRegister">
           <div class="input-group">
             <label for="username">Username</label>
             <input type="text" id="username" v-model="username" required autocomplete="username" placeholder="Masukkan username">
@@ -18,11 +18,41 @@
             <label for="password">Password</label>
             <input type="password" id="password" v-model="password" required autocomplete="current-password" placeholder="Masukkan password">
           </div>
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" v-model="email" required autocomplete="email" placeholder="Masukkan email">
+          </div>
+          <div class="input-group">
+            <label for="name">Nama Lengkap</label>
+            <input type="text" id="name" v-model="name" required autocomplete="name" placeholder="Masukkan nama lengkap">
+          </div>
+          <div class="input-group">
+            <label for="id_number">NIM</label>
+            <input type="text" id="id_number" v-model="id_number" required autocomplete="id_number" placeholder="Masukkan NIM">
+          </div>
+          <div class="input-group">
+            <label for="prodi">Program Studi</label>
+            <select id="prodi" v-model="prodi" required>
+              <option value="Manajemen">Manajemen</option>
+                <option value="Akuntansi">Akuntansi</option>
+                <option value="Pendidikan Matematika">Pendidikan Matematika</option>
+                <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
+                <option value="Sains Komunikasi">Sains Komunikasi</option>
+                <option value="DKV">DKV</option>
+                <option value="Sistem Informasi">Sistem Informasi</option>
+                <option value="Ilmu Komputer">Ilmu Komputer</option>
+            </select>
+          </div>
+
           <div class="register">
-            <router-link to="/register">Belum punya akun? Daftar</router-link>
+            <router-link to="/login">Sudah punya akun? Masuk</router-link>
           </div>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-          <button type="submit">Masuk</button>
+          <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+          <button type="submit" :disabled="isLoading">
+            <span v-if="isLoading">Mendaftar...</span>
+            <span v-else>Daftar</span>
+          </button>
         </form>
       </div>
 
@@ -30,7 +60,6 @@
   </div>
 </template>
 
-/* -- API connections -- */
 <script>
 import axios from 'axios';
 import logo from '../assets/mncu_logo.png';
@@ -41,32 +70,61 @@ export default {
       logo: logo,
       username: '',
       password: '',
-      errorMessage: ''
+      email: '',
+      name: '',
+      id_number:'',
+      prodi: '',
+      errorMessage: '',
+      successMessage:'',
+      isLoading: false,
     };
   },
   methods: {
-    async handleLogin() {
+    async handleRegister() {
       this.errorMessage = '';
-      try {
-        const response = await axios.post('/api/login', {
-          username: this.username,
-          password: this.password
-        });
-        // Send login request to the server
-        // await axios.post('/login', {
-        //   username: this.username,
-        //   password: this.password
-        // });
+      this.successMessage = '';
 
-        this.$emit('login-success', response.data);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          this.errorMessage = 'Username atau password salah.';
-        } else {
-          this.errorMessage = 'Terjadi kesalahan saat mencoba masuk. Silakan coba lagi.';
-        }
-        console.error('Login error:', error);
+      if (!this.email.endsWith("@mncu.ac.id")) {
+        this.errorMessage = "Hanya email @mncu.ac.id yang diperbolehkan.";
+        this.success = false;
+        return;
       }
+
+      if (/[^0-9]/.test(this.id_number)) {
+        this.errorMessage = "NIM hanya boleh terdiri dari angka.";
+        this.success = false;
+        return;
+      }
+
+      this.isLoading = true; // start loading
+      this.message = "";
+      
+      try {
+        const response = await axios.post('/api/register', {
+          username: this.username,
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          id_number: this.id_number,
+          prodi: this.prodi
+        });
+
+        // Save email for verification
+        const registeredEmail = response.data.email;
+        localStorage.setItem("registeredEmail", registeredEmail);
+
+        alert("Registrasi berhasil. Silakan verifikasi email Anda.");
+        this.successMessage = "Registrasi berhasil. Silakan verifikasi email Anda.";
+        this.$router.push('/verify-otp');
+      } catch (error) {
+        if (error.response && error.response.data.errors) {
+          this.errorMessage = Object.values(error.response.data.errors).flat().join(' ');
+        } else {
+          this.errorMessage = 'Terjadi kesalahan saat registrasi.';
+        }
+        console.error('Register error:', error);
+      }
+      this.isLoading = false; // stop loading
     }
   }
 };
@@ -135,7 +193,7 @@ export default {
   font-weight: bold;
 }
 .input-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 .input-group label {
   display: block;
@@ -143,9 +201,9 @@ export default {
   color: #555;
   font-weight: 500;
 }
-.input-group input {
+.input-group input, select {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 12px;
   box-sizing: border-box;
@@ -181,6 +239,12 @@ button:hover {
 }
 .error-message {
   color: #d93025;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.success-message {
+  color: #0f5200;
   text-align: center;
   margin-bottom: 1rem;
   font-size: 0.9rem;

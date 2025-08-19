@@ -1,10 +1,18 @@
 <template>
   <li>
-    <router-link :to="'/category/' + item.slug">
+    <div v-if="hasChildren" @click="toggleDropdown" class="category-box dropdown-trigger">
       {{ item.name }}
-      <span v-if="hasChildren" class="dropdown-arrow">&#9656;</span>
+      <span class="dropdown-arrow" :class="{ 'rotated': isDropdownOpen }">&#9656;</span>
+    </div>
+    <router-link v-else :to="'/category/' + item.slug" class="category-box">
+      {{ item.name }}
     </router-link>
-    <ul v-if="hasChildren" class="dropdown-menu">
+    <ul v-if="hasChildren && isDropdownOpen" class="dropdown-menu">
+      <li>
+        <router-link :to="'/category/' + item.slug" class="dropdown-item">
+          Semua {{ item.name }}
+        </router-link>
+      </li>
       <menu-item v-for="child in item.children" :key="child.id" :item="child" />
     </ul>
   </li>
@@ -17,41 +25,33 @@ export default {
     item: {
       type: Object,
       required: true
-    },
-    isTopLevel: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
-      menuItems: []
+      isDropdownOpen: false
     }
   },
   computed: {
     hasChildren() {
-      return this.item.children && this.item.children.length > 0;
+      return this.item.children && this.item.children.length > 0
     }
   },
   methods: {
-    async fetchMenuItems() {
-      try {
-        const response = await axios.get('/api/categories/menu');
-        this.menuItems = response.data;
-      } catch (error) {
-        console.error('Error fetching menu items:', error);
-      }
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen
     }
   }
 }
 </script>
+
 
 <style scoped>
 li {
   position: relative;
   list-style: none;
 }
-a {
+a, .dropdown-trigger {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -63,13 +63,22 @@ a {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   cursor: pointer;
 }
-li:hover > a {
+li:hover > a, .dropdown-trigger:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
 .dropdown-arrow {
   font-size: 0.8em;
   color: #888;
+}
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+}
+.dropdown-arrow.rotated {
+  transform: rotate(90deg);
+}
+.dropdown-item {
+  font-weight: bold;
 }
 .dropdown-menu {
   visibility: hidden;
