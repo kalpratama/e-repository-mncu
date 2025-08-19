@@ -8,6 +8,8 @@ import CategoryPage from '../components/CategoryPage.vue';
 import SearchPage from '../components/SearchPage.vue';
 import ArticleEditPage from '../components/ArticleEditPage.vue';
 import AdminBackgroundImages from '../components/AdminBackgroundImages.vue';
+import RegistrationPage from '../components/RegistrationPage.vue';
+import VerifyOTP from '../components/VerifyOTP.vue';
 
 const routes = [
   {
@@ -15,6 +17,18 @@ const routes = [
     name: 'Dashboard',
     component: DashboardPage,
     meta: {title: 'Dashboard | MNCU-IR'},
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegistrationPage,
+    meta: {title: 'Buat Akun | MNCU-IR'},
+  },
+  {
+    path: '/verify-otp',
+    name: 'VerifyOTP',
+    component: VerifyOTP,
+    meta: {title: 'Verifikasi OTP | MNCU-IR'},
   },
   {
     path: '/login',

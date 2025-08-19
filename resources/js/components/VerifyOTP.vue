@@ -9,20 +9,21 @@
       <div class="login-box">
         <h1 class="app-name">E-Repository</h1>
         <p class="company-name">Universitas Media Nusantara Citra</p>
-        <form @submit.prevent="handleLogin">
-          <div class="input-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" v-model="username" required autocomplete="username" placeholder="Masukkan username">
-          </div>
-          <div class="input-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" v-model="password" required autocomplete="current-password" placeholder="Masukkan password">
-          </div>
-          <div class="register">
-            <router-link to="/register">Belum punya akun? Daftar</router-link>
-          </div>
+        <form @submit.prevent="submitOtp">
+            <!-- <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" v-model="email" required placeholder="Masukkan email" />
+            </div> -->
+            <div class="input-group">
+                <label for="otp-code">Kode OTP</label>
+                <input type="text" id="otp-code" v-model="otp" required placeholder="Masukkan 6 digit kode OTP"/>
+            </div>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-          <button type="submit">Masuk</button>
+          <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+          <button type="submit" :disabled="isLoading">
+            <span v-if="isLoading">Memverifikasi...</span>
+            <span v-else>Verifikasi</span>
+          </button>
         </form>
       </div>
 
@@ -30,45 +31,51 @@
   </div>
 </template>
 
-/* -- API connections -- */
 <script>
-import axios from 'axios';
+import axios from "axios";
 import logo from '../assets/mncu_logo.png';
 
 export default {
+  name: "VerifyOtp",
   data() {
     return {
       logo: logo,
-      username: '',
-      password: '',
-      errorMessage: ''
+      email: localStorage.getItem("registeredEmail"),
+      otp: "",
+      message: "",
+      success: false,
+      isLoading: false,
     };
   },
   methods: {
-    async handleLogin() {
-      this.errorMessage = '';
-      try {
-        const response = await axios.post('/api/login', {
-          username: this.username,
-          password: this.password
-        });
-        // Send login request to the server
-        // await axios.post('/login', {
-        //   username: this.username,
-        //   password: this.password
-        // });
+    async submitOtp() {
 
-        this.$emit('login-success', response.data);
+      this.isLoading = true; // start loading
+      this.message = "";
+
+      try {
+        const response = await axios.post('/api/verify-otp', {
+          email: this.email,
+          otp: this.otp,
+        });
+
+        this.message = response.data.message;
+        this.success = true;
+
+        localStorage.removeItem("registeredEmail");
+
+        // Redirect after success
+        setTimeout(() => {
+          this.$router.push("/login");
+        }, 1000);
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          this.errorMessage = 'Username atau password salah.';
-        } else {
-          this.errorMessage = 'Terjadi kesalahan saat mencoba masuk. Silakan coba lagi.';
-        }
-        console.error('Login error:', error);
+        this.success = false;
+        this.errorMessage =
+          error.response?.data?.message || "Verifikasi gagal, coba lagi.";
       }
-    }
-  }
+      this.isLoading = false;
+    },
+  },
 };
 </script>
 
@@ -135,7 +142,7 @@ export default {
   font-weight: bold;
 }
 .input-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 .input-group label {
   display: block;
@@ -143,9 +150,9 @@ export default {
   color: #555;
   font-weight: 500;
 }
-.input-group input {
+.input-group input, select {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 12px;
   box-sizing: border-box;
@@ -170,17 +177,14 @@ button {
 button:hover {
   background-color: #0056b3;
 }
-.register {
+.error-message {
+  color: #d93025;
   text-align: center;
-  color: #1F3D7B;
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
-.register:hover {
-  text-decoration: underline;
-}
-.error-message {
-  color: #d93025;
+.success-message {
+  color: #0f5200;
   text-align: center;
   margin-bottom: 1rem;
   font-size: 0.9rem;

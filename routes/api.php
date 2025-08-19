@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Middleware\IsAdmin;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 use App\Http\Controllers\API\BackgroundImageController;
 
@@ -17,14 +18,13 @@ Route::get('/search', [DashboardController::class, 'search']);
 Route::get('/document-types', [DocumentTypeController::class, 'index']);
 
 Route::get('/articles/{document}', [ArticleController::class, 'show']);
-// Route::get('/category/all', [CategoryController::class, 'show']);
 Route::get('/category/{slug}', [CategoryController::class, 'show']);
 
 Route::get('/background-images', [BackgroundImageController::class, 'index']);
 
-
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum',])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
@@ -42,3 +42,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/background-images/update-order', [BackgroundImageController::class, 'updateOrder']);
 
 });
+
+// Email OTP Verification
+Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return response()->json(['message' => 'Email verified successfully!']);
+})->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+
