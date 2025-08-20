@@ -91,7 +91,7 @@ export default {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  width: 80%;
+  width: 60%;
   max-width: 1000px;
 }
 .logo-area {
@@ -100,12 +100,12 @@ export default {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 2rem;
 }
 .logo-image {
   width: 50%;
   height: 50%;
   object-fit: contain;
+  margin: 2rem;
 }
 .app-name {
   text-align: center;

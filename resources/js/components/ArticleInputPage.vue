@@ -493,6 +493,7 @@ button:disabled {
   gap: 1rem;
   align-items: center;
   margin-bottom: 1rem;
+  border: 10px;
 }
 .message {
   padding: 1rem;

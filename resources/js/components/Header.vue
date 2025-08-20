@@ -79,13 +79,16 @@ export default {
 }
 
 .company-logo {
-  max-height: 57px;
+  max-height: 45px;
   width: auto;
 }
 
 .communities-link {
   font-weight: 900;
   font-size: 1.5rem;
+  position: center;
+  margin-left: 5%;
+  margin-right: 20%;
 }
 
 button.login-button {
@@ -99,6 +102,7 @@ button.login-button {
   font-size: 1rem;
   font-weight: 600;
   transition: background-color 0.2s;
+  border-radius: 1rem;
 }
 
 button.login-button:hover {

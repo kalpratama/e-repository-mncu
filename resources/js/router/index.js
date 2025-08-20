@@ -10,6 +10,7 @@ import ArticleEditPage from '../components/ArticleEditPage.vue';
 import AdminBackgroundImages from '../components/AdminBackgroundImages.vue';
 import RegistrationPage from '../components/RegistrationPage.vue';
 import VerifyOTP from '../components/VerifyOTP.vue';
+import ManageUserPage from '../components/ManageUserPage.vue';
 
 const routes = [
   {
@@ -50,6 +51,18 @@ const routes = [
     meta: { title: 'Unggah Dokumen | MNCU-IR' }
   },
   {
+    path: '/admin/articles/:id/edit',
+    name: 'ArticleEdit',
+    component: ArticleEditPage,
+    meta: { title: 'Edit Dokumen | MNCU-IR' },
+  },
+  {
+    path: '/admin/users/manage',
+    name: 'UserManage',
+    component: ManageUserPage,
+    meta: { title: 'Kelola Pengguna | MNCU-IR' },
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: ProfilePage,
@@ -65,12 +78,6 @@ const routes = [
     path: '/search',
     name: 'Search',
     component: SearchPage,
-  },
-  {
-    path: '/admin/articles/:id/edit',
-    name: 'ArticleEdit',
-    component: ArticleEditPage,
-    meta: { title: 'Edit Dokumen | MNCU-IR' },
   },
   {
     path: '/admin/background-images',

@@ -15,8 +15,8 @@ class DashboardController extends Controller
         $publicationTypes = $allTypes->whereNull('parent_id');
 
         $recentDocuments = Document::with('authors', 'documentType')
-                                ->latest()
-                                ->take(5)
+                                ->latest('id')
+                                ->take(6)
                                 ->get();
 
         // Return both sets of data in a single JSON response
