@@ -112,8 +112,8 @@ export default {
 
     setupAxios() {
       // Set base URL if your API is on a different domain/port
-      axios.defaults.baseURL = 'http://127.0.0.1:8000';
-      
+      // axios.defaults.baseURL = 'http://127.0.0.1:8000'; //local
+      axios.defaults.baseURL = import.meta.env.VITE_API_URL || '/api'; // prod
       // Set default headers
       axios.defaults.headers.common['Content-Type'] = 'application/json';
       axios.defaults.headers.common['Accept'] = 'application/json';
