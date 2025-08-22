@@ -11,6 +11,7 @@ import AdminBackgroundImages from '../components/AdminBackgroundImages.vue';
 import RegistrationPage from '../components/RegistrationPage.vue';
 import VerifyOTP from '../components/VerifyOTP.vue';
 import ManageUserPage from '../components/ManageUserPage.vue';
+import UserEditPage from '../components/UserEditPage.vue';
 
 const routes = [
   {
@@ -61,6 +62,12 @@ const routes = [
     name: 'UserManage',
     component: ManageUserPage,
     meta: { title: 'Kelola Pengguna | MNCU-IR' },
+  },
+  {
+    path: '/admin/users/edit/:id',
+    name: 'UserEdit',
+    component: UserEditPage,
+    meta: { title: 'Edit Pengguna | MNCU-IR' },
   },
   {
     path: '/profile',

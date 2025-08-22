@@ -142,11 +142,11 @@ export default {
   computed: {
     downloadUrl() {
       if (!this.article) return '#';
-      return `http://127.0.0.1:8000/api/articles/${this.article.id}/download`;
+      return `/api/articles/${this.article.id}/download`;
     },
     previewURL() {
       if (!this.article || !this.article.file_path) return '#';
-      return `http://127.0.0.1:8000/storage/${this.article.file_path}`;
+      return `/storage/${this.article.file_path}`;
     },
     hasPdfFiles() {
       return this.article &&
@@ -203,7 +203,7 @@ export default {
       if (!this.article) return;
       try {
         const response = await axios({
-          url: `http://127.0.0.1:8000/api/articles/${this.article.id}/download`,
+          url: `/api/articles/${this.article.id}/download`,
           method: 'GET',
           responseType: 'blob',
         });
