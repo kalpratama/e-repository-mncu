@@ -8,7 +8,29 @@
       @logout="$emit('logout')" 
     />
 
-    
+    <main class="main-content">
+      <h1 class="page-title">Kelola Pengguna</h1>
+
+      <!-- Error Message -->
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+      <!-- User List -->
+      <div v-if="users.length > 0" class="user-list">
+        <div v-for="userItem in users" :key="userItem.id" class="user-card">
+          <div class="user-info">
+            <p><strong>Nama:</strong> {{ userItem.name }}</p>
+            <p><strong>Username:</strong> {{ userItem.username }}</p>
+            <p><strong>Email:</strong> {{ userItem.email }}</p>
+            <p><strong>Role:</strong> {{ userItem.role }}</p>
+            <p><strong>Prodi:</strong> {{ userItem.prodi }}</p>
+          </div>
+          <button @click="editUser(userItem.id)">Edit</button>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <p v-else class="no-users">Belum ada pengguna terdaftar.</p>
+    </main>
   </div>
 </template>
 
@@ -17,168 +39,41 @@ import Header from './Header.vue';
 import axios from 'axios';
 
 export default {
-  components: {
-    Header
-  },
+  components: { Header },
   props: {
     isLoggedIn: Boolean,
     user: Object
   },
   data() {
     return {
-      documentTypes: [],
-      isSubmitting: false,
-      successMessage: '',
-      errorMessage: '',
-      validationErrors: null,
+      users: [],
+      errorMessage: ''
     };
   },
-
-  computed: {
-    flatDocumentTypes() {
-      const flatten = (types) => {
-        let list = [];
-        for (const type of types) {
-          list.push({ id: type.id, name: type.name });
-          if (type.children) {
-            list = list.concat(flatten(type.children));
-          }
-        }
-        return list;
-      };
-      return flatten(this.documentTypes);
-    }
+  created() {
+    this.checkAdminAccess();
+    this.fetchUsers();
   },
-
   methods: {
-    shouldShow(fieldName) {
-      if (!this.form.document_type_id) return false;
-      const fields = fieldConfig[this.form.document_type_id];
-      return fields ? fields.includes(fieldName) : false;
+    checkAdminAccess() {
+      if (!this.user || this.user.role !== 'admin') {
+        this.$router.push('/'); // Non-admin users redirected to homepage
+      }
     },
-    onTypeChange() {
-      this.resetForm(this.form.document_type_id);
-    },
-    async fetchDocumentTypes() {
+    async fetchUsers() {
       try {
-        const response = await axios.get('/api/document-types');
-        this.documentTypes = response.data;
+        const response = await axios.get('/api/users');
+        this.users = response.data;
       } catch (error) {
-        console.error("Failed to fetch document types:", error);
+        this.errorMessage = 'Gagal memuat data pengguna.';
+        console.error(error);
       }
     },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      this.fileError = '';
-      
-      if (file) {
-        if (file.type !== 'application/pdf') {
-          this.fileError = 'Hanya file PDF yang diperbolehkan';
-          event.target.value = '';
-          this.form.document_file = null;
-          return;
-        }
-        
-        const maxSize = 10 * 1024 * 1024;
-        if (file.size > maxSize) {
-          this.fileError = 'Ukuran file maksimal 10MB';
-          event.target.value = '';
-          this.form.document_file = null;
-          return;
-        }
-        
-        this.form.document_file = file;
-        console.log('File selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
-      }
-    },
-    addAuthor(){
-      this.form.authors.push({ name: '', identifier: '', program_studi: '', role: '' });
-    },
-    removeAuthor(index) {
-      if (this.form.authors.length > 1) {
-        this.form.authors.splice(index, 1);
-      } else {
-        alert('Harus ada minimal satu penulis.');
-      }
-    },
-    resetForm(selectedTypeId = '') {
-      this.form = {
-        title: '',
-        document_type_id: selectedTypeId,
-        abstract: '',
-        description: '',
-        date_when: null,
-        year: null,
-        publisher: '',
-        issn: '',
-        conference_name: '',
-        publication_link: '',
-        authors: [{ name: '', identifier: '', program_studi: '', role: '' }],
-        document_file: null,
-
-        location: '',
-        achievement_type: '',
-        championship: '',
-        champ_ranking: '',
-      };
-    },
-    hasOverlongWord(input){
-      return /\S{30,}/.test(input);
-    },
-    async submitArticle() {
-      this.isSubmitting = true;
-      this.successMessage = '';
-      this.errorMessage = '';
-      this.validationErrors = null;
-      const formData = new FormData();
-      const fieldsToCheck = ['title', 'abstract', 'description', 'publisher', 'conference_name', 'location', 'achievement_type', 'championship', 'champ_ranking'];
-      const overlongInput = fieldsToCheck.find(field => this.hasOverlongWord(this.form[field]));
-      if (overlongInput) {
-        this.isSubmitting = false;
-        this.errorMessage = `"${overlongInput}" tidak boleh memiliki kata lebih dari 30 karakter tanpa spasi.`;
-        return;
-      }
-      Object.keys(this.form).forEach(key => {
-        if (key === 'authors') {
-          this.form.authors.forEach((author, index) => {
-            formData.append(`authors[${index}][name]`, author.name);
-            formData.append(`authors[${index}][identifier]`, author.identifier);
-            formData.append(`authors[${index}][program_studi]`, author.program_studi);
-            formData.append(`authors[${index}][role]`, author.role);
-          });
-        } else if (this.form[key] !== null) {
-          formData.append(key, this.form[key]);
-        }
-      });
-        if (this.form.document_file) {
-          formData.append('document_file', this.form.document_file);
-        }
-
-      try {
-        const response = await axios.post('/api/articles', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        this.successMessage = `Dokumen "${response.data.title}" berhasil dibuat!`;
-        this.resetForm();
-        setTimeout(() => this.$router.push(`/article/${response.data.id}`), 2000);
-      } catch (error) {
-        if (error.response && error.response.status === 422) {
-          this.errorMessage = 'Perbaiki kesalahan sebelum mengunggah.';
-          this.validationErrors = error.response.data.errors;
-        } else if (error.response && error.response.data.message) {
-          this.errorMessage = `Error: ${error.response.data.message}`;
-        } else {
-          this.errorMessage = 'Terjadi kesalahan yang tidak terduga. Silakan coba lagi.';
-        }
-      } finally {
-        this.isSubmitting = false;
-      }
-    },
-  },
-  created() { 
-    this.fetchDocumentTypes(); 
+    editUser(userId) {
+      this.$router.push(`/users/edit/${userId}`);
+    }
   }
-}
+};
 </script>
 
 <style scoped>
