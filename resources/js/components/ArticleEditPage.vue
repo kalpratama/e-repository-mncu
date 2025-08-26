@@ -7,15 +7,25 @@
       @request-login="$emit('request-login')" 
       @logout="$emit('logout')" 
     />
+    <div v-if="isLoading" class="loading-container">
+      <p>Memuat dokumen untuk diedit...</p>
+    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
-      <div v-if="isLoading" class="loading-container">
-        <p>Memuat dokumen untuk diedit...</p>
-      </div>
-      <div v-else class="form-container">
+    <main v-else-if="user && user.role === 'admin'" class="main-content">
+      <div class="form-container">
         <h1 class="form-title">Edit Dokumen</h1>
         <p class="form-subtitle">Perbarui detail dokumen </p>
+
+        <div class="form-group">
+          <label for="document_type">Kategori Dokumen</label>
+          <select id="document_type" v-model="form.document_type_id" @change="onTypeChange" required>
+            <option disabled value="">Pilih Kategori</option>
+            <option class="documenttype_dropdown" v-for="type in flatDocumentTypes" :key="type.id" :value="type.id">
+              {{ type.name }}
+            </option>
+          </select>
+        </div>
 
         <form v-if="form.document_type_id" @submit.prevent="submitUpdate" enctype="multipart/form-data">
           <!-- Success Message -->
@@ -38,7 +48,7 @@
                 </div>
                 
                 <!-- Conditionally show fields based on the selected category -->
-                 <div v-if="shouldShow('date_when')" class="form-group">
+                <div v-if="shouldShow('date_when')" class="form-group">
                   <label for="date_when">Tanggal</label>
                   <input type="date" id="date_when" v-model.number="form.date_when" placeholder="e.g.,">
                 </div>
@@ -132,7 +142,7 @@
                       <option value="Pendidikan Matematika">Pendidikan Matematika</option>
                       <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
                       <option value="Sains Komunikasi">Sains Komunikasi</option>
-                      <option value="DKV">DKV</option>
+                      <option value="Desain Komunikasi Visual">Desain Komunikasi Visual</option>
                       <option value="Sistem Informasi">Sistem Informasi</option>
                       <option value="Ilmu Komputer">Ilmu Komputer</option>
                     </select>
@@ -167,6 +177,9 @@
         </form>
       </div>
     </main>
+    <main v-else class="main-content">
+      <h1 class="page-title">Anda tidak memiliki akses!</h1>
+    </main>
   </div>
 </template>
 
@@ -175,9 +188,9 @@ import Header from './Header.vue';
 import axios from 'axios';
 
 const fieldConfig = {
-  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
-  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
-  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
+  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
+  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel JTT
+  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel
   4: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'description', 'authors', 'program_studi', 'role', 'file_path'], // Buku
   5: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'description', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
   6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'identifier', 'role', 'file_path'], // Skripsi
@@ -189,9 +202,9 @@ const fieldConfig = {
   12: ['title', 'year', 'authors', 'program_studi', 'role', 'identifier', 'file_path'],// Poster Ilmiah
   13: ['title', 'year', 'name', 'program_studi', 'role', 'identifier', 'location', 'achievement_type', 'championship', 'champ_ranking', 'file_path'],// Dokumentasi Prestasi mhs
 
-  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
-  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
-  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internal
+  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
+  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
+  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internal
   17: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Majalah
   18: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Koran
 };
@@ -323,8 +336,6 @@ export default {
         console.log('File selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
       }
     },
-
-    
     addAuthor() {
       this.form.authors.push({ name: '', identifier: '', program_studi: '', role: '' });
     },
@@ -366,7 +377,7 @@ export default {
       this.validationErrors = null;
       const formData = new FormData();
       const articleId = this.$route.params.id;
-      const fieldsToCheck = ['title', 'abstract', 'publisher', 'conference_name',  'location', 'achievement_type', 'championship', 'champ_ranking'];
+      const fieldsToCheck = ['title', 'abstract', 'publisher', 'description', 'conference_name',  'location', 'achievement_type', 'championship', 'champ_ranking'];
       const overlongInput = fieldsToCheck.find(field => this.hasOverlongWord(this.form[field]));
       if (overlongInput) {
         this.isSubmitting = false;
@@ -393,7 +404,6 @@ export default {
         const response = await axios.post(`/api/articles/${articleId}?_method=PUT`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-
         this.successMessage = `Dokumen "${response.data.title}" berhasil diperbarui!`;
         setTimeout(() => this.$router.push(`/article/${articleId}`), 2000);
       } catch (error) {
@@ -424,6 +434,14 @@ export default {
 }
 .main-content {
   padding: 3rem 1rem;
+}
+.page-title {
+  color: #ffffff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: .5rem;
 }
 .form-container {
   max-width: 1250px;
@@ -536,6 +554,12 @@ button:disabled {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+.loading-container {
+  text-align: center;
+  color: white;
+  padding: 5rem;
+  font-size: 1.2rem;
 }
 @media (max-width: 1024px) { 
   .form-columns {

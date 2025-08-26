@@ -7,15 +7,17 @@
       @request-login="$emit('request-login')" 
       @logout="$emit('logout')"
     />
+    <div v-if ="isLoading" class="loading-container">
+      <p>Memuat...</p>
+    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main v-else class="main-content">
+      <div class="title-container"></div>
       <h1 class="repository-title">Repositori Institusional MNC University</h1>
-      <div v-if ="isLoading" class="loading-container">
-        <p>Memuat...</p>
-      </div>
-
-      <div v-else class="content-boxes">
+      <h3 class="repository-description">Repositori Institusional MNC University adalah layanan digital yang mengumpulkan, melestarikan, dan menyebarluaskan karya akademik, serta menjamin akses jangka panjang terhadap hasil pemikiran Sivitas Akademika.</h3>
+      
+      <div class="content-boxes">
         <!-- Left Column -->
         <div class="content-box left-column">
           <h2 class="box-title">Terbitan Pustaka</h2>
@@ -170,7 +172,7 @@ export default {
 .loading-container {
   text-align: center;
   color: white;
-  padding: 1rem;
+  padding: 5rem;
   font-size: 1.2rem;
 }
 /* --- Main Content --- */
@@ -182,11 +184,21 @@ export default {
 }
 .repository-title {
   color: #ffffff;
-  text-align: center;
+  text-align: left;
   font-size: 1.5rem;
   font-weight: 600;
   margin-top: 0;
-  margin-bottom: .5rem;
+  margin-bottom: 0rem;
+}
+.repository-description{
+  color: #ffffff;
+  text-align: justify;
+  font-size: 0.75rem;
+  font-weight: 250;
+  margin-top: 0.2rem;
+  margin-bottom: 1rem;
+  /* padding-right: 8rem; */
+  /* padding-left: 8rem; */
 }
 .content-boxes {
   display: flex;
@@ -398,8 +410,19 @@ li:hover > a {
     padding: 0rem;
   }
   .repository-title {
+    text-align: center;
     font-size: 1rem;
     margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .repository-description{
+    font-size: 0.85rem;
+    margin: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 0.5rem;
   }
   .box-title {
     text-align: center;

@@ -7,10 +7,14 @@
       @request-login="$emit('request-login')" 
       @logout="$emit('logout')" 
     />
+    <div v-if ="isLoading" class="loading-container">
+      <p>Memuat...</p>
+    </div>
 
     <!-- Main Content Area -->
-    <main class="main-content">
+    <main v-else class="main-content">
       <div class="content-boxes">
+
         <!-- Left Column: Article Details -->
         <div v-if="article" class="content-box article-details">
           <div class="article-header">
@@ -120,7 +124,6 @@ export default {
   props: {
     isLoggedIn: Boolean,
     user: Object,
-    // hasPdfFiles: Boolean
     article: Object
   },
   data() {
@@ -132,7 +135,6 @@ export default {
     }
   },
   watch: {
-    // Watch for changes in the URL query string (e.g., a new search)
     '$route.query.q': {
       handler: 'performSearch',
       immediate: true
@@ -274,14 +276,12 @@ export default {
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
 }
-
 .main-content {
   padding-left: 5rem;
   padding-right: 5rem;
   padding-bottom: 2rem;
   padding-top: 3rem;
 }
-
 .repository-title {
   color: #ffffff;
   text-align: center;
@@ -290,7 +290,6 @@ export default {
   margin-top: 0;
   margin-bottom: .5rem;
 }
-
 .content-boxes {
   display: flex;
   flex-direction: row;
@@ -298,22 +297,18 @@ export default {
   max-width: 1400px;
   margin: 0 auto;
 }
-
 .content-boxes > .content-box:first-child {
   flex: 1;
 }
-
 .content-boxes > .content-box:last-child {
   flex: 2;
 }
-
 .content-box {
   background-color: #ffffff;
   border-radius: 8px;
   padding: 1.5rem 2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
-
 .download-button {
   display: inline-block;
   padding: 0.5rem 1rem;
@@ -323,19 +318,16 @@ export default {
   border-radius: 5px;
   transition: background-color 0.2s;
 }
-
 .article-details {
   flex: 2; /* Takes up more space */
   overflow-x: auto;
 }
-
 .right-column {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
-
 .box-title {
   margin: 0,0,0,0;
   font-size: 1.25rem;
@@ -346,7 +338,6 @@ export default {
   margin-bottom: 2.5rem;
   font-size: 1rem;
 }
-
 .article-header {
   display: flex;
   justify-content: space-between;
@@ -355,34 +346,35 @@ export default {
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
 }
-
 .title-section h1 {
   margin: 0 0 0.5rem 0;
   font-size: 2rem;
   line-height: 1.2;
   color: #1F3D7B;
 }
-
 .meta {
   font-size: 1rem;
   color: #666;
   margin: 0;
 }
-
 .thumbnail {
   display: block;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
-
 .abstract-section h2 {
   margin: 0 0 1rem 0;
   font-size: 1.25rem;
 }
-
 .abstract-section p {
   line-height: 1.7;
   text-align: justify;
+}
+.loading-container {
+  text-align: center;
+  color: white;
+  padding: 5rem;
+  font-size: 1.2rem;
 }
 
 /* --- Search Bar --- */

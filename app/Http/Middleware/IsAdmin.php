@@ -17,6 +17,7 @@ class IsAdmin
         }
 
         // If not an admin, return an "Unauthorized" error
-        return response()->json(['message' => 'Unauthorized'], 403);
+        // return response()->json(['message' => 'Unauthorized'], 403);
+        return redirect('/dashboard')->with('error', 'Anda tidak memiliki akses!');
     }
 }

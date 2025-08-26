@@ -7,9 +7,12 @@
       @request-login="$emit('request-login')" 
       @logout="$emit('logout')" 
     />
+    <div v-if ="isLoading" class="loading-container">
+      <p>Memuat...</p>
+    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main v-else class="main-content">
       <div class="form-container">
         <h1 class="form-title">Buat Unggahan Baru</h1>
         <p class="form-subtitle">Isi detail untuk item repositori baru.</p>
@@ -34,7 +37,7 @@
             {{ errorMessage }}
           </div>
 
-          <div class="form-columns">
+          <div v-else class="form-columns">
             <!-- Left Column -->
             <div class="form-column">
               <fieldset class="form-section">
@@ -138,7 +141,7 @@
                       <option value="Pendidikan Matematika">Pendidikan Matematika</option>
                       <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
                       <option value="Sains Komunikasi">Sains Komunikasi</option>
-                      <option value="DKV">DKV</option>
+                      <option value="Desain Komunikasi Visual">Desain Komunikasi Visual</option>
                       <option value="Sistem Informasi">Sistem Informasi</option>
                       <option value="Ilmu Komputer">Ilmu Komputer</option>
                     </select>
@@ -180,9 +183,9 @@ import Header from './Header.vue';
 import axios from 'axios';
 
 const fieldConfig = {
-  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
-  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel JTT
-  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'], // Artikel
+  1: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel Jurnal
+  2: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel JTT
+  3: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'], // Artikel
   4: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'description', 'authors', 'program_studi', 'role', 'file_path'], // Buku
   5: ['title', 'year', 'isbn', 'publisher', 'tempat_terbit', 'description', 'authors', 'program_studi', 'role', 'file_path'], // Bab buku
   6: ['title', 'year', 'abstract', 'authors', 'program_studi', 'identifier', 'role', 'file_path'], // Skripsi
@@ -194,9 +197,9 @@ const fieldConfig = {
   12: ['title', 'year', 'authors', 'program_studi', 'role', 'identifier', 'file_path'],// Poster Ilmiah
   13: ['title', 'year', 'name', 'program_studi', 'role', 'identifier', 'location', 'achievement_type', 'championship', 'champ_ranking', 'file_path'],// Dokumentasi Prestasi mhs
 
-  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
-  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
-  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Jurnal Internal
+  14: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
+  15: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internasional
+  16: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internal
   17: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Majalah
   18: ['title', 'year', 'issn', 'publisher', 'abstract', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Koran
 };
@@ -222,9 +225,9 @@ export default {
         issn: '',
         conference_name: '',
         publication_link: '',
-        authors: [{ name: '', identifier: '', program_studi: '', role: '' }], // Default role set to 'Dosen'
+        authors: [{ name: '', identifier: '', program_studi: '', role: '' }],
         document_file: null,
-        fileError: '', // For file upload error messages
+        fileError: '',
 
         location: '',
         achievement_type: '',
@@ -236,6 +239,7 @@ export default {
       successMessage: '',
       errorMessage: '',
       validationErrors: null,
+      isLoading: true,
     };
   },
 
@@ -254,7 +258,6 @@ export default {
       return flatten(this.documentTypes);
     }
   },
-
   methods: {
     shouldShow(fieldName) {
       if (!this.form.document_type_id) return false;
@@ -270,6 +273,8 @@ export default {
         this.documentTypes = response.data;
       } catch (error) {
         console.error("Failed to fetch document types:", error);
+      } finally {
+      this.isLoading = false;
       }
     },
     handleFileUpload(event) {
@@ -364,7 +369,6 @@ export default {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         this.successMessage = `Dokumen "${response.data.title}" berhasil dibuat!`;
-        this.resetForm();
         setTimeout(() => this.$router.push(`/article/${response.data.id}`), 2000);
       } catch (error) {
         if (error.response && error.response.status === 422) {
@@ -510,6 +514,12 @@ button:disabled {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+.loading-container {
+  text-align: center;
+  color: white;
+  padding: 5rem;
+  font-size: 1.2rem;
 }
 @media (max-width: 1024px) { 
   .form-columns {
