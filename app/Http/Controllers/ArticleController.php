@@ -49,17 +49,30 @@ class ArticleController extends Controller
 
             $authorIds = [];
             foreach ($validatedData['authors'] as $authorData) {
-                $author = Author::updateOrCreate(
-                    ['identifier' => $authorData['identifier']],
-                    [
+                if (!empty($authorData['identifier'])) {
+                    // If identifier exists, just find or create by identifier
+                    $author = Author::firstOrCreate(
+                        ['identifier' => $authorData['identifier']],
+                        [
+                            'name' => $authorData['name'],
+                            'program_studi' => $authorData['program_studi'],
+                            'role' => $authorData['role'],
+                        ]
+                    );
+                } else {
+                    // No identifier → create new author first
+                    $author = Author::updateOrCreate([
                         'name' => $authorData['name'],
                         'program_studi' => $authorData['program_studi'],
                         'role' => $authorData['role'],
-                    ]
-                );
+                    ]);
+
+                    // Generate unique default identifier (e.g., 0000 + author_id)
+                    $author->identifier = '0000' . str_pad($author->id, 4, '0', STR_PAD_LEFT);
+                    $author->save();
+                }
                 $authorIds[] = $author->id;
             }
-
             $document->authors()->sync($authorIds);
 
             return response()->json($document->load('authors'), 201);
@@ -105,13 +118,37 @@ class ArticleController extends Controller
             // Process and sync the authors
             $authorIds = [];
             foreach ($validatedData['authors'] as $authorData) {
-                $author = Author::firstOrCreate(
-                    ['identifier' => $authorData['identifier']],
-                    [
-                        'name' => $authorData['name'],
-                        'program_studi' => $authorData['program_studi'],
-                    ]
-                );
+                if (!empty($authorData['identifier'])) {
+                    // If identifier exists, just find or create by identifier
+                    $author = Author::firstOrCreate(
+                        ['identifier' => $authorData['identifier']],
+                        [
+                            'name' => $authorData['name'],
+                            'program_studi' => $authorData['program_studi'],
+                            'role' => $authorData['role'],
+                        ]
+                    );
+                } else {
+                    // Update or create based on unique fields
+                    $author = Author::updateOrCreate(
+                        [
+                            'name' => $authorData['name'],
+                            'program_studi' => $authorData['program_studi'],
+                            'role' => $authorData['role'],
+                        ],
+                        [
+                            'program_studi' => $authorData['program_studi'],
+                            'role' => $authorData['role'],
+                        ]
+                    );
+
+                    // Generate identifier ONLY if it's missing
+                    if (empty($author->identifier)) {
+                        $author->identifier = '0000' . str_pad($author->id, 4, '0', STR_PAD_LEFT);
+                        $author->save();
+                    }
+                }
+
                 $authorIds[] = $author->id;
             }
             $document->authors()->sync($authorIds);

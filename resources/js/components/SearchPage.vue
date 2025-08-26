@@ -7,16 +7,14 @@
       @request-login="$emit('request-login')" 
       @logout="$emit('logout')" 
     />
+    <div v-if="isLoading" class="loading-container">
+      <p>Mencari...</p>
+    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <h1 class="search-title">Hasil Pencarian untuk: "{{ searchQuery }}"</h1>
-      <div v-if="isLoading" class="loading-container">
-        <p>Mencari...</p>
-      </div>
-      
-      <div v-else class="content-boxes">
-        
+    <main v-else class="main-content">
+      <h1 class="search-title">Hasil Pencarian untuk: "{{ searchQuery }}"</h1>
+      <div class="content-boxes">
         <!-- Left Column -->
         <div class="content-box document-list">
           <SearchBar :initial-query="searchQuery" @perform-search="navigateToSearch" />
@@ -151,7 +149,7 @@ export default {
 .loading-container { 
   text-align: center; 
   color: white; 
-  padding: 4rem; 
+  padding: 5rem; 
   font-size: 1.2rem; 
 }
 .main-content {

@@ -190,7 +190,8 @@ export default {
 .loading-container {
   text-align: center;
   color: white;
-  padding: 3rem;
+  padding: 5rem;
+  font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {

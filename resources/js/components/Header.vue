@@ -87,8 +87,8 @@ export default {
   font-weight: 900;
   font-size: 1.5rem;
   position: center;
-  margin-left: 5%;
-  margin-right: 20%;
+  padding-left: 5%;
+  padding-right: 20%;
 }
 
 button.login-button {
