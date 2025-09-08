@@ -16,7 +16,7 @@
         Kelola Pengguna
       </router-link>
       <div class="dropdown-divider"></div>
-      <a href="#" @click.prevent="$emit('logout')" class="dropdown-item">Logout</a>
+      <a href="#" @click.prevent="$emit('logout')" class="dropdown-item logout">Logout</a>
       
     </div>
   </div>
@@ -95,6 +95,9 @@ export default {
   text-decoration: none;
   display: block;
   font-size: 1rem;
+}
+.logout{
+  color: red;
 }
 .dropdown-item:hover {
   background-color: #f1f1f1;

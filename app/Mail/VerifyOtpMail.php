@@ -19,7 +19,7 @@ class VerifyOtpMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Your Email Verification Code')
+        return $this->subject('Verifikasi Email Anda - MNCU Repository')
                     ->view('emails.verify-otp')
                     ->with(['otp' => $this->otp]);
     }
