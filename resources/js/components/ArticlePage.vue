@@ -26,6 +26,8 @@
               <img :src="article.thumbnail || 'https://placehold.co/100x120/e2e8f0/718096?text=No%0AImage'" alt="Article Thumbnail" class="thumbnail">
             </div> -->
           </div>
+
+          <!-- Preview Document -->
           <div class="abstract-section" v-if="article && article.abstract">
             <h2 class="box-title"> Abstrak</h2>
             <p class="abstract-text">{{ article.abstract }}</p>
@@ -34,6 +36,15 @@
             <h2 class="box-title"> Deskripsi</h2>
             <p class="abstract-text">{{ article.description }}</p>
           </div>
+          <div v-if="hasPdfFiles && isLoggedIn" class="pdf-preview-box">
+            <h2 class="box-title">Pratinjau Dokumen</h2>
+              <iframe
+                :src="previewURL + '#toolbar=0&navpanes=0&scrollbar=0'"
+                type="application/pdf"
+                class="pdf-preview"
+                frameborder="0"
+              ></iframe>
+            </div>
         </div>
         <!-- Fallback if article not found -->
         <div v-else class="content-box article-details">
@@ -50,6 +61,21 @@
           <div v-if="article" class="content-box">
             <h2 class="details-title">Detail Dokumen</h2>
             <div class="details-grid">
+              <div v-if="article.document_type && (article.document_type.name === 'Dokumentasi Prestasi Mahasiswa' || article.document_type.name === 'Poster Ilmiah')" class="action-buttons">
+                <div v-if="article.authors && article.authors.length" class="detail-item">
+                  <span class="detail-label">Nama</span>
+                  <span class="detail-value">
+                    {{ article.authors.map(author => author.name).join(', ') }}
+                  </span>
+                </div>
+                <div v-if="article.authors && article.authors.length" class="detail-item">
+                  <span class="detail-label">Prodi</span>
+                  <span class="detail-value">
+                    {{ article.authors.map(author => author.program_studi).join(', ') }}
+                  </span>
+                </div>
+              </div>
+
               <div v-if="article.document_type" class="detail-item">
                 <span class="detail-label">Kategori</span>
                 <span class="detail-value">{{ article.document_type.name }}</span>
@@ -93,7 +119,75 @@
                 <span class="detail-label">Peringkat</span>
                 <span class="detail-value">{{ article.champ_ranking }}</span>
               </div>
-              <div class="buttons-box">
+              <div class="buttons-box flex gap-2 items-center">
+                <!-- Preview Button -->
+                <button
+                  v-if="isLoggedIn && hasPdfFiles"
+                  @click="previewDocument"
+                  class="preview-button"
+                  title="Lihat Dokumen"
+                >
+                  <!-- Eye Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg> 
+                </button>
+
+                <!-- Download Button -->
+                <button
+                  v-if="isLoggedIn && hasPdfFiles"
+                  @click="downloadDocument"
+                  class="download-button"
+                  title="Unduh PDF"
+                >
+                  <!-- Download Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
+                  </svg>
+                </button>
+
+                <!-- Prompt for Non-Logged-In Users -->
+                <p v-else-if="!isLoggedIn" class="login-prompt text-gray-500 text-sm">
+                  Masuk untuk melihat atau mengunduh dokumen
+                </p>
+
+                <!-- No PDF Available -->
+                <p v-else class="login-prompt text-gray-500 text-sm">
+                  PDF dokumen ini tidak tersedia
+                </p>
+
+                <!-- Admin Actions -->
+                <div v-if="user && user.role === 'admin'" class="admin-actions flex gap-2 ml-2">
+                  <!-- Edit Button -->
+                  <router-link
+                    :to="'/admin/articles/' + article.id + '/edit'"
+                    class="edit-button"
+                    title="Edit Dokumen"
+                  >
+                    <!-- Pencil Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 4h2m-6.586 9.586a2 2 0 010-2.828l7-7a2 2 0 012.828 0l2.172 2.172a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0L7.414 15.414z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5l3 3" />
+                  </svg>
+                  </router-link>
+
+                  <!-- Delete Button -->
+                  <button @click="deleteArticle" class="delete-button" title="Hapus Dokumen">
+                    <!-- Trash Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- <div class="buttons-box">
                 <button v-if="isLoggedIn && hasPdfFiles" @click="previewDocument" class="preview-button">Lihat Dokumen</button>
                 <button v-if="isLoggedIn && hasPdfFiles" @click="downloadDocument" class="download-button">Unduh PDF</button>
                 <p v-else-if="!isLoggedIn" class="login-prompt">Masuk untuk lihat atau unduh dokumen</p>
@@ -102,7 +196,7 @@
                   <router-link :to="'/admin/articles/' + article.id + '/edit'" class="edit-button">Edit</router-link>
                   <button @click="deleteArticle" class="delete-button">Hapus</button>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -174,6 +268,11 @@ export default {
 
     formatMeta(item) {
       if (!item) return '';
+
+      // If the document is Poster Ilmiah, skip meta formatting entirely
+      if (item.document_type && (item.document_type.name === "Poster Ilmiah" || item.document_type.name === "Dokumentasi Prestasi Mahasiswa")) {
+        return '';
+      }
       
       const authors = item.authors && item.authors.length > 0
         ? item.authors.map(author => {
@@ -308,6 +407,16 @@ export default {
   border-radius: 8px;
   padding: 1.5rem 2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.pdf-preview-box {
+  margin-bottom: 2.5rem;
+}
+.pdf-preview {
+  width: 100%;
+  height: 300px; /* Limit preview area */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
 }
 .download-button {
   display: inline-block;

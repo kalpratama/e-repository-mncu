@@ -16,37 +16,85 @@
 
       <!-- User List -->
       <div class="content-box">
-        <form @submit.prevent="submitSearch" class="search-bar-container">
-          <input 
-            type="text" 
-            v-model="internalQuery" 
-            placeholder="X Belum bisa search pengguna. X" 
+        <div class="search-bar-container">
+          <input
+            v-model="searchQuery"
+            @input="filterUsers"
+            type="text"
+            placeholder="Cari pengguna berdasarkan nama, username, email, atau prodi..."
             class="search-input"
-          >
-          <!-- USER SEARCH BELUM DIIMPLEMENTASIKAN -->
+          />
           <button type="submit" class="search-button" aria-label="Search">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </button>
-        </form>
-        <!-- <SearchBar :initial-query="searchQuery" @perform-search="navigateToSearch" /> -->
+        </div>
+
+        <!-- <SearchBar @perform-search="navigateToSearch" /> -->
+
         <div class="user-list">
-          <p v-if="users.length === 0">Tidak ada pengguna yang ditemukan.</p>
-          <div v-for="userItem in users" :key="userItem.id" class="user-card">
-            <router-link :to="'/admin/users/edit/' + userItem.id">
-              <div class="text-container header">
-                <h3 class="text-name">{{ userItem.name }}</h3>
-                <p class="text-username">{{ userItem.username }}</p>
-              </div>
-              <div class="info-container">
-                <div class="text-container email">
-                  <p class="text">{{ userItem.email }}</p>
-                </div>
-                <div class="text-container info">
-                  <p class="text">{{ userItem.prodi || '-' }}</p>
-                  <p class="text">{{ userItem.role }}</p>
-                </div>
-              </div>
-            </router-link>
+          <!-- If there are no users -->
+          <p v-if="users.length === 0" class="no-users">
+            Tidak ada pengguna yang ditemukan.
+          </p>
+
+          <!-- If there are users, display them in a table -->
+          <div v-else class="table-container">
+            <table class="user-table">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>No. Induk</th>
+                <th>Program Studi</th>
+                <th>Role</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(userItem, index) in filteredUsers" :key="userItem.id">
+                <td>{{ index + 1 }}.</td>
+                <td>{{ userItem?.id }}</td>
+                <td class="username-text">@{{ userItem?.username }}</td>
+                <td>{{ userItem?.name }}</td>
+                <td>{{ userItem?.email }}</td>
+                <td>{{ userItem?.id_number }}</td>
+                <td>{{ userItem?.prodi || '-' }}</td>
+                <td>{{ userItem?.role }}</td>
+                <td class="action-buttons">
+                <!-- Edit User Button -->
+                <router-link
+                  :to="'/admin/users/edit/' + userItem.id"
+                  class="icon-button edit-button"
+                  title="Edit Pengguna"
+                >
+                  <!-- Pencil Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 4h2m-6.586 9.586a2 2 0 010-2.828l7-7a2 2 0 012.828 0l2.172 2.172a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0L7.414 15.414z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5l3 3" />
+                  </svg>
+                </router-link>
+
+                <!-- Delete User Button -->
+                <button
+                  @click="deleteUser(userItem.id)"
+                  class="icon-button delete-button"
+                  title="Hapus Pengguna"
+                >
+                  <!-- Trash Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v1h6V4a1 1 0 00-1-1m-4 0h4" />
+                  </svg>
+                </button>
+              </td>
+
+              </tr>
+            </tbody>
+          </table>
           </div>
         </div>
       </div>
@@ -65,7 +113,7 @@ import axios from 'axios';
 export default {
   components: { 
     Header,
-  SearchBar
+    SearchBar
  },
   props: {
     isLoggedIn: Boolean,
@@ -74,6 +122,8 @@ export default {
   data() {
     return {
       users: [],
+      filteredUsers: [],
+      searchQuery: '',
       errorMessage: '',
       isLoading: true,
     };
@@ -84,20 +134,60 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const response = await axios.get(`/api/users`);
-        console.log("Fetched Users: ", response.data);
-        this.users = response.data.data || response.data;
+        const response = await axios.get("/api/users");
+
+        // Ensure the response is an array
+        if (Array.isArray(response.data)) {
+          this.users = response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+          // If API returns { data: [...] }
+          this.users = response.data.data;
+        } else {
+          this.users = [];
+        }
+
+        this.filteredUsers = [...this.users];
+        this.isLoading = false;
       } catch (error) {
-        console.error('Fetch users failed:', error);
-        this.errorMessage = 'Gagal memuat data pengguna.';
-      } finally {
+        this.errorMessage = "Gagal memuat data pengguna.";
+        console.error(error);
         this.isLoading = false;
       }
     },
-    editUser(userId) {
-      this.$router.push(`/users/edit/${userId}`);
-    }
-  }
+    filterUsers() {
+      const query = this.searchQuery.trim().toLowerCase();
+
+      if (!query) {
+        // If search is empty, show all users again
+        this.filteredUsers = this.users;
+        return;
+      }
+
+      // Filter users based on name, username, email, prodi, or role
+      this.filteredUsers = this.users.filter((user) =>
+        (user.name && user.name.toLowerCase().includes(query)) ||
+        (user.username && user.username.toLowerCase().includes(query)) ||
+        (user.email && user.email.toLowerCase().includes(query)) ||
+        (user.prodi && user.prodi.toLowerCase().includes(query)) ||
+        (user.role && user.role.toLowerCase().includes(query))
+      );
+    },
+    editUser(id) {
+      this.$router.push(`/admin/users/edit/${id}`);
+    },
+    async deleteUser(id) {
+      if (!confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) return;
+
+      try {
+        await axios.delete(`/api/users/${id}`);
+        this.users = this.users.filter((user) => user.id !== id);
+        this.filteredUsers = this.filteredUsers.filter((user) => user.id !== id);
+      } catch (error) {
+        console.error(error);
+        alert("Gagal menghapus pengguna.");
+      }
+    },
+  },
 };
 </script>
 
@@ -236,6 +326,86 @@ export default {
   background-color: #0056b3;
 }
 
+/* Tables */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  margin-top: 15px;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.user-table thead {
+  background-color: #f4f4f4;
+}
+.user-table th,
+.user-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+.user-table th {
+  font-weight: 600;
+  color: #333;
+}
+.user-table tr:hover {
+  background-color: #f9f9f9;
+}
+.username-text {
+  font-weight: 600;
+  color: #1F3D7B;
+}
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.edit-button {
+  background-color: #1d4ed8; /* Blue */
+  color: white;
+}
+
+.delete-button {
+  background-color: #ef4444; /* Red */
+  color: white;
+}
+
+.icon-button:hover {
+  filter: brightness(1.15);
+}
+
+.icon-button svg {
+  pointer-events: none;
+}
+
+/* .action-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+} */
+
 @media (max-width: 768px){
   .main-content {
     padding: 0rem;
@@ -251,6 +421,10 @@ export default {
   .text-container.header{
     flex-direction: row;
     justify-content: space-between;
+  }
+  .user-table th:nth-child(2),
+  .user-table td:nth-child(2) {
+    display: none; /* Example: hides "Role" column */
   }
   p.text{
     width: 100%;

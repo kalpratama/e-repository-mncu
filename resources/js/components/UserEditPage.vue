@@ -34,12 +34,10 @@
             <label for="username">Username</label>
             <input type="text" id="username" v-model="form.username" required />
           </div>
-
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" v-model="form.email" required />
-          </div>
-
+          </div> -->
           <div class="form-group">
             <label for="prodi">Program Studi</label>
             <select id="prodi" v-model="form.prodi" required>
@@ -52,13 +50,11 @@
               <option value="Sistem Informasi">Sistem Informasi</option>
               <option value="Ilmu Komputer">Ilmu Komputer</option>
             </select>
-          </div>  
-
+          </div>
           <div class="form-group">
             <label for="id_number">Nomor Induk</label>
             <input type="text" id="id_number" v-model="form.id_number" required />
           </div>
-
           <div class="form-group">
             <label>Role</label>
             <select v-model="form.role" required>
@@ -67,8 +63,8 @@
               <option value="admin">Admin</option>
             </select>
           </div>
-
           <div class="form-actions">
+            <!-- <button type="button" @click="deleteUser">Hapus</button> -->
             <button type="button" @click="$router.push('/admin/users/manage')">Batal</button>
             <button type="submit" :disabled="isSubmitting">
                 {{ isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan' }}

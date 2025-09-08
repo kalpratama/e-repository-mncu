@@ -21,7 +21,7 @@ class ArticleController extends Controller
             'date_when' => 'nullable|date',
             'year' => 'nullable|integer|digits:4',
             'publisher' => 'nullable|string|max:100',
-            'issn' => 'nullable|string|min:8|max:13',
+            'issn' => 'nullable|string|min:8|max:20',
             'conference_name' => 'nullable|string|max:100',
             'publication_link' => 'nullable|url|max:255',
             'authors' => 'required|array|min:1',
