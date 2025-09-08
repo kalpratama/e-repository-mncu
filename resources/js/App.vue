@@ -50,6 +50,15 @@ export default {
       return this.$route.name || 'loading...';
     }
   },
+  mounted() {
+    // Call cleanup API every 1 minutes
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupUnverifiedUsers();
+    }, 1 * 60 * 1000);
+  },
+  beforeUnmount() {
+    clearInterval(this.cleanupInterval);
+  },
   methods: {
     goToLogin(){
       this.$router.push('/login');
@@ -154,7 +163,16 @@ export default {
           return Promise.reject(error);
         }
       );
-    }
+    },
+    async cleanupUnverifiedUsers() {
+      try {
+        await fetch("http://localhost:8000/api/cleanup-unverified", {
+          method: "DELETE",
+        });
+      } catch (error) {
+        console.error("Cleanup failed:", error);
+      }
+    },
   },
 
   created(){

@@ -38,7 +38,7 @@
                 <option value="Pendidikan Matematika">Pendidikan Matematika</option>
                 <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
                 <option value="Sains Komunikasi">Sains Komunikasi</option>
-                <option value="DKV">DKV</option>
+                <option value="Desain Komunikasi Visual">Desain Komunikasi Visual</option>
                 <option value="Sistem Informasi">Sistem Informasi</option>
                 <option value="Ilmu Komputer">Ilmu Komputer</option>
             </select>
@@ -84,11 +84,11 @@ export default {
       this.errorMessage = '';
       this.successMessage = '';
 
-      if (!this.email.endsWith("@mncu.ac.id")) {
-        this.errorMessage = "Hanya email @mncu.ac.id yang diperbolehkan.";
-        this.success = false;
-        return;
-      }
+      // if (!this.email.endsWith("@mncu.ac.id")) {
+      //   this.errorMessage = "Hanya email @mncu.ac.id yang diperbolehkan.";
+      //   this.success = false;
+      //   return;
+      // }
 
       if (/[^0-9]/.test(this.id_number)) {
         this.errorMessage = "NIM hanya boleh terdiri dari angka.";

@@ -62,6 +62,8 @@ export default {
       } catch (error) {
         if (error.response && error.response.status === 401) {
           this.errorMessage = 'Username atau password salah.';
+        } else if (error.response && error.response.status === 403) {
+          this.errorMessage = 'Akun Anda dihapus karena tidak memverifikasi email dalam 10 menit. Silakan registrasi ulang.';
         } else {
           this.errorMessage = 'Terjadi kesalahan saat mencoba masuk. Silakan coba lagi.';
         }

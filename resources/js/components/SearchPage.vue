@@ -218,7 +218,7 @@ export default {
   background-color: #0056b3;
 }
 .no-documents-message { text-align: center; font-size: 1.1rem; color: #666; padding: 2rem; }
-a.publication-item { display: block; text-decoration: none; color: inherit; padding: 1.5rem; margin-bottom: 1rem; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+a.publication-item { display: block; text-decoration: none; color: inherit; padding: 1rem; margin-bottom: 1rem; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
 a.publication-item:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
 a.publication-item:last-child { margin-bottom: 0; }
 .publication-item h3 { margin: 0 0 0.25rem 0; font-size: 1.1rem; color: #1F3D7B; font-weight: 600; }

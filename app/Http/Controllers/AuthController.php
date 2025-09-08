@@ -65,6 +65,15 @@ class AuthController extends Controller
 
          // Check if email is verified
         if (!$user->hasVerifiedEmail()) {
+            // If account is older than 10 minutes and still unverified, delete it
+            if ($user->created_at->diffInMinutes(now()) >= 1) {
+                $user->delete();
+                $this->cleanupUnverified();
+                return response()->json([
+                    'message' => 'Akun Anda dihapus karena tidak memverifikasi email dalam 10 menit. Silakan registrasi ulang.'
+                ], 403);
+            }
+
             return response()->json([
                 'message' => 'Verifikasi email Anda terlebih dahulu.'
             ], 403);
@@ -156,6 +165,10 @@ class AuthController extends Controller
     // Helper: generate OTP and send email
     private function generateAndSendOtp(User $user)
     {
+        User::whereNull('email_verified_at')
+            ->where('created_at', '<', now()->subMinutes(10))
+            ->delete();
+
         $otp = rand(100000, 999999);
 
         $user->email_verification_code = $otp;
@@ -165,7 +178,15 @@ class AuthController extends Controller
         Mail::to($user->email)->send(new VerifyOtpMail($otp));
     }
 
+    public function cleanupUnverified()
+    {
+        $deleted = User::whereNull('email_verified_at')
+            ->where('created_at', '<', now()->subMinutes(10))
+            ->delete();
 
-    
+        return response()->json([
+            'message' => "$deleted akun yang belum diverifikasi telah dihapus."
+        ]);
+    }
 }
 

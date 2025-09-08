@@ -23,7 +23,8 @@ class UsersController extends Controller
         // If there is a search query
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
+                $q->where('id', 'LIKE', "%{$search}%")
+                  ->orWhere('name', 'LIKE', "%{$search}%")
                   ->orWhere('username', 'LIKE', "%{$search}%")
                   ->orWhere('email', 'LIKE', "%{$search}%")
                   ->orWhere('role', 'LIKE', "%{$search}%")
@@ -62,43 +63,32 @@ class UsersController extends Controller
         }
 
         // Validate input
-        // $validatedData = $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'username' => 'required|string|max:50|unique:users,username,' . $user->id . ',id',
-        //     'email' => 'required|email|max:255|unique:users,email,' . $user->id . ',id',
-        //     'role' => 'required|in:admin,mahasiswa,dosen',
-        //     'prodi' => 'nullable|in:Manajemen,Akuntansi,Pendidikan Matematika,Pendidikan Bahasa Inggris,Sains Komunikasi,Desain Komunikasi Visual,Sistem Informasi,Ilmu Komputer|max:100',
-        //     'id_number' => 'nullable|string|max:20|unique:users,id_number,' . $user->id . ',id',
-        // ]);
-
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'username' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('users', 'username')->ignore($user->id)
-            ],
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('users', 'email')->ignore($user->id)
-            ],
+            'username' => 'required|string|max:50|unique:users,username,' . $user->id . ',id',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id . ',id',
             'role' => 'required|in:admin,mahasiswa,dosen',
             'prodi' => 'nullable|in:Manajemen,Akuntansi,Pendidikan Matematika,Pendidikan Bahasa Inggris,Sains Komunikasi,Desain Komunikasi Visual,Sistem Informasi,Ilmu Komputer|max:100',
-            'id_number' => [
-                'nullable',
-                'string',
-                'max:20',
-                Rule::unique('users', 'id_number')->ignore($user->id)
-            ]
+            'id_number' => 'nullable|string|max:20|unique:users,id_number,' . $user->id . ',id',
         ]);
-
 
         // Update user
         $user->update($validatedData);
 
         return response()->json(['message' => 'User updated successfully', 'user' => $user]);
     }
+
+    public function destroy($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User tidak ditemukan'], 404);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'User berhasil dihapus'], 200);
+    }
+
 }

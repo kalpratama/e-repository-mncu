@@ -200,7 +200,7 @@ const fieldConfig = {
   10: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Penelitian
   11: ['title', 'year', 'abstract', 'authors', 'identifier', 'program_studi', 'role', 'file_path'],// Laporan Magang Mahasiswa
   12: ['title', 'year', 'authors', 'program_studi', 'role', 'identifier', 'file_path'],// Poster Ilmiah
-  13: ['title', 'year', 'name', 'program_studi', 'role', 'identifier', 'location', 'achievement_type', 'championship', 'champ_ranking', 'file_path'],// Dokumentasi Prestasi mhs
+  13: ['title', 'year', 'name', 'program_studi', 'role', 'identifier', 'location', 'description', 'achievement_type', 'championship', 'champ_ranking', 'file_path'],// Dokumentasi Prestasi mhs
 
   14: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Nasional
   15: ['title', 'year', 'issn', 'publisher', 'abstract', 'description', 'publication_link', 'authors', 'program_studi', 'role', 'file_path'],// Jurnal Internasional

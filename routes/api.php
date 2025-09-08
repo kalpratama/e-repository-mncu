@@ -23,8 +23,10 @@ Route::get('/category/{slug}', [CategoryController::class, 'show']);
 
 // Route::get('/background-images', [BackgroundImageController::class, 'index']);
 
+Route::delete('/cleanup-unverified', [AuthController::class, 'cleanupUnverified']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::delete('/users/{id}', [UsersController::class, 'destroy'])->middleware('auth:sanctum');
 Route::middleware(['auth:sanctum',])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);

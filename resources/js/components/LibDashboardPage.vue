@@ -26,10 +26,6 @@
           </ol>
           <li>
             <router-link :to="{ name: 'Category', params: { slug: 'all' } }">Semua Dokumen</router-link>
-
-            <!-- <router-link :to="{ name: 'CategoryAll' }">
-              Semua Dokumen
-            </router-link> -->
           </li>
         </div>
 
