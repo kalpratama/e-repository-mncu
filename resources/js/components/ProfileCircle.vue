@@ -16,6 +16,8 @@
         Kelola Pengguna
       </router-link>
       <div class="dropdown-divider"></div>
+      <button v-if="user && user.role === 'admin'" class="admin-button" @click="toggleDebug">Debug
+      </button>
       <a href="#" @click.prevent="$emit('logout')" class="dropdown-item logout">Logout</a>
       
     </div>
@@ -40,6 +42,15 @@ export default {
     },
     realName() {
       return this.user.name || 'User';
+    }
+  },
+  methods:{
+    toggleDebug() {
+      if (this.user && this.user.role === 'admin') {
+        this.debugVisible = !this.debugVisible;
+      } else {
+        alert("You are not authorized to access debug tools.");
+      }
     }
   }
 }

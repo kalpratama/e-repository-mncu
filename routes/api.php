@@ -23,6 +23,7 @@ Route::get('/category/{slug}', [CategoryController::class, 'show']);
 
 // Route::get('/background-images', [BackgroundImageController::class, 'index']);
 
+Route::post('/debug/send-otp', [AuthController::class, 'debugSendOTP']);
 Route::delete('/cleanup-unverified', [AuthController::class, 'cleanupUnverified']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);

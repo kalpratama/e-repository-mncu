@@ -84,20 +84,17 @@ export default {
       this.errorMessage = '';
       this.successMessage = '';
 
-      // if (!this.email.endsWith("@mncu.ac.id")) {
-      //   this.errorMessage = "Hanya email @mncu.ac.id yang diperbolehkan.";
-      //   this.success = false;
-      //   return;
-      // }
-
+      // Validate NIM input
       if (/[^0-9]/.test(this.id_number)) {
         this.errorMessage = "NIM hanya boleh terdiri dari angka.";
         this.success = false;
+        console.error("[VALIDATION ERROR] NIM hanya boleh angka:", this.id_number);
         return;
       }
 
-      this.isLoading = true; // start loading
-      
+      this.isLoading = true;
+      console.log("[REGISTER] Starting registration request...");
+
       try {
         const response = await axios.post('/api/register', {
           username: this.username,
@@ -108,22 +105,53 @@ export default {
           prodi: this.prodi
         });
 
-        // Save email for verification
+        // Save email for OTP verification
         const registeredEmail = response.data.email;
         localStorage.setItem("registeredEmail", registeredEmail);
 
-        alert("Registrasi berhasil. Silakan verifikasi email Anda.");
+        console.log("[REGISTER SUCCESS] Registrasi berhasil untuk email:", registeredEmail);
         this.successMessage = "Registrasi berhasil. Silakan verifikasi email Anda.";
+
+        // alert("Registrasi berhasil. Silakan verifikasi email Anda.");
+        // Redirect to OTP verification page
         this.$router.push('/verify-otp');
+
       } catch (error) {
-        if (error.response && error.response.data.errors) {
-          this.errorMessage = Object.values(error.response.data.errors).flat().join(' ');
+        console.group("📌 [REGISTER ERROR LOG]");
+        console.error("Full Error Object:", error);
+
+        if (error.response) {
+          console.error("Status:", error.response.status);
+          console.error("Response Data:", error.response.data);
+
+          // Handle validation errors
+          if (error.response.data.errors) {
+            this.errorMessage = Object.values(error.response.data.errors)
+              .flat()
+              .join(' ');
+            console.error("Validation Errors:", this.errorMessage);
+          }
+          // Handle server-side issues
+          else if (error.response.status === 500) {
+            this.errorMessage = 'Terjadi kesalahan pada server. Silakan coba lagi nanti.';
+            console.error("Internal Server Error:", error.response.data);
+          }
+          // Handle all other cases
+          else {
+            this.errorMessage = error.response.data.message || 'Terjadi kesalahan saat registrasi.';
+            console.error("Unhandled Error:", this.errorMessage);
+          }
+        } else if (error.request) {
+          console.error("No response received from server. Possible CORS/Network issue.");
+          this.errorMessage = "Tidak ada respons dari server.";
         } else {
-          this.errorMessage = 'Terjadi kesalahan saat registrasi.';
+          console.error("Axios internal error:", error.message);
+          this.errorMessage = "Terjadi kesalahan tidak terduga.";
         }
-        console.error('Register error:', error);
+        console.groupEnd();
       }
-      this.isLoading = false; // stop loading
+
+      this.isLoading = false; // stop loading indicator
     }
   }
 };
