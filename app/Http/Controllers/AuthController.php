@@ -77,7 +77,12 @@ class AuthController extends Controller
 
             return response()->json([
                 'message' => 'Registrasi berhasil. Silakan cek email untuk verifikasi.',
-                'email' => $user->email
+                'email' => $user->email,
+                'MAIL_MAILER' => config('mail.default'),
+                'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
             ], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -144,7 +149,11 @@ class AuthController extends Controller
 
     public function user(Request $request)
     {
-        return $request->user();
+        try {
+            return response()->json($request->user());
+        } catch (\Exception $e) {
+            return response()->json($users = ['message' => 'Error fetching users', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function logout(Request $request)
@@ -195,18 +204,33 @@ class AuthController extends Controller
     private function generateAndSendOtp(User $user)
     {
         try {
-            Log::info('[OTP-STEP 1] Starting OTP generation.', ['user_id' => $user->id]);
+            Log::info('[OTP-STEP 1] Starting OTP generation.', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]
+            );
 
             $otp = rand(100000, 999999);
-
             $user->email_verification_code = $otp;
             $user->email_verification_expires_at = now()->addMinutes(10);
             $user->save();
             Log::info('[OTP-STEP 2] OTP saved to DB.', [
                 'user_id' => $user->id,
-                'otp' => $otp
+                'otp' => $otp,
+                'expires_at' => $user->email_verification_expires_at
             ]);
 
+            Log::info('[OTP-DEBUG] Current mail config:', [
+                'MAIL_MAILER' => config('mail.default'),
+                'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
+                'email' => $user->email,
+                'APP_URL' => config('app.url'),
+            ]);
+
+            Log::info('[OTP-DEBUG] Attempting to send OTP email...');
             Mail::to($user->email)->send(new VerifyOtpMail($otp));
             Log::info('[OTP-STEP 3] OTP email sent successfully.', ['email' => $user->email]);
 
@@ -214,6 +238,11 @@ class AuthController extends Controller
             Log::error('[OTP-FAIL] Failed to send OTP.', [
                 'user_id' => $user->id,
                 'email' => $user->email,
+                'MAIL_MAILER' => config('mail.default'),
+                'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -240,21 +269,43 @@ class AuthController extends Controller
             if (!$email) {
                 return response()->json(['message' => 'Email is required'], 400);
             }
+            Log::info('[OTP-DEBUG] Starting OTP generation.', ['email' => $email]);
 
             // Generate random OTP (6 digits)
-            $otp = rand(100000, 999999);
+            $otp = rand(364000000, 364000999);
 
             // Send email using existing VerifyOtpMail Mailable
+            Log::info('[OTP-DEBUG] Attempting to send OTP email...');
             Mail::to($email)->send(new VerifyOtpMail($otp));
+            Log::info('[OTP-DEBUG] OTP email sent successfully.', ['email' => $email]);
 
             return response()->json([
                 'message' => 'Debug OTP sent successfully',
+                'MAIL_MAILER' => config('mail.default'),
+                'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
+
+                'email' => $email,
                 'otp' => $otp
             ], 200);
         } catch (\Exception $e) {
-            \Log::error("DEBUG OTP SEND ERROR: " . $e->getMessage());
+            // Log::error("DEBUG OTP SEND ERROR: " . $e->getMessage());
+            Log::error('[OTP-FAIL] Failed to send OTP.', [
+                'MAIL_MAILER' => config('mail.default'),
+                'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
+
+                'email' => $email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'message' => 'Failed to send OTP',
+                'email' => $email,
                 'error' => $e->getMessage()
             ], 500);
         }

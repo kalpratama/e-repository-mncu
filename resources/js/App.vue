@@ -1,6 +1,5 @@
 <template>
   <div>
-    
 
     <router-view 
       :is-logged-in="isLoggedIn"
@@ -8,10 +7,11 @@
       @request-login="goToLogin"
       @login-success="handleLoginSuccess"
       @logout="handleLogout"
+      @toggle-debug="toggleDebugBlock" 
     />
 
     <!-- ======================= DEBUG BLOCK ======================= -->
-    <div class="debug-info">
+    <!-- <div class="debug-info">
       <strong>-- DEBUG INFO --</strong><br>
       <p>Current Page: <strong>{{ currentPage }}</strong></p>
       <p>Is Logged In: <strong>{{ isLoggedIn }}</strong></p>
@@ -21,22 +21,21 @@
 
       <button @click="debugStorage" style="margin-top: 10px;">Debug Storage</button>
       <button @click="checkAuthStatus" style="margin-top: 10px; margin-left: 10px;">Re-check Auth</button>
-      
-      <!-- NEW: OTP input and trigger -->
+
       <div style="margin-top: 10px;">
         <input 
-          v-model="debugTargetEmail" 
-          type="email" 
-          placeholder="Enter target email" 
-          style="padding:5px; border:1px solid #ccc; border-radius:4px; width: 250px; margin-right:10px;"
+          v-model="debugTargetEmail"
+          type="email"
+          placeholder="Enter target email"
+          style="padding:5px; border:1px solid #ccc; border-radius:4px; width:250px; margin-right:10px;"
         >
         <button 
-          @click="sendDebugOTP" 
+          @click="sendDebugOTP"
           style="background:#007bff; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer;">
           Send Debug OTP
         </button>
       </div>
-    </div>
+    </div> -->
     <!-- =========================================================== -->
 
 
@@ -97,9 +96,9 @@ export default {
     clearInterval(this.cleanupInterval);
   },
   methods: {
-    toggleDebug() {
+    toggleDebugBlock() {
       this.debugVisible = !this.debugVisible;
-      console.log(`[DEBUG] Debug panel ${this.debugVisible ? 'shown' : 'hidden'}`);
+      console.log(`[DEBUG] Debug block is now ${this.debugVisible ? 'visible' : 'hidden'}`);
     },
     goToLogin(){
       this.$router.push('/login');
@@ -143,12 +142,19 @@ export default {
         this.token = token;
         this.debugToken = token; // For debugging purposes
         try {
-          const response = await axios.get('/api/user');
+          const response = await axios.get('/api/user', {
+            headers: {
+              "Accept": "application/json",
+            }
+          });
+          console.log('Auth check response:', response);
           if (response.data) {
             this.isLoggedIn = true;
             this.user = response.data;
           } 
         } catch (error) {
+          this.user = response.data;
+          console.error('Auth check failed:', error);
           console.warn('User session invalid or expired.', error);
           // localStorage.removeItem('access_token');
           // delete axios.defaults.headers.common['Authorization'];
@@ -214,47 +220,11 @@ export default {
         console.error("Cleanup failed:", error);
       }
     },
-    
-    async sendDebugOTP() {
-      console.log("[DEBUG] Triggering manual OTP send...");
-
-      if (!this.debugTargetEmail) {
-        alert("Please enter a target email before sending OTP.");
-        return;
-      }
-
-      try {
-        const response = await axios.post('/api/debug/send-otp', {
-          email: this.debugTargetEmail
-        });
-
-        console.log("[DEBUG] OTP Send Response:", response.data);
-        alert(`Debug OTP sent to ${this.debugTargetEmail}`);
-      } catch (error) {
-        console.group("[DEBUG OTP ERROR]");
-        console.error("Full error object:", error);
-
-        if (error.response) {
-          console.error("Status:", error.response.status);
-          console.error("Response:", error.response.data);
-          alert(`Failed to send OTP: ${error.response.data.message || 'Server error'}`);
-        } else if (error.request) {
-          console.error("No response from server. Check network or backend.");
-          alert("No response from server.");
-        } else {
-          console.error("Axios internal error:", error.message);
-          alert("Unexpected error occurred.");
-        }
-
-        console.groupEnd();
-      }
-    }
   },
 
   created(){
     this.setupAxios();
     this.checkAuthStatus();
-
   }
 };
 </script>

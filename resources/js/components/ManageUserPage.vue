@@ -7,6 +7,25 @@
       @request-login="$emit('request-login')" 
       @logout="$emit('logout')" 
     />
+
+    <div class="debug-info">
+      <strong>-- DEBUG OTP --</strong><br>
+      <h3>Gunakan blok ini untuk menguji kirim OTP ke email pengguna.</h3>
+      <h3><strong>PERHATIAN:</strong> Ini hanya untuk tujuan pengujian!!!</h3>
+      <div style="margin-top: 10px;">
+        <input 
+          v-model="debugTargetEmail"
+          type="email"
+          placeholder="Enter target email"
+          style="padding:5px; border:1px solid #ccc; border-radius:4px; width:250px; margin-right:10px;"
+        >
+        <button 
+          @click="sendDebugOTP"
+          style="background:#007bff; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer;">
+          Send Debug OTP
+        </button>
+      </div>
+    </div>
     <div v-if ="isLoading" class="loading-container">
       <p>Memuat...</p>
     </div>
@@ -187,6 +206,50 @@ export default {
         alert("Gagal menghapus pengguna.");
       }
     },
+    async sendDebugOTP() {
+      console.log("[DEBUG] Triggering manual OTP send...");
+
+      if (!this.debugTargetEmail) {
+        alert("Please enter a target email before sending OTP.");
+        return;
+      }
+      try {
+        const response = await fetch("/api/debug/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ email: this.debugTargetEmail }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error("DEBUG OTP ERROR:", result.message); // <--- SHOW FULL ERROR
+          alert("Failed to send OTP. Check console for details.");
+        } else {
+          alert(`OTP sent successfully to ${this.debugTargetEmail}`);
+        }
+      } catch (error) {
+        console.group("[DEBUG OTP ERROR]");
+        console.error("Full error object:", error);
+
+        if (error.response) {
+          console.error("Status:", error.response.status);
+          console.error("Response:", error.response.data);
+          alert(`Failed to send OTP: ${error.response.data.message || 'Server error'}`);
+        } else if (error.request) {
+          console.error("No response from server. Check network or backend.");
+          alert("No response from server.");
+        } else {
+          console.error("Axios internal error:", error.message);
+          alert("Unexpected error occurred.");
+        }
+
+        console.groupEnd();
+      }
+    }
   },
 };
 </script>
