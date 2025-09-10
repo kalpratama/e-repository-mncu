@@ -38,9 +38,15 @@ class ArticleController extends Controller
         ]);
 
         return DB::transaction(function () use ($request, $validatedData) {
+            // $filePath = null;
+            // if ($request->hasFile('document_file')) {
+            //     $filePath = $request->file('document_file')->store('documents', 'public');
+            // }
             $filePath = null;
             if ($request->hasFile('document_file')) {
-                $filePath = $request->file('document_file')->store('documents', 'public');
+                $fileName = time() . '_' . $request->file('document_file')->getClientOriginalName();
+                $request->file('document_file')->move(public_path(), $fileName);
+                $filePath = '/' . $fileName;
             }
             $document = Document::create(array_merge(
                 Arr::except($validatedData, ['authors', 'document_file']),
@@ -108,7 +114,9 @@ class ArticleController extends Controller
         return DB::transaction(function () use ($request, $validatedData, $document) {
             $filePath = null;
             if ($request->hasFile('document_file')) {
-                $filePath = $request->file('document_file')->store('documents', 'public');
+                $fileName = time() . '_' . $request->file('document_file')->getClientOriginalName();
+                $request->file('document_file')->move(public_path(), $fileName);
+                $filePath = '/' . $fileName;
             }
             // Update the document's main fields
             $document->update(array_merge(Arr::except($validatedData, ['authors', 'document_file']), 
@@ -164,11 +172,15 @@ class ArticleController extends Controller
 
     public function download(Document $document)
     {
-        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
-            return response()->download(storage_path('app/public/' . $document->file_path));
+        $filePath = public_path($document->file_path);
+
+        if ($document->file_path && file_exists($filePath)) {
+            return response()->download($filePath);
         }
+
         return response()->json(['message' => 'File not found.'], 404);
     }
+
 
     public function destroy(Document $document)
     {
