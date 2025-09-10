@@ -11,35 +11,39 @@ class UsersController extends Controller
     // Show all users (with search, sort, and pagination)
     public function index(Request $request)
     {
-        // Get query params
-        $search = $request->input('search');
-        $sortBy = $request->input('sortBy', 'created_at'); // Default: sort by created_at
-        $sortOrder = $request->input('sortOrder', 'desc'); // Default: descending
-        $perPage = $request->input('perPage', 10); // Default: 10 users per page
+        try {
+            // Get query params
+            $search = $request->input('search');
+            $sortBy = $request->input('sortBy', 'created_at'); // Default: sort by created_at
+            $sortOrder = $request->input('sortOrder', 'desc'); // Default: descending
+            $perPage = $request->input('perPage', 10); // Default: 10 users per page
 
-        // Query builder
-        $query = User::query();
+            // Query builder
+            $query = User::query();
 
-        // If there is a search query
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('id', 'LIKE', "%{$search}%")
-                  ->orWhere('name', 'LIKE', "%{$search}%")
-                  ->orWhere('username', 'LIKE', "%{$search}%")
-                  ->orWhere('email', 'LIKE', "%{$search}%")
-                  ->orWhere('role', 'LIKE', "%{$search}%")
-                  ->orWhere('prodi', 'LIKE', "%{$search}%")
-                  ->orWhere('id_number', 'LIKE', "%{$search}%");
-            });
+            // If there is a search query
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('id', 'LIKE', "%{$search}%")
+                    ->orWhere('name', 'LIKE', "%{$search}%")
+                    ->orWhere('username', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhere('role', 'LIKE', "%{$search}%")
+                    ->orWhere('prodi', 'LIKE', "%{$search}%")
+                    ->orWhere('id_number', 'LIKE', "%{$search}%");
+                });
+            }
+
+            // Sorting
+            $query->orderBy($sortBy, $sortOrder);
+
+            // Get paginated results
+            $users = $query->paginate($perPage);
+
+            return response()->json($users);
+        } catch (\Exception $e) {
+            return response()->json($users = ['message' => 'Error fetching users', 'error' => $e->getMessage()], 500);
         }
-
-        // Sorting
-        $query->orderBy($sortBy, $sortOrder);
-
-        // Get paginated results
-        $users = $query->paginate($perPage);
-
-        return response()->json($users);
     }
 
     // Show single user by ID
