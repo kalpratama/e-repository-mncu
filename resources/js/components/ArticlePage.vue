@@ -242,7 +242,7 @@ export default {
     },
     previewURL() {
       if (!this.article || !this.article.file_path) return '#';
-      return `/storage/${this.article.file_path}`;
+      return `${this.article.file_path}`;
     },
     hasPdfFiles() {
       return this.article &&
@@ -297,9 +297,13 @@ export default {
     },
     previewDocument() {
       if (this.article && this.article.file_path) {
-        window.open(this.previewURL, '_blank');
+        const fileURL = `${window.location.origin}${this.article.file_path}`;
+        window.open(fileURL, '_blank');
+      } else {
+        console.error("No file found for preview.");
       }
     },
+
     async downloadDocument() {
       if (!this.article) return;
       try {

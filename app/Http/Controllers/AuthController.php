@@ -11,6 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Carbon;
 use App\Mail\VerifyOtpMail;
+use App\Mail\DebugOtpMail;
 
 class AuthController extends Controller
 {
@@ -59,20 +60,40 @@ class AuthController extends Controller
             } catch (\Exception $e) {
                 \DB::rollBack();
                 Log::error('[STEP 6-FAIL] Failed to send OTP. Rolling back user registration.', [
-                    'email' => $user->email,
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'trace' => $e->getTraceAsString(),
+                    'MAIL_MAILER' => config('mail.default'),
+                    'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                    'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                    'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                    'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
+                    'email' => $user->email,
+                    'APP_URL' => config('app.url'),
                 ]);
 
                 return response()->json([
                     'message' => 'Gagal mengirim OTP. Registrasi dibatalkan.',
                     'error' => $e->getMessage(),
-                ], 500);
+                    'MAIL_MAILER' => config('mail.default'),
+                    'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                    'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                    'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                    'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
+                    'email' => $user->email,
+                    'APP_URL' => config('app.url'),
+                ], 555);
             }
 
             \DB::commit();
             Log::info('[STEP 7] Registration transaction committed successfully.', [
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'MAIL_MAILER' => config('mail.default'),
+                'MAIL_HOST' => config('mail.mailers.smtp.host'),
+                'MAIL_PORT' => config('mail.mailers.smtp.port'),
+                'MAIL_USERNAME' => config('mail.mailers.smtp.username'),
+                'MAIL_ENCRYPTION' => config('mail.mailers.smtp.encryption'),
+                'email' => $user->email,
+                'APP_URL' => config('app.url'),
             ]);
 
             return response()->json([
@@ -276,7 +297,7 @@ class AuthController extends Controller
 
             // Send email using existing VerifyOtpMail Mailable
             Log::info('[OTP-DEBUG] Attempting to send OTP email...');
-            Mail::to($email)->send(new VerifyOtpMail($otp));
+            Mail::to($email)->send(new DebugOtpMail($otp));
             Log::info('[OTP-DEBUG] OTP email sent successfully.', ['email' => $email]);
 
             return response()->json([
