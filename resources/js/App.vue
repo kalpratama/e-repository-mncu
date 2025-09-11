@@ -1,6 +1,14 @@
 <template>
   <div>
-
+    <router-view 
+      :is-logged-in="isLoggedIn"
+      :user="user"
+      @request-login="goToLogin"
+      @login-success="handleLoginSuccess"
+      @logout="handleLogout"
+      @toggle-debug="toggleDebugBlock"
+    />
+    <button v-if="user && user.role === 'admin'" @click="toggleDebugBlock" class="toggle-debug">Toggle Debug</button>
     <!-- ======================= DEBUG BLOCK ======================= -->
     <div v-if="user && user.role === 'admin'" class="debug-info">
       <strong>-- DEBUG INFO --</strong><br>
@@ -12,46 +20,18 @@
 
       <button @click="debugStorage" style="margin-top: 10px;">Debug Storage</button>
       <button @click="checkAuthStatus" style="margin-top: 10px; margin-left: 10px;">Re-check Auth</button>
-
-      <div style="margin-top: 10px;">
-        <input 
+      <input 
           v-model="debugTargetEmail"
           type="email"
           placeholder="Enter target email"
-          style="padding:5px; border:1px solid #ccc; border-radius:4px; width:250px; margin-right:10px;"
+          style="padding:5px; border:1px solid #ccc; border-radius:12px; width:250px; margin-left:100px; margin-right: 10px;"
         >
         <button 
           @click="sendDebugOTP"
-          style="background:#007bff; color:white; padding:5px 10px; border:none; border-radius:4px; cursor:pointer;">
+          style="background:#007bff; color:white; padding:5px 10px; border:none; border-radius:13px; cursor:pointer;">
           Send Debug OTP
         </button>
-      </div>
     </div>
-    <!-- =========================================================== -->
-
-    <router-view 
-      :is-logged-in="isLoggedIn"
-      :user="user"
-      @request-login="goToLogin"
-      @login-success="handleLoginSuccess"
-      @logout="handleLogout"
-      @toggle-debug="toggleDebugBlock" 
-    />
-
-    <!-- ======================= DEBUG BLOCK ======================= -->
-    <!-- <div class="debug-info">
-      <strong>-- DEBUG INFO --</strong><br>
-      <p>Current Page: <strong>{{ currentPage }}</strong></p>
-      <p>Is Logged In: <strong>{{ isLoggedIn }}</strong></p>
-      <p>User Data: <strong>{{ user || 'null' }}</strong></p>
-      <p>Token: <strong>{{ token ? 'Available' : 'Missing' }}</strong></p>
-      <p>LocalStorage Token: <strong>{{ $data.debugToken || 'Missing' }}</strong></p>
-      <button @click="debugStorage" style="margin-top: 10px;">Debug Storage</button>
-      <button @click="checkAuthStatus" style="margin-top: 10px; margin-left: 10px;">Re-check Auth</button>
-      <button @click="sendDebugOTP" style="margin-top: 10px; margin-left: 10px;">
-        Send Debug OTP
-      </button>
-    </div> -->
     <!-- =========================================================== -->
   </div>
 </template>

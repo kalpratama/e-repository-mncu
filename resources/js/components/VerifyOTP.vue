@@ -10,20 +10,22 @@
         <h1 class="app-name">E-Repository</h1>
         <p class="company-name">Universitas Media Nusantara Citra</p>
         <form @submit.prevent="submitOtp">
-            <!-- <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" v-model="email" required placeholder="Masukkan email" />
-            </div> -->
-            <div class="input-group">
-                <label for="otp-code">Kode OTP</label>
-                <input type="text" id="otp-code" v-model="otp" required placeholder="Masukkan 6 digit kode OTP"/>
-            </div>
+          <div class="input-group">
+              <label for="otp-code">Kode OTP</label>
+              <input type="text" id="otp-code" v-model="otp" required placeholder="Masukkan 6 digit kode OTP"/>
+          </div>
           <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
           <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
           <button type="submit" :disabled="isLoading">
             <span v-if="isLoading">Memverifikasi...</span>
             <span v-else>Verifikasi</span>
           </button>
+          <div class="register">
+            <router-link to="/login">Sudah diverifikasi admin? Masuk</router-link>
+          </div>
+          <div class="register">
+            <router-link to="/">Tidak menerima email? Hubungi admin</router-link>
+          </div>
         </form>
       </div>
 
@@ -49,7 +51,6 @@ export default {
   },
   methods: {
     async submitOtp() {
-
       this.isLoading = true; // start loading
       this.message = "";
 
@@ -179,6 +180,16 @@ button {
   font-size: 1rem;
   font-weight: 600;
   transition: background-color 0.2s;
+}
+.register {
+  text-align: center;
+  color: #1F3D7B;
+  margin-top: 1rem;;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+.register:hover {
+  text-decoration: underline;
 }
 button:hover {
   background-color: #0056b3;
