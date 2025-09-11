@@ -16,6 +16,13 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/debug/send-otp', [AuthController::class, 'debugSendOTP']);
 Route::delete('/cleanup-unverified', [AuthController::class, 'cleanupUnverified']);
 
+// Articles and related routes
+Route::get('/dashboard-data', [DashboardController::class, 'index']);
+Route::get('/search', [DashboardController::class, 'search']);    Route::get('/document-types', [DocumentTypeController::class, 'index']);
+Route::get('/articles/{document}', [ArticleController::class, 'show']);
+Route::get('/category/{slug}', [CategoryController::class, 'show']);
+Route::get('/articles/{document}/download', [ArticleController::class, 'download']);
+
 // protected Routes
 Route::middleware(['auth:sanctum',])->group(function () {
 
@@ -26,13 +33,7 @@ Route::middleware(['auth:sanctum',])->group(function () {
     Route::get('/users', [UsersController::class, 'index'])
         ->name('users.index');
 
-    // Articles and related routes
-    Route::get('/dashboard-data', [DashboardController::class, 'index']);
-    Route::get('/search', [DashboardController::class, 'search']);
-    Route::get('/document-types', [DocumentTypeController::class, 'index']);
-    Route::get('/articles/{document}', [ArticleController::class, 'show']);
-    Route::get('/category/{slug}', [CategoryController::class, 'show']);
-    Route::get('/articles/{document}/download', [ArticleController::class, 'download']);
+    
     Route::middleware(IsAdmin::class)->group(function () {
         Route::post('/articles', [ArticleController::class, 'store']);
         Route::put('/articles/{document}', [ArticleController::class, 'update']);
