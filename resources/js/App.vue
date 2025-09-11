@@ -1,17 +1,8 @@
 <template>
   <div>
 
-    <router-view 
-      :is-logged-in="isLoggedIn"
-      :user="user"
-      @request-login="goToLogin"
-      @login-success="handleLoginSuccess"
-      @logout="handleLogout"
-      @toggle-debug="toggleDebugBlock" 
-    />
-
     <!-- ======================= DEBUG BLOCK ======================= -->
-    <!-- <div class="debug-info">
+    <div v-if="user && user.role === 'admin'" class="debug-info">
       <strong>-- DEBUG INFO --</strong><br>
       <p>Current Page: <strong>{{ currentPage }}</strong></p>
       <p>Is Logged In: <strong>{{ isLoggedIn }}</strong></p>
@@ -35,9 +26,17 @@
           Send Debug OTP
         </button>
       </div>
-    </div> -->
+    </div>
     <!-- =========================================================== -->
 
+    <router-view 
+      :is-logged-in="isLoggedIn"
+      :user="user"
+      @request-login="goToLogin"
+      @login-success="handleLoginSuccess"
+      @logout="handleLogout"
+      @toggle-debug="toggleDebugBlock" 
+    />
 
     <!-- ======================= DEBUG BLOCK ======================= -->
     <!-- <div class="debug-info">
@@ -68,6 +67,9 @@ export default {
     LoginPage,
     DashboardPage,
     ProfileCircle
+  },
+  props:{
+    user: Object,
   },
   data() {
     return {
@@ -168,8 +170,10 @@ export default {
 
     setupAxios() {
       // Set base URL if your API is on a different domain/port
+
       // axios.defaults.baseURL = 'http://127.0.0.1:8000'; //local
       axios.defaults.baseURL = import.meta.env.VITE_API_URL || '/api'; 
+
       console.debug('Axios base URL set to:', axios.defaults.baseURL);
       // Set default headers
       axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -220,6 +224,50 @@ export default {
         console.error("Cleanup failed:", error);
       }
     },
+    async sendDebugOTP() {
+      console.log("[DEBUG] Triggering manual OTP send...");
+
+      if (!this.debugTargetEmail) {
+        alert("Please enter a target email before sending OTP.");
+        return;
+      }
+      try {
+        const response = await fetch("/api/debug/send-otp", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ email: this.debugTargetEmail }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error("DEBUG OTP ERROR:", result.message); // <--- SHOW FULL ERROR
+          alert("Failed to send OTP. Check console for details.");
+        } else {
+          alert(`OTP sent successfully to ${this.debugTargetEmail}`);
+        }
+      } catch (error) {
+        console.group("[DEBUG OTP ERROR]");
+        console.error("Full error object:", error);
+
+        if (error.response) {
+          console.error("Status:", error.response.status);
+          console.error("Response:", error.response.data);
+          alert(`Failed to send OTP: ${error.response.data.message || 'Server error'}`);
+        } else if (error.request) {
+          console.error("No response from server. Check network or backend.");
+          alert("No response from server.");
+        } else {
+          console.error("Axios internal error:", error.message);
+          alert("Unexpected error occurred.");
+        }
+
+        console.groupEnd();
+      }
+    }
   },
 
   created(){

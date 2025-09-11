@@ -13,6 +13,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 // public Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/debug/send-otp', [AuthController::class, 'debugSendOTP']);
+Route::delete('/cleanup-unverified', [AuthController::class, 'cleanupUnverified']);
 
 // protected Routes
 Route::middleware(['auth:sanctum',])->group(function () {
@@ -40,8 +42,6 @@ Route::middleware(['auth:sanctum',])->group(function () {
     });
 
     // Misc routes
-    Route::post('/debug/send-otp', [AuthController::class, 'debugSendOTP']);
-    Route::delete('/cleanup-unverified', [AuthController::class, 'cleanupUnverified']);
     // Route::get('/background-images', [BackgroundImageController::class, 'index']);
     // Route::get('/admin/background-images', [BackgroundImageController::class, 'adminIndex']);
     // Route::post('/admin/background-images', [BackgroundImageController::class, 'store']);
