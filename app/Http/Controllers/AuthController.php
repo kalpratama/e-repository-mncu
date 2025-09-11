@@ -146,7 +146,7 @@ class AuthController extends Controller
          // Check if email is verified
         if (!$user->hasVerifiedEmail()) {
             // If account is older than 10 minutes and still unverified, delete it
-            if ($user->created_at->diffInMinutes(now()) >= 1) {
+            if ($user->created_at->diffInMinutes(now()) >= 10) {
                 $user->delete();
                 $this->cleanupUnverified();
                 return response()->json([
@@ -222,6 +222,28 @@ class AuthController extends Controller
         return response()->json(['message' => 'Email verified successfully']);
     }
 
+    public function verifyUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'User already verified'], 400);
+        }
+
+        $user->email_verified_at = now();
+        $user->email_verification_code = null;
+        $user->email_verification_expires_at = null;
+        $user->save();
+
+        event(new Verified($user));
+
+        return response()->json(['message' => 'User verified successfully']);
+    }
+
     private function generateAndSendOtp(User $user)
     {
         try {
@@ -274,7 +296,7 @@ class AuthController extends Controller
     public function cleanupUnverified()
     {
         $deleted = User::whereNull('email_verified_at')
-            ->where('created_at', '<', now()->subMinutes(1))
+            ->where('created_at', '<', now()->subMinutes(10))
             ->delete();
 
         return response()->json([

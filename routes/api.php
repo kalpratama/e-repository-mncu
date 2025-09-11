@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum',])->group(function () {
         Route::put('/articles/{document}', [ArticleController::class, 'update']);
         Route::put('/users/{id}', [UsersController::class, 'update']);
         Route::get('/users/{id}', [UsersController::class, 'show']);
+        Route::post('/users/{id}/verify', [AuthController::class, 'verifyUser']);
         Route::delete('/articles/{document}', [ArticleController::class, 'destroy']);
     });
 

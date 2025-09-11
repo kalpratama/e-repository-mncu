@@ -16,8 +16,6 @@
         Kelola Pengguna
       </router-link>
       <div class="dropdown-divider"></div>
-      <button v-if="user && user.role === 'admin'" class="admin-button" @click="toggleDebug">Debug
-      </button>
       <a href="#" @click.prevent="$emit('logout')" class="dropdown-item logout">Logout</a>
       
     </div>

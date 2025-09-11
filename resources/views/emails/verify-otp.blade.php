@@ -44,7 +44,7 @@
                             </a>
 
                             <p style="font-size: 13px; margin-top: 20px; color: #888;">
-                                Kode ini akan kedaluwarsa dalam <strong>10 menit</strong>.  
+                                Kode ini akan kedaluwarsa dalam <strong>10 menit</strong>.
                                 Jika Anda tidak meminta kode ini, abaikan email ini.
                             </p>
                         </td>

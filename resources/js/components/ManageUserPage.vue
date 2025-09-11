@@ -51,7 +51,8 @@
                 <th>No. Induk</th>
                 <th>Program Studi</th>
                 <th>Role</th>
-                <th>Aksi</th>
+                <th>Verified At</th>
+                <th style="text-align: center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -64,27 +65,39 @@
                 <td>{{ userItem?.id_number }}</td>
                 <td>{{ userItem?.prodi || '-' }}</td>
                 <td>{{ userItem?.role }}</td>
+                <td>{{ userItem?.email_verified_at ? new Date(userItem.email_verified_at).toLocaleString('id', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    // hour: '2-digit',
+                    // minute: '2-digit'
+                  }) : 'Not Verified' }}</td>
                 <td class="action-buttons">
-                <!-- Edit User Button -->
-                <router-link
-                  :to="'/admin/users/edit/' + userItem.id"
-                  class="icon-button edit-button"
-                  title="Edit Pengguna"
-                >
-                  <!-- Pencil Icon -->
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M11 4h2m-6.586 9.586a2 2 0 010-2.828l7-7a2 2 0 012.828 0l2.172 2.172a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0L7.414 15.414z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5l3 3" />
-                  </svg>
-                </router-link>
+                  <!-- Verify User Button -->
+                  <button v-if="userItem.email_verified_at === null"
+                    @click="verifyUser(userItem.id)"
+                    class="icon-button verify-button"
+                    title="Verifikasi Pengguna"
+                  >V</button>
+                  <router-link
+                    :to="'/admin/users/edit/' + userItem.id"
+                    class="icon-button edit-button"
+                    title="Edit Pengguna"
+                  >
+                    <!-- Pencil Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 4h2m-6.586 9.586a2 2 0 010-2.828l7-7a2 2 0 012.828 0l2.172 2.172a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0L7.414 15.414z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5l3 3" />
+                    </svg>
+                  </router-link>
 
-                <!-- Delete User Button -->
-                <button
-                  @click="deleteUser(userItem.id)"
-                  class="icon-button delete-button"
-                  title="Hapus Pengguna"
-                >
+                  <!-- Delete User Button -->
+                  <button
+                    @click="deleteUser(userItem.id)"
+                    class="icon-button delete-button"
+                    title="Hapus Pengguna"
+                  >
                   <!-- Trash Icon -->
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -188,6 +201,19 @@ export default {
         alert("Gagal menghapus pengguna.");
       }
     },
+    async verifyUser(id) {
+      const userItem = this.users.find(user => user.id === id);
+      if (!confirm(`Verifikasi '${userItem?.name}'?`)) return;
+
+      try {
+        await axios.post(`/api/users/${id}/verify`);
+        alert("Pengguna berhasil diverifikasi.");
+        this.fetchUsers(); // Refresh the user list to reflect changes
+      } catch (error) {
+        console.error(error);
+        alert("Gagal memverifikasi pengguna.");
+      }
+    },
   },
 };
 </script>
@@ -198,9 +224,9 @@ export default {
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
 }
-.main-content { 
-  padding-left: 5rem;
-  padding-right: 5rem;
+.main-content {
+  padding-left: 1rem;
+  padding-right: 1rem;
   padding-bottom: 0rem;
   padding-top: .5rem;
 }
@@ -349,7 +375,7 @@ export default {
 }
 .user-table th,
 .user-table td {
-  padding: 12px 15px;
+  padding: 10px 5px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
@@ -380,7 +406,12 @@ export default {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: 0.2s ease;
+}
+
+.verify-button {
+  background-color: #f9da0e; /* Yellow */
+  color: rgb(0, 0, 0);
 }
 
 .edit-button {
